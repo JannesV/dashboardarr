@@ -1,0 +1,10 @@
+query getServices {
+  services {
+    name
+    id
+    type
+    icon
+    url
+    apiKey
+  }
+}

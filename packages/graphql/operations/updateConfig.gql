@@ -1,0 +1,33 @@
+mutation updateConfig($configName: String!, $body: String!) {
+  updateConfig(configName: $configName, body: $body) {
+    name
+    settings {
+      searchUrl
+      title
+      logo
+      favicon
+      primaryColor
+      secondaryColor
+      primaryShade
+      background
+      customCSS
+      appOpacity
+      widgetPosition
+      appCardWidth
+    }
+    modules {
+      usenet {
+        title
+        enabled
+      }
+      docker {
+        title
+        enabled
+      }
+      calendar {
+        title
+        enabled
+      }
+    }
+  }
+}

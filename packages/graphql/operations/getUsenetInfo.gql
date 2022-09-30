@@ -1,0 +1,9 @@
+query getUsenetInfo($serviceId: String!) {
+  usenetInfo(serviceId: $serviceId) {
+    paused
+    sizeLeft
+    speed
+    eta
+    itemsRemaining
+  }
+}

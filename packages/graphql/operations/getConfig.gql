@@ -1,0 +1,33 @@
+query getConfig($configName: String!) {
+  config(configName: $configName) {
+    name
+    settings {
+      searchUrl
+      title
+      logo
+      favicon
+      primaryColor
+      secondaryColor
+      primaryShade
+      background
+      customCSS
+      appOpacity
+      widgetPosition
+      appCardWidth
+    }
+    modules {
+      usenet {
+        title
+        enabled
+      }
+      docker {
+        title
+        enabled
+      }
+      calendar {
+        title
+        enabled
+      }
+    }
+  }
+}

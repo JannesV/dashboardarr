@@ -1,0 +1,7 @@
+query search($search: String!) {
+  search(search: $search) {
+    image
+    title
+    type
+  }
+}
