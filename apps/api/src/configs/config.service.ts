@@ -1,5 +1,5 @@
-import { Injectable } from "@nestjs/common";
-import { readdir, readFile, writeFile } from "fs/promises";
+import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
+import { mkdir, readdir, readFile, stat, writeFile } from "fs/promises";
 import { v4 } from "uuid";
 import { Config as ConfigModel } from "./models/config.model";
 import { Config } from "./config.types";
@@ -10,7 +10,23 @@ import { ServiceInput } from "../services/models/serviceInput.model";
 const SERVICES_PATH = "../../data/services.json";
 
 @Injectable()
-export class ConfigService {
+export class ConfigService implements OnModuleInit {
+  private logger: Logger = new Logger(ConfigService.name);
+
+  public async onModuleInit() {
+    try {
+      await stat("../../data");
+    } catch (err) {
+      this.logger.debug(
+        "Data directory does not exist. Creating initial setup."
+      );
+      await mkdir("../../data", { recursive: true });
+      await mkdir("../../data/configs", { recursive: true });
+
+      await writeFile(SERVICES_PATH, "[]");
+    }
+  }
+
   public async getConfigs(): Promise<ConfigModel[]> {
     const files = await readdir("../../data/configs");
     const configs = files.map((file) => file.replace(".json", ""));
