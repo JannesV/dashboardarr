@@ -1,96 +1,146 @@
 import {
   Button,
   HStack,
+  Icon,
   Tab,
   TabList,
   TabPanel,
   TabPanels,
   Tabs,
   Tag,
-  useColorModeValue,
 } from "@chakra-ui/react";
 import {
+  GetUsenetInfoDocument,
+  GetUsenetInfoQuery,
+  GetUsenetInfoQueryVariables,
   ServiceType,
   useGetServicesQuery,
   useGetUsenetInfoQuery,
+  usePauseUsenetQueueMutation,
+  useResumeUsenetQueueMutation,
 } from "@dashboardarr/graphql";
 import { FC, useEffect, useState } from "react";
-import { parseDuration } from "../../utils/formatDuration";
+import { ModuleBox } from "../../components/ModuleBox/ModuleBox";
+import { parseEta } from "../../utils/formatDuration";
 import { humanFileSize } from "../../utils/humanFileSize";
 import { UsenetDownloads } from "./UsenetDownloads/UsenetDownloads";
 import { UsenetHistory } from "./UsenetHistory/UsenetHistory";
+import { MdPause, MdPlayArrow } from "react-icons/md";
 
 export const UsernetOverview: FC = () => {
   const [tabIndex, setTabIndex] = useState(0);
-
-  const handleTabsChange = (index: number) => {
-    setTabIndex(index);
-  };
-
-  const { border } = useColorModeValue(
-    { border: "gray.200" },
-    { border: "gray.700" }
-  );
 
   // TODO Get services in a better way
   const { data: servicesData } = useGetServicesQuery();
   const sabSevice = servicesData?.services.find(
     (s) => s.type === ServiceType.Sabnzbd
   );
+  const handleTabsChange = (index: number) => {
+    setTabIndex(index);
+  };
 
   const serviceId = sabSevice?.id || "";
 
-  const { data: historyData, previousData } = useGetUsenetInfoQuery({
+  const { data: usenetInfoData, previousData } = useGetUsenetInfoQuery({
     variables: {
       serviceId,
     },
     skip: !sabSevice,
   });
 
+  const [resumeQueue, { loading: resumeLoading }] =
+    useResumeUsenetQueueMutation({
+      variables: { serviceId },
+      update(cache, { data }) {
+        if (data) {
+          cache.updateQuery<GetUsenetInfoQuery, GetUsenetInfoQueryVariables>(
+            {
+              query: GetUsenetInfoDocument,
+              variables: { serviceId },
+            },
+            () => ({
+              usenetInfo: data.resumeUsenetQueue,
+            })
+          );
+        }
+      },
+    });
+
+  const [pauseQueue, { loading: pauseLoading }] = usePauseUsenetQueueMutation({
+    variables: { serviceId },
+    update(cache, { data }) {
+      if (data) {
+        cache.updateQuery<GetUsenetInfoQuery, GetUsenetInfoQueryVariables>(
+          {
+            query: GetUsenetInfoDocument,
+            variables: { serviceId },
+          },
+          () => ({
+            usenetInfo: data.pauseUsenetQueue,
+          })
+        );
+      }
+    },
+  });
+
   useEffect(() => {
-    if (!previousData && historyData?.usenetInfo.itemsRemaining === 0) {
+    if (!previousData && usenetInfoData?.usenetInfo.itemsRemaining === 0) {
       setTabIndex(1);
     }
-  }, [historyData, previousData]);
+  }, [usenetInfoData, previousData]);
 
   return (
-    <Tabs
-      shadow="md"
-      rounded="20"
-      alignItems="center"
-      justifyContent="center"
-      border="1px"
-      borderColor={border}
-      m="4"
-      p="4"
-      index={tabIndex}
-      onChange={handleTabsChange}
-    >
-      <TabList>
-        <Tab>Queue</Tab>
-        <Tab>History</Tab>
-        <HStack alignItems="center" h="6" spacing="5" ml="auto">
-          <Tag colorScheme="orange" size="sm" borderRadius="full">
-            {humanFileSize(historyData?.usenetInfo.speed || 0)}/s
-          </Tag>
-          <Tag colorScheme="orange" size="sm" borderRadius="full">
-            Size Remaining:{" "}
-            {humanFileSize(historyData?.usenetInfo.sizeLeft || 0)}
-          </Tag>
-          <Button size="sm" borderRadius="full">
-            {parseDuration(historyData?.usenetInfo.eta || 0)}
-          </Button>
-        </HStack>
-      </TabList>
+    <ModuleBox>
+      <Tabs
+        alignItems="center"
+        justifyContent="center"
+        index={tabIndex}
+        onChange={handleTabsChange}
+      >
+        <TabList>
+          <Tab>Queue</Tab>
+          <Tab>History</Tab>
+          <HStack alignItems="center" h="6" spacing="5" ml="auto">
+            <Tag colorScheme="orange" size="sm" borderRadius="full">
+              {humanFileSize(usenetInfoData?.usenetInfo.speed || 0)}/s
+            </Tag>
+            <Tag colorScheme="orange" size="sm" borderRadius="full">
+              Size Remaining:{" "}
+              {humanFileSize(usenetInfoData?.usenetInfo.sizeLeft || 0)}
+            </Tag>
+            {usenetInfoData?.usenetInfo.paused ? (
+              <Button
+                onClick={() => resumeQueue()}
+                isLoading={resumeLoading}
+                size="sm"
+                borderRadius="full"
+              >
+                <Icon mr={2} as={MdPlayArrow} />
+                PAUSED
+              </Button>
+            ) : (
+              <Button
+                onClick={() => pauseQueue()}
+                isLoading={pauseLoading}
+                size="sm"
+                borderRadius="full"
+              >
+                <Icon mr={2} as={MdPause} />
+                {parseEta(usenetInfoData?.usenetInfo.eta || 0)}
+              </Button>
+            )}
+          </HStack>
+        </TabList>
 
-      <TabPanels>
-        <TabPanel>
-          <UsenetDownloads serviceId={serviceId} />
-        </TabPanel>
-        <TabPanel>
-          <UsenetHistory serviceId={serviceId} />
-        </TabPanel>
-      </TabPanels>
-    </Tabs>
+        <TabPanels>
+          <TabPanel p={0} pt={5}>
+            <UsenetDownloads serviceId={serviceId} />
+          </TabPanel>
+          <TabPanel p={0} pt={5}>
+            <UsenetHistory serviceId={serviceId} />
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
+    </ModuleBox>
   );
 };

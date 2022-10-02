@@ -1,0 +1,5 @@
+mutation createService($service: ServiceInput!) {
+  createService(service: $service) {
+    ...Service
+  }
+}

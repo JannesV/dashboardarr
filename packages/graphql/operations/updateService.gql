@@ -1,10 +1,5 @@
 mutation updateService($id: String!, $service: ServiceInput!) {
   updateService(id: $id, service: $service) {
-    name
-    id
-    type
-    icon
-    url
-    apiKey
+    ...Service
   }
 }

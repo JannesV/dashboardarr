@@ -116,6 +116,7 @@ type Service {
   type: ServiceType!
   icon: String!
   url: String!
+  externalUrl: String
   apiKey: String
 }
 
@@ -201,5 +202,6 @@ input ServiceInput {
   type: ServiceType!
   icon: String!
   url: String!
+  externalUrl: String
   apiKey: String
 }

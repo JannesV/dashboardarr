@@ -1,0 +1,9 @@
+fragment Service on Service {
+  name
+  id
+  type
+  icon
+  url
+  externalUrl
+  apiKey
+}

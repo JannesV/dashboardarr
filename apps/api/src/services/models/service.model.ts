@@ -15,8 +15,17 @@ export class Service {
   @Field()
   icon: string;
 
+  /**
+   * URL for internal use (API Requests, ....)
+   */
   @Field()
   url: string;
+
+  /**
+   * URL To open when the service is clicked
+   */
+  @Field({ nullable: true })
+  externalUrl?: string;
 
   @Field({ nullable: true })
   apiKey?: string;

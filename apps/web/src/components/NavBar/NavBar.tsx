@@ -17,11 +17,14 @@ import {
   Kbd,
   useBoolean,
 } from "@chakra-ui/react";
-import { HamburgerIcon, MoonIcon, SunIcon } from "@chakra-ui/icons";
+import { AddIcon, HamburgerIcon, MoonIcon, SunIcon } from "@chakra-ui/icons";
 import { SearchModal } from "../Search/SearchModal";
 import { useHotkeys } from "react-hotkeys-hook";
+import { useAtom } from "jotai";
+import { createServiceAtom } from "../../state/service";
 
 export const NavBar = () => {
+  const [, setIsCreateService] = useAtom(createServiceAtom);
   const { border, SwitchIcon } = useColorModeValue(
     { border: "gray.200", SwitchIcon: MoonIcon },
     { border: "gray.700", SwitchIcon: SunIcon }
@@ -84,6 +87,12 @@ export const NavBar = () => {
                 </InputRightElement>
               </InputGroup>
             </HStack>
+            <IconButton
+              aria-label="Add a new service"
+              icon={<AddIcon />}
+              onClick={() => setIsCreateService(true)}
+              variant="outline"
+            />
             <IconButton
               aria-label="Switch light/darkmode"
               icon={<SwitchIcon />}

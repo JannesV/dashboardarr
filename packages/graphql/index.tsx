@@ -194,7 +194,8 @@ export type SearchResult = {
 
 export type Service = {
   __typename?: 'Service';
-  apiKey: Scalars['String'];
+  apiKey?: Maybe<Scalars['String']>;
+  externalUrl?: Maybe<Scalars['String']>;
   icon: Scalars['String'];
   id: Scalars['String'];
   name: Scalars['String'];
@@ -204,6 +205,7 @@ export type Service = {
 
 export type ServiceInput = {
   apiKey?: InputMaybe<Scalars['String']>;
+  externalUrl?: InputMaybe<Scalars['String']>;
   icon: Scalars['String'];
   name: Scalars['String'];
   type: ServiceType;
@@ -308,6 +310,20 @@ export enum UsenetQueueStatus {
   Queued = 'Queued'
 }
 
+export type CreateServiceMutationVariables = Exact<{
+  service: ServiceInput;
+}>;
+
+
+export type CreateServiceMutation = { __typename?: 'Mutation', createService: { __typename?: 'Service', name: string, id: string, type: ServiceType, icon: string, url: string, externalUrl?: string | null, apiKey?: string | null } };
+
+export type DeleteServiceMutationVariables = Exact<{
+  ids: Array<Scalars['String']> | Scalars['String'];
+}>;
+
+
+export type DeleteServiceMutation = { __typename?: 'Mutation', deleteService: boolean };
+
 export type GetCalendarQueryVariables = Exact<{
   startDate: Scalars['DateTime'];
   endDate: Scalars['DateTime'];
@@ -336,7 +352,7 @@ export type GetContainersQuery = { __typename?: 'Query', containers: Array<{ __t
 export type GetServicesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetServicesQuery = { __typename?: 'Query', services: Array<{ __typename?: 'Service', name: string, id: string, type: ServiceType, icon: string, url: string, apiKey: string }> };
+export type GetServicesQuery = { __typename?: 'Query', services: Array<{ __typename?: 'Service', name: string, id: string, type: ServiceType, icon: string, url: string, externalUrl?: string | null, apiKey?: string | null }> };
 
 export type GetUsenetHistoryQueryVariables = Exact<{
   serviceId: Scalars['String'];
@@ -368,14 +384,14 @@ export type PauseUsenetQueueMutationVariables = Exact<{
 }>;
 
 
-export type PauseUsenetQueueMutation = { __typename?: 'Mutation', pauseUsenetQueue: { __typename?: 'UsenetInfo', paused: boolean, sizeLeft: number, speed: number, eta: number } };
+export type PauseUsenetQueueMutation = { __typename?: 'Mutation', pauseUsenetQueue: { __typename?: 'UsenetInfo', paused: boolean, sizeLeft: number, speed: number, eta: number, itemsRemaining: number } };
 
 export type ResumeUsenetQueueMutationVariables = Exact<{
   serviceId: Scalars['String'];
 }>;
 
 
-export type ResumeUsenetQueueMutation = { __typename?: 'Mutation', resumeUsenetQueue: { __typename?: 'UsenetInfo', paused: boolean, sizeLeft: number, speed: number, eta: number } };
+export type ResumeUsenetQueueMutation = { __typename?: 'Mutation', resumeUsenetQueue: { __typename?: 'UsenetInfo', paused: boolean, sizeLeft: number, speed: number, eta: number, itemsRemaining: number } };
 
 export type SearchQueryVariables = Exact<{
   search: Scalars['String'];
@@ -383,6 +399,8 @@ export type SearchQueryVariables = Exact<{
 
 
 export type SearchQuery = { __typename?: 'Query', search: Array<{ __typename?: 'SearchResult', image?: string | null, title: string, type: string }> };
+
+export type ServiceFragment = { __typename?: 'Service', name: string, id: string, type: ServiceType, icon: string, url: string, externalUrl?: string | null, apiKey?: string | null };
 
 export type UpdateConfigMutationVariables = Exact<{
   configName: Scalars['String'];
@@ -406,9 +424,94 @@ export type UpdateServiceMutationVariables = Exact<{
 }>;
 
 
-export type UpdateServiceMutation = { __typename?: 'Mutation', updateService: { __typename?: 'Service', name: string, id: string, type: ServiceType, icon: string, url: string, apiKey: string } };
+export type UpdateServiceMutation = { __typename?: 'Mutation', updateService: { __typename?: 'Service', name: string, id: string, type: ServiceType, icon: string, url: string, externalUrl?: string | null, apiKey?: string | null } };
 
+export type UsenetInfoFragment = { __typename?: 'UsenetInfo', paused: boolean, sizeLeft: number, speed: number, eta: number, itemsRemaining: number };
 
+export const ServiceFragmentDoc = gql`
+    fragment Service on Service {
+  name
+  id
+  type
+  icon
+  url
+  externalUrl
+  apiKey
+}
+    `;
+export const UsenetInfoFragmentDoc = gql`
+    fragment UsenetInfo on UsenetInfo {
+  paused
+  sizeLeft
+  speed
+  eta
+  itemsRemaining
+}
+    `;
+export const CreateServiceDocument = gql`
+    mutation createService($service: ServiceInput!) {
+  createService(service: $service) {
+    ...Service
+  }
+}
+    ${ServiceFragmentDoc}`;
+export type CreateServiceMutationFn = Apollo.MutationFunction<CreateServiceMutation, CreateServiceMutationVariables>;
+
+/**
+ * __useCreateServiceMutation__
+ *
+ * To run a mutation, you first call `useCreateServiceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateServiceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createServiceMutation, { data, loading, error }] = useCreateServiceMutation({
+ *   variables: {
+ *      service: // value for 'service'
+ *   },
+ * });
+ */
+export function useCreateServiceMutation(baseOptions?: Apollo.MutationHookOptions<CreateServiceMutation, CreateServiceMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateServiceMutation, CreateServiceMutationVariables>(CreateServiceDocument, options);
+      }
+export type CreateServiceMutationHookResult = ReturnType<typeof useCreateServiceMutation>;
+export type CreateServiceMutationResult = Apollo.MutationResult<CreateServiceMutation>;
+export type CreateServiceMutationOptions = Apollo.BaseMutationOptions<CreateServiceMutation, CreateServiceMutationVariables>;
+export const DeleteServiceDocument = gql`
+    mutation deleteService($ids: [String!]!) {
+  deleteService(ids: $ids)
+}
+    `;
+export type DeleteServiceMutationFn = Apollo.MutationFunction<DeleteServiceMutation, DeleteServiceMutationVariables>;
+
+/**
+ * __useDeleteServiceMutation__
+ *
+ * To run a mutation, you first call `useDeleteServiceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteServiceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteServiceMutation, { data, loading, error }] = useDeleteServiceMutation({
+ *   variables: {
+ *      ids: // value for 'ids'
+ *   },
+ * });
+ */
+export function useDeleteServiceMutation(baseOptions?: Apollo.MutationHookOptions<DeleteServiceMutation, DeleteServiceMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteServiceMutation, DeleteServiceMutationVariables>(DeleteServiceDocument, options);
+      }
+export type DeleteServiceMutationHookResult = ReturnType<typeof useDeleteServiceMutation>;
+export type DeleteServiceMutationResult = Apollo.MutationResult<DeleteServiceMutation>;
+export type DeleteServiceMutationOptions = Apollo.BaseMutationOptions<DeleteServiceMutation, DeleteServiceMutationVariables>;
 export const GetCalendarDocument = gql`
     query getCalendar($startDate: DateTime!, $endDate: DateTime!) {
   calendar(startDate: $startDate, endDate: $endDate) {
@@ -607,15 +710,10 @@ export type GetContainersQueryResult = Apollo.QueryResult<GetContainersQuery, Ge
 export const GetServicesDocument = gql`
     query getServices {
   services {
-    name
-    id
-    type
-    icon
-    url
-    apiKey
+    ...Service
   }
 }
-    `;
+    ${ServiceFragmentDoc}`;
 
 /**
  * __useGetServicesQuery__
@@ -689,14 +787,10 @@ export type GetUsenetHistoryQueryResult = Apollo.QueryResult<GetUsenetHistoryQue
 export const GetUsenetInfoDocument = gql`
     query getUsenetInfo($serviceId: String!) {
   usenetInfo(serviceId: $serviceId) {
-    paused
-    sizeLeft
-    speed
-    eta
-    itemsRemaining
+    ...UsenetInfo
   }
 }
-    `;
+    ${UsenetInfoFragmentDoc}`;
 
 /**
  * __useGetUsenetInfoQuery__
@@ -773,13 +867,10 @@ export type GetUsenetQueueQueryResult = Apollo.QueryResult<GetUsenetQueueQuery, 
 export const PauseUsenetQueueDocument = gql`
     mutation pauseUsenetQueue($serviceId: String!) {
   pauseUsenetQueue(serviceId: $serviceId) {
-    paused
-    sizeLeft
-    speed
-    eta
+    ...UsenetInfo
   }
 }
-    `;
+    ${UsenetInfoFragmentDoc}`;
 export type PauseUsenetQueueMutationFn = Apollo.MutationFunction<PauseUsenetQueueMutation, PauseUsenetQueueMutationVariables>;
 
 /**
@@ -809,13 +900,10 @@ export type PauseUsenetQueueMutationOptions = Apollo.BaseMutationOptions<PauseUs
 export const ResumeUsenetQueueDocument = gql`
     mutation resumeUsenetQueue($serviceId: String!) {
   resumeUsenetQueue(serviceId: $serviceId) {
-    paused
-    sizeLeft
-    speed
-    eta
+    ...UsenetInfo
   }
 }
-    `;
+    ${UsenetInfoFragmentDoc}`;
 export type ResumeUsenetQueueMutationFn = Apollo.MutationFunction<ResumeUsenetQueueMutation, ResumeUsenetQueueMutationVariables>;
 
 /**
@@ -985,15 +1073,10 @@ export type UpdateContainersMutationOptions = Apollo.BaseMutationOptions<UpdateC
 export const UpdateServiceDocument = gql`
     mutation updateService($id: String!, $service: ServiceInput!) {
   updateService(id: $id, service: $service) {
-    name
-    id
-    type
-    icon
-    url
-    apiKey
+    ...Service
   }
 }
-    `;
+    ${ServiceFragmentDoc}`;
 export type UpdateServiceMutationFn = Apollo.MutationFunction<UpdateServiceMutation, UpdateServiceMutationVariables>;
 
 /**

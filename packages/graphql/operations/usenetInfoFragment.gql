@@ -1,0 +1,7 @@
+fragment UsenetInfo on UsenetInfo {
+  paused
+  sizeLeft
+  speed
+  eta
+  itemsRemaining
+}
