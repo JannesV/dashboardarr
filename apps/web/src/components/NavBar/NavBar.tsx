@@ -79,7 +79,7 @@ export const NavBar = () => {
                 md: "inline-flex",
               }}
             >
-              <InputGroup>
+              <InputGroup variant="filled">
                 <Input onClick={setSearchModalOpen.on} placeholder="Search" />
                 <InputRightElement pr={6}>
                   <Kbd>⌘</Kbd>&nbsp;
@@ -91,13 +91,13 @@ export const NavBar = () => {
               aria-label="Add a new service"
               icon={<AddIcon />}
               onClick={() => setIsCreateService(true)}
-              variant="outline"
+              variant="solid"
             />
             <IconButton
               aria-label="Switch light/darkmode"
               icon={<SwitchIcon />}
               onClick={toggleColorMode}
-              variant="ghost"
+              variant="solid"
             />
 
             <Box
