@@ -12,7 +12,7 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import { MovieCalendarItem, TvCalendarItem } from "@dashboardarr/graphql";
-import { isSameDay, parseISO, isSameMonth, getDate } from "date-fns";
+import { isSameDay, parseISO, isSameMonth, getDate, isToday } from "date-fns";
 import { FunctionComponent } from "react";
 import { MovieItem } from "./MovieItem";
 import { TvItem } from "./TvItem";
@@ -64,6 +64,8 @@ export const CalendarDay: FunctionComponent<CalendarDayProps> = ({
           opacity={isSameMonth(date, selectedMonth) ? 1 : 0.3}
           cursor="pointer"
           pos="relative"
+          borderColor={isToday(date) ? "blue.400" : undefined}
+          borderWidth={isToday(date) ? 1 : 0}
         >
           {getDate(date)}
           <HStack

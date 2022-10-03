@@ -3,17 +3,20 @@
 # ------------------------------------------------------
 
 type CalendarConfig {
-  title: String
   enabled: Boolean!
+  weekStart: CalendarWeekStart!
+}
+
+enum CalendarWeekStart {
+  SUNDAY
+  MONDAY
 }
 
 type DockerConfig {
-  title: String
   enabled: Boolean!
 }
 
 type UsenetConfig {
-  title: String
   enabled: Boolean!
 }
 

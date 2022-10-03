@@ -17,16 +17,14 @@ query getConfig($configName: String!) {
     }
     modules {
       usenet {
-        title
         enabled
       }
       docker {
-        title
         enabled
       }
       calendar {
-        title
         enabled
+        weekStart
       }
     }
   }

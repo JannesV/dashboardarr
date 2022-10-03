@@ -17,15 +17,12 @@ mutation updateConfig($configName: String!, $body: String!) {
     }
     modules {
       usenet {
-        title
         enabled
       }
       docker {
-        title
         enabled
       }
       calendar {
-        title
         enabled
       }
     }

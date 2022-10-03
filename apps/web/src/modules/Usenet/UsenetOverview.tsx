@@ -35,11 +35,12 @@ export const UsernetOverview: FC = () => {
   const sabSevice = servicesData?.services.find(
     (s) => s.type === ServiceType.Sabnzbd
   );
+
+  const serviceId = sabSevice?.id || "";
+
   const handleTabsChange = (index: number) => {
     setTabIndex(index);
   };
-
-  const serviceId = sabSevice?.id || "";
 
   const { data: usenetInfoData, previousData } = useGetUsenetInfoQuery({
     variables: {
@@ -105,7 +106,7 @@ export const UsernetOverview: FC = () => {
               {humanFileSize(usenetInfoData?.usenetInfo.speed || 0)}/s
             </Tag>
             <Tag colorScheme="orange" size="sm" borderRadius="full">
-              Size Remaining:{" "}
+              Size Remaining: &nbsp;
               {humanFileSize(usenetInfoData?.usenetInfo.sizeLeft || 0)}
             </Tag>
             {usenetInfoData?.usenetInfo.paused ? (

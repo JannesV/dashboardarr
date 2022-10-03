@@ -1,6 +1,19 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
-import { Box, Button, Flex, Grid, Text } from "@chakra-ui/react";
-import { useGetCalendarQuery } from "@dashboardarr/graphql";
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  Box,
+  Button,
+  Flex,
+  Grid,
+  Text,
+} from "@chakra-ui/react";
+import {
+  CalendarWeekStart,
+  useGetCalendarQuery,
+  useGetConfigQuery,
+} from "@dashboardarr/graphql";
 import {
   add,
   eachDayOfInterval,
@@ -19,9 +32,18 @@ import { CalendarDay } from "./CalendarDay/CalendarDay";
 interface CalendarProps {}
 
 export const Calendar: FunctionComponent<CalendarProps> = () => {
+  const { data: configData } = useGetConfigQuery({
+    variables: { configName: "default" },
+  });
+
+  const weekStart =
+    configData?.config.modules.calendar?.weekStart || CalendarWeekStart.Monday;
+
   const [month, setMonth] = useState(startOfMonth(new Date()));
 
-  const startDate = startOfWeek(month);
+  const startDate = startOfWeek(month, {
+    weekStartsOn: weekStart === CalendarWeekStart.Monday ? 1 : 0,
+  });
   const endDate = endOfWeek(endOfMonth(month));
 
   const dates = eachDayOfInterval({
@@ -29,7 +51,7 @@ export const Calendar: FunctionComponent<CalendarProps> = () => {
     end: endDate,
   });
 
-  const { data } = useGetCalendarQuery({
+  const { data, error } = useGetCalendarQuery({
     variables: {
       startDate: startDate.toISOString(),
       endDate: endDate.toISOString(),
@@ -65,13 +87,14 @@ export const Calendar: FunctionComponent<CalendarProps> = () => {
         alignItems="center"
         justifyItems="center"
       >
+        {weekStart === CalendarWeekStart.Sunday && <Flex>Zo</Flex>}
         <Flex>Ma</Flex>
         <Flex>Di</Flex>
         <Flex>Wo</Flex>
         <Flex>Do</Flex>
         <Flex>Vr</Flex>
         <Flex>Za</Flex>
-        <Flex>Zo</Flex>
+        {weekStart === CalendarWeekStart.Monday && <Flex>Zo</Flex>}
         {dates.map((date) => (
           <CalendarDay
             key={date.toISOString()}
@@ -81,6 +104,14 @@ export const Calendar: FunctionComponent<CalendarProps> = () => {
           />
         ))}
       </Grid>
+      {error && (
+        <Alert borderRadius="md" status="error" mt={4}>
+          <AlertIcon />
+          <AlertDescription>
+            Something went wrong while fetching calendar items.
+          </AlertDescription>
+        </Alert>
+      )}
     </ModuleBox>
   );
 };

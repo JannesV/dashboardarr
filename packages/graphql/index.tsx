@@ -22,10 +22,15 @@ export type Scalars = {
 export type CalendarConfig = {
   __typename?: 'CalendarConfig';
   enabled: Scalars['Boolean'];
-  title?: Maybe<Scalars['String']>;
+  weekStart: CalendarWeekStart;
 };
 
 export type CalendarItem = MovieCalendarItem | TvCalendarItem;
+
+export enum CalendarWeekStart {
+  Monday = 'MONDAY',
+  Sunday = 'SUNDAY'
+}
 
 export type Config = {
   __typename?: 'Config';
@@ -44,7 +49,6 @@ export enum DockerAction {
 export type DockerConfig = {
   __typename?: 'DockerConfig';
   enabled: Scalars['Boolean'];
-  title?: Maybe<Scalars['String']>;
 };
 
 export type DockerContainer = {
@@ -262,7 +266,6 @@ export type TvCalendarItem = {
 export type UsenetConfig = {
   __typename?: 'UsenetConfig';
   enabled: Scalars['Boolean'];
-  title?: Maybe<Scalars['String']>;
 };
 
 export type UsenetHistory = {
@@ -337,7 +340,7 @@ export type GetConfigQueryVariables = Exact<{
 }>;
 
 
-export type GetConfigQuery = { __typename?: 'Query', config: { __typename?: 'Config', name: string, settings: { __typename?: 'Settings', searchUrl: string, title?: string | null, logo?: string | null, favicon?: string | null, primaryColor?: string | null, secondaryColor?: string | null, primaryShade?: string | null, background?: string | null, customCSS?: string | null, appOpacity?: number | null, widgetPosition?: string | null, appCardWidth?: number | null }, modules: { __typename?: 'Modules', usenet?: { __typename?: 'UsenetConfig', title?: string | null, enabled: boolean } | null, docker?: { __typename?: 'DockerConfig', title?: string | null, enabled: boolean } | null, calendar?: { __typename?: 'CalendarConfig', title?: string | null, enabled: boolean } | null } } };
+export type GetConfigQuery = { __typename?: 'Query', config: { __typename?: 'Config', name: string, settings: { __typename?: 'Settings', searchUrl: string, title?: string | null, logo?: string | null, favicon?: string | null, primaryColor?: string | null, secondaryColor?: string | null, primaryShade?: string | null, background?: string | null, customCSS?: string | null, appOpacity?: number | null, widgetPosition?: string | null, appCardWidth?: number | null }, modules: { __typename?: 'Modules', usenet?: { __typename?: 'UsenetConfig', enabled: boolean } | null, docker?: { __typename?: 'DockerConfig', enabled: boolean } | null, calendar?: { __typename?: 'CalendarConfig', enabled: boolean, weekStart: CalendarWeekStart } | null } } };
 
 export type GetConfigListQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -408,7 +411,7 @@ export type UpdateConfigMutationVariables = Exact<{
 }>;
 
 
-export type UpdateConfigMutation = { __typename?: 'Mutation', updateConfig: { __typename?: 'Config', name: string, settings: { __typename?: 'Settings', searchUrl: string, title?: string | null, logo?: string | null, favicon?: string | null, primaryColor?: string | null, secondaryColor?: string | null, primaryShade?: string | null, background?: string | null, customCSS?: string | null, appOpacity?: number | null, widgetPosition?: string | null, appCardWidth?: number | null }, modules: { __typename?: 'Modules', usenet?: { __typename?: 'UsenetConfig', title?: string | null, enabled: boolean } | null, docker?: { __typename?: 'DockerConfig', title?: string | null, enabled: boolean } | null, calendar?: { __typename?: 'CalendarConfig', title?: string | null, enabled: boolean } | null } } };
+export type UpdateConfigMutation = { __typename?: 'Mutation', updateConfig: { __typename?: 'Config', name: string, settings: { __typename?: 'Settings', searchUrl: string, title?: string | null, logo?: string | null, favicon?: string | null, primaryColor?: string | null, secondaryColor?: string | null, primaryShade?: string | null, background?: string | null, customCSS?: string | null, appOpacity?: number | null, widgetPosition?: string | null, appCardWidth?: number | null }, modules: { __typename?: 'Modules', usenet?: { __typename?: 'UsenetConfig', enabled: boolean } | null, docker?: { __typename?: 'DockerConfig', enabled: boolean } | null, calendar?: { __typename?: 'CalendarConfig', enabled: boolean } | null } } };
 
 export type UpdateContainersMutationVariables = Exact<{
   ids: Array<Scalars['String']> | Scalars['String'];
@@ -589,16 +592,14 @@ export const GetConfigDocument = gql`
     }
     modules {
       usenet {
-        title
         enabled
       }
       docker {
-        title
         enabled
       }
       calendar {
-        title
         enabled
+        weekStart
       }
     }
   }
@@ -987,15 +988,12 @@ export const UpdateConfigDocument = gql`
     }
     modules {
       usenet {
-        title
         enabled
       }
       docker {
-        title
         enabled
       }
       calendar {
-        title
         enabled
       }
     }
