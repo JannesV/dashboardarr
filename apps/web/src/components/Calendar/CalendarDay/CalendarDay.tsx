@@ -119,7 +119,16 @@ export const CalendarDay: FunctionComponent<CalendarDayProps> = ({
             p={2}
           >
             {movieItems?.map((item, index) => (
-              <MovieItem movie={item} key={index} />
+              <MovieItem
+                movie={item}
+                type={
+                  item.inCinemasDate &&
+                  isSameDay(date, parseISO(item.inCinemasDate))
+                    ? "cinema"
+                    : "digital"
+                }
+                key={index}
+              />
             ))}
 
             {tvItems?.map((item, index) => (

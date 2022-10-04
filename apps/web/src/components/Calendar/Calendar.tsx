@@ -59,8 +59,8 @@ export const Calendar: FunctionComponent<CalendarProps> = () => {
   });
 
   return (
-    <ModuleBox width="360px">
-      <Flex justifyContent="center" mb="4">
+    <ModuleBox>
+      <Flex justifyContent="center" mb={4}>
         <Button
           variant="ghost"
           onClick={() => setMonth(sub(month, { months: 1 }))}
@@ -68,11 +68,9 @@ export const Calendar: FunctionComponent<CalendarProps> = () => {
           <ChevronLeftIcon />
         </Button>
         <Box w="200px" textAlign="center">
-          <Text as="b" fontSize="base">
-            {format(month, "LLLL")}
-          </Text>
+          <Text as="b">{format(month, "LLLL")}</Text>
 
-          <Text fontSize="sm">{format(month, "yyyy")}</Text>
+          <Text fontSize="xs">{format(month, "yyyy")}</Text>
         </Box>
         <Button
           variant="ghost"
@@ -83,9 +81,10 @@ export const Calendar: FunctionComponent<CalendarProps> = () => {
       </Flex>
       <Grid
         templateColumns="repeat(7, 40px)"
-        gridGap={2}
+        gridGap={1}
         alignItems="center"
         justifyItems="center"
+        fontSize="sm"
       >
         {weekStart === CalendarWeekStart.Sunday && <Flex>Zo</Flex>}
         <Flex>Ma</Flex>

@@ -24,7 +24,7 @@ import {
   Tr,
 } from "@chakra-ui/react";
 import { useGetUsenetHistoryQuery } from "@dashboardarr/graphql";
-import { FunctionComponent, useCallback, useState } from "react";
+import { FunctionComponent, useCallback, useEffect, useState } from "react";
 import { parseDuration } from "../../../utils/formatDuration";
 import { humanFileSize } from "../../../utils/humanFileSize";
 
@@ -37,13 +37,23 @@ export const UsenetHistory: FunctionComponent<UsenetHistoryProps> = ({
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
-  const { data: historyData, error } = useGetUsenetHistoryQuery({
+  const {
+    data: historyData,
+    error,
+    startPolling,
+    stopPolling,
+  } = useGetUsenetHistoryQuery({
     variables: {
       serviceId,
       limit: 10,
       offset: (currentPage - 1) * 10,
     },
   });
+
+  useEffect(() => {
+    startPolling(2000);
+    return stopPolling;
+  }, [startPolling, stopPolling]);
 
   const {
     pages,

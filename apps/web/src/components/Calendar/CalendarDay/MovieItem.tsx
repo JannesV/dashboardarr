@@ -1,15 +1,34 @@
-import { Flex, Heading, Tag, Box, Image, Text } from "@chakra-ui/react";
+import { Flex, Heading, Tag, Box, Image, Text, Badge } from "@chakra-ui/react";
 import { MovieCalendarItem } from "@dashboardarr/graphql";
 import { FunctionComponent } from "react";
 
 interface MovieItemProps {
   movie: MovieCalendarItem;
+  type: "digital" | "cinema";
 }
 
-export const MovieItem: FunctionComponent<MovieItemProps> = ({ movie }) => {
+export const MovieItem: FunctionComponent<MovieItemProps> = ({
+  movie,
+  type,
+}) => {
   return (
     <Flex w="full">
-      <Image w="100px" alignSelf="flex-start" src={movie.poster || ""} />
+      <Box w="100px" flexShrink={0} pos="relative">
+        <Image
+          borderRadius="base"
+          alignSelf="flex-start"
+          src={movie.poster || ""}
+        />
+        <Badge
+          fontSize="x-small"
+          colorScheme="orange"
+          pos="absolute"
+          top={1}
+          left={1}
+        >
+          {type}
+        </Badge>
+      </Box>
       <Box pl={3}>
         <Heading size="md">{movie.movieTitle}</Heading>
 
@@ -27,7 +46,9 @@ export const MovieItem: FunctionComponent<MovieItemProps> = ({ movie }) => {
             </Tag>
           ))}
         </Flex>
-        <Text fontSize="xs">{movie.overview}</Text>
+        <Text noOfLines={5} fontSize="xs">
+          {movie.overview}
+        </Text>
       </Box>
     </Flex>
   );

@@ -6,8 +6,33 @@ import { Config } from "./config.types";
 import { ServiceType } from "../services/models/serviceType.enum";
 import { Service } from "../services/models/service.model";
 import { ServiceInput } from "../services/models/serviceInput.model";
+import { CalendarWeekStart } from "src/calendar/models/calendarWeekStart.enum";
+import { join } from "path";
+import { cwd } from "process";
 
-const SERVICES_PATH = "../../data/services.json";
+const DATA_FOLDER = join(cwd(), "data");
+const CONFIGS_FOLDER = join(DATA_FOLDER, "configs");
+
+const SERVICES_PATH = join(DATA_FOLDER, "services.json");
+
+const EMPTY_CONFIG: ConfigModel = {
+  name: "default",
+  settings: {
+    searchUrl: "https://google.com/search?q=",
+  },
+  modules: {
+    usenet: {
+      enabled: true,
+    },
+    docker: {
+      enabled: true,
+    },
+    calendar: {
+      enabled: true,
+      weekStart: CalendarWeekStart.MONDAY,
+    },
+  },
+};
 
 @Injectable()
 export class ConfigService implements OnModuleInit {
@@ -15,20 +40,24 @@ export class ConfigService implements OnModuleInit {
 
   public async onModuleInit() {
     try {
-      await stat("../../data");
+      await stat(DATA_FOLDER);
     } catch (err) {
       this.logger.debug(
         "Data directory does not exist. Creating initial setup."
       );
-      await mkdir("../../data", { recursive: true });
-      await mkdir("../../data/configs", { recursive: true });
+      await mkdir(DATA_FOLDER, { recursive: true });
+      await mkdir(CONFIGS_FOLDER, { recursive: true });
 
       await writeFile(SERVICES_PATH, "[]");
+      await writeFile(
+        join(CONFIGS_FOLDER, "default.json"),
+        JSON.stringify(EMPTY_CONFIG)
+      );
     }
   }
 
   public async getConfigs(): Promise<ConfigModel[]> {
-    const files = await readdir("../../data/configs");
+    const files = await readdir(CONFIGS_FOLDER);
     const configs = files.map((file) => file.replace(".json", ""));
 
     return Promise.all(
@@ -37,7 +66,7 @@ export class ConfigService implements OnModuleInit {
   }
 
   public async getConfig(configName: string): Promise<ConfigModel> {
-    const path = `../../data/configs/${configName}.json`;
+    const path = join(CONFIGS_FOLDER, `${configName}.json`);
 
     const config = JSON.parse(await readFile(path, "utf8")) as Config;
 
@@ -119,7 +148,7 @@ export class ConfigService implements OnModuleInit {
     configName: string,
     config: Config
   ): Promise<Config> {
-    const path = `../../data/configs/${configName}.json`;
+    const path = join(CONFIGS_FOLDER, `${configName}.json`);
 
     await writeFile(path, JSON.stringify(config, null, 2));
 

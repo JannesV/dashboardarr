@@ -9,29 +9,42 @@ import {
   TableContainer,
   Tbody,
   Td,
+  Text,
   Th,
   Thead,
   Tr,
 } from "@chakra-ui/react";
 import { useGetUsenetQueueQuery } from "@dashboardarr/graphql";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useEffect } from "react";
 import { parseEta } from "../../../utils/formatDuration";
 import { humanFileSize } from "../../../utils/humanFileSize";
 
 interface UsenetDownloadsProps {
   serviceId: string;
+  paused: boolean;
 }
 
 export const UsenetDownloads: FunctionComponent<UsenetDownloadsProps> = ({
   serviceId,
+  paused,
 }) => {
-  const { data: queueData, error } = useGetUsenetQueueQuery({
+  const {
+    data: queueData,
+    error,
+    startPolling,
+    stopPolling,
+  } = useGetUsenetQueueQuery({
     variables: {
       serviceId,
       limit: 10,
       offset: 0,
     },
   });
+
+  useEffect(() => {
+    startPolling(2000);
+    return stopPolling;
+  }, [startPolling, stopPolling]);
 
   if (error) {
     return (
@@ -78,31 +91,47 @@ export const UsenetDownloads: FunctionComponent<UsenetDownloadsProps> = ({
 
   return (
     <TableContainer>
-      <Table>
+      <Table style={{ tableLayout: "fixed" }} size="sm">
         <Thead>
           <Tr>
             <Th pl={0}>Name</Th>
             <Th w={100}>Size</Th>
             <Th w={100}>ETA</Th>
-            <Th w={300} pr={0}>
+            <Th w={250} pr={0}>
               Progress
             </Th>
           </Tr>
         </Thead>
         <Tbody>
-          {queueData.usenetQueue.items.map((data) => (
-            <Tr key={data.id}>
-              <Td pl={0}>{data.name}</Td>
-              <Td>{humanFileSize(data.size)}</Td>
-              <Td>{parseEta(data.eta)}</Td>
+          {queueData.usenetQueue.items.map((item) => (
+            <Tr key={item.id}>
+              <Td minW={0} pl={0}>
+                <Text
+                  whiteSpace="nowrap"
+                  overflow="hidden"
+                  textOverflow="ellipsis"
+                >
+                  {item.name}
+                </Text>
+              </Td>
+              <Td>{humanFileSize(item.size)}</Td>
+              <Td>
+                {paused ? (
+                  <Text color="gray.400">Paused</Text>
+                ) : (
+                  parseEta(item.eta)
+                )}
+              </Td>
+
               <Td display={"flex"} alignItems="center" pr={0}>
-                {data.progress}%
+                {item.progress}%
                 <Progress
                   minW={16}
                   ml={4}
                   w={"full"}
                   borderRadius={8}
-                  value={data.progress}
+                  value={item.progress}
+                  colorScheme={paused ? "gray" : "blue"}
                 />
               </Td>
             </Tr>

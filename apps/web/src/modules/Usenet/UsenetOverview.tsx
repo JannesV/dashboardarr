@@ -42,12 +42,22 @@ export const UsernetOverview: FC = () => {
     setTabIndex(index);
   };
 
-  const { data: usenetInfoData, previousData } = useGetUsenetInfoQuery({
+  const {
+    data: usenetInfoData,
+    previousData,
+    startPolling,
+    stopPolling,
+  } = useGetUsenetInfoQuery({
     variables: {
       serviceId,
     },
     skip: !sabSevice,
   });
+
+  useEffect(() => {
+    startPolling(2000);
+    return stopPolling;
+  }, [startPolling, stopPolling]);
 
   const [resumeQueue, { loading: resumeLoading }] =
     useResumeUsenetQueueMutation({
@@ -102,10 +112,10 @@ export const UsernetOverview: FC = () => {
           <Tab>Queue</Tab>
           <Tab>History</Tab>
           <HStack alignItems="center" h="6" spacing="5" ml="auto">
-            <Tag colorScheme="orange" size="sm" borderRadius="full">
+            <Tag colorScheme="blue" size="sm" borderRadius="full">
               {humanFileSize(usenetInfoData?.usenetInfo.speed || 0)}/s
             </Tag>
-            <Tag colorScheme="orange" size="sm" borderRadius="full">
+            <Tag colorScheme="blue" size="sm" borderRadius="full">
               Size Remaining: &nbsp;
               {humanFileSize(usenetInfoData?.usenetInfo.sizeLeft || 0)}
             </Tag>
@@ -135,7 +145,10 @@ export const UsernetOverview: FC = () => {
 
         <TabPanels>
           <TabPanel p={0} pt={5}>
-            <UsenetDownloads serviceId={serviceId} />
+            <UsenetDownloads
+              paused={usenetInfoData?.usenetInfo.paused ?? true}
+              serviceId={serviceId}
+            />
           </TabPanel>
           <TabPanel p={0} pt={5}>
             <UsenetHistory serviceId={serviceId} />
