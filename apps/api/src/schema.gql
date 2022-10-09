@@ -33,6 +33,13 @@ type Settings {
   title: String
   logo: String
   favicon: String
+  colorMode: ColorMode!
+}
+
+enum ColorMode {
+  Light
+  Dark
+  Auto
 }
 
 type Config {

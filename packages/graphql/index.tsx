@@ -33,6 +33,12 @@ export enum CalendarWeekStart {
   Sunday = 'SUNDAY'
 }
 
+export enum ColorMode {
+  Auto = 'Auto',
+  Dark = 'Dark',
+  Light = 'Light'
+}
+
 export type Config = {
   __typename?: 'Config';
   modules: Array<ConfigModule>;
@@ -235,6 +241,7 @@ export enum ServiceType {
 
 export type Settings = {
   __typename?: 'Settings';
+  colorMode: ColorMode;
   favicon?: Maybe<Scalars['String']>;
   logo?: Maybe<Scalars['String']>;
   title?: Maybe<Scalars['String']>;
@@ -334,7 +341,7 @@ export type GetConfigQueryVariables = Exact<{
 }>;
 
 
-export type GetConfigQuery = { __typename?: 'Query', config: { __typename?: 'Config', name: string, settings: { __typename?: 'Settings', title?: string | null, logo?: string | null, favicon?: string | null }, modules: Array<{ __typename: 'CalendarModule', weekStart: CalendarWeekStart, id: string, enabled: boolean } | { __typename: 'DockerModule', id: string, enabled: boolean } | { __typename: 'UsenetModule', serviceId: string, id: string, enabled: boolean }> } };
+export type GetConfigQuery = { __typename?: 'Query', config: { __typename?: 'Config', name: string, settings: { __typename?: 'Settings', title?: string | null, logo?: string | null, favicon?: string | null, colorMode: ColorMode }, modules: Array<{ __typename: 'CalendarModule', weekStart: CalendarWeekStart, id: string, enabled: boolean } | { __typename: 'DockerModule', id: string, enabled: boolean } | { __typename: 'UsenetModule', serviceId: string, id: string, enabled: boolean }> } };
 
 export type GetConfigListQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -574,6 +581,7 @@ export const GetConfigDocument = gql`
       title
       logo
       favicon
+      colorMode
     }
     modules {
       __typename

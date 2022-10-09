@@ -1,21 +1,5 @@
 query getConfig($configName: String!) {
   config(configName: $configName) {
-    name
-    settings {
-      title
-      logo
-      favicon
-    }
-    modules {
-      __typename
-      id
-      enabled
-      ... on CalendarModule {
-        weekStart
-      }
-      ... on UsenetModule {
-        serviceId
-      }
-    }
+    ...Config
   }
 }

@@ -13,6 +13,7 @@ import {
   TabPanels,
   Tabs,
 } from "@chakra-ui/react";
+import { useGetConfigQuery } from "@dashboardarr/graphql";
 import { useAtom } from "jotai";
 import { FunctionComponent } from "react";
 import { settingsOpenAtom } from "../../state/settings";
@@ -23,6 +24,7 @@ interface SettingsDrawerProps {}
 
 export const SettingsDrawer: FunctionComponent<SettingsDrawerProps> = () => {
   const [isOpen, setIsOpen] = useAtom(settingsOpenAtom);
+  const { data } = useGetConfigQuery({ variables: { configName: "default" } });
 
   return (
     <Drawer size="md" onClose={() => setIsOpen(false)} isOpen={isOpen}>
@@ -39,11 +41,14 @@ export const SettingsDrawer: FunctionComponent<SettingsDrawerProps> = () => {
               <TabPanel>
                 <FormControl>
                   <FormLabel>Color Mode</FormLabel>
-                  <ColorModeSlider />
+                  <ColorModeSlider
+                    value={data?.config.settings.colorMode}
+                    onChange={console.log}
+                  />
 
                   <FormHelperText>
                     Choose between light and darkmode. Or automatically match
-                    your system&apos;s choice{" "}
+                    your system&apos;s choice
                   </FormHelperText>
                 </FormControl>
               </TabPanel>

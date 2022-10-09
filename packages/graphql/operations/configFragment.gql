@@ -1,0 +1,20 @@
+fragment Config on Config {
+  name
+  settings {
+    title
+    logo
+    favicon
+    colorMode
+  }
+  modules {
+    __typename
+    id
+    enabled
+    ... on CalendarModule {
+      weekStart
+    }
+    ... on UsenetModule {
+      serviceId
+    }
+  }
+}

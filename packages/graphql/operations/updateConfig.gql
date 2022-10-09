@@ -1,18 +1,5 @@
 mutation updateConfig($configName: String!, $body: String!) {
   updateConfig(configName: $configName, body: $body) {
-    name
-    settings {
-      title
-      logo
-      favicon
-    }
-    modules {
-      __typename
-      id
-      enabled
-      ... on CalendarModule {
-        weekStart
-      }
-    }
+    ...Config
   }
 }

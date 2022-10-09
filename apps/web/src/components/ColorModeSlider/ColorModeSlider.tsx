@@ -1,26 +1,33 @@
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
-import { Box, Flex, useColorMode, useColorModeValue } from "@chakra-ui/react";
+import { Box, Flex, useColorModeValue } from "@chakra-ui/react";
+import { ColorMode } from "@dashboardarr/graphql";
 import { FunctionComponent, useState } from "react";
 
-interface ColorModeSliderProps {}
+interface ColorModeSliderProps {
+  value?: ColorMode;
+  onChange(val: ColorMode): void;
+}
 
-export const ColorModeSlider: FunctionComponent<ColorModeSliderProps> = () => {
-  const [mode, setMode] = useState<"dark" | "light" | "auto">("light");
-  const { setColorMode } = useColorMode();
+export const ColorModeSlider: FunctionComponent<ColorModeSliderProps> = ({
+  value,
+  onChange,
+}) => {
+  const [mode, setMode] = useState<ColorMode>(value || ColorMode.Auto);
   const { bgColor } = useColorModeValue(
     { bgColor: "gray.300" },
     { bgColor: "whiteAlpha.400" }
   );
 
   const handleClick = () => {
-    if (mode === "light") {
-      setMode("auto");
-    } else if (mode === "auto") {
-      setMode("dark");
-      setColorMode("dark");
+    if (mode === ColorMode.Light) {
+      setMode(ColorMode.Auto);
+      onChange(ColorMode.Auto);
+    } else if (mode === ColorMode.Auto) {
+      setMode(ColorMode.Dark);
+      onChange(ColorMode.Dark);
     } else {
-      setMode("light");
-      setColorMode("light");
+      setMode(ColorMode.Light);
+      onChange(ColorMode.Light);
     }
   };
 
@@ -37,7 +44,11 @@ export const ColorModeSlider: FunctionComponent<ColorModeSliderProps> = () => {
       >
         <Flex
           transform={`translateX(${
-            mode === "auto" ? "12px" : mode === "dark" ? "24px" : 0
+            mode === ColorMode.Auto
+              ? "12px"
+              : mode === ColorMode.Dark
+              ? "24px"
+              : 0
           })`}
           transition="ease-out"
           transitionDuration="0.2s"
@@ -49,9 +60,9 @@ export const ColorModeSlider: FunctionComponent<ColorModeSliderProps> = () => {
           alignItems="center"
           fontSize="xs"
         >
-          {mode === "light" ? (
+          {mode === ColorMode.Light ? (
             <SunIcon color="black" />
-          ) : mode === "dark" ? (
+          ) : mode === ColorMode.Dark ? (
             <MoonIcon color="black" />
           ) : (
             "A"

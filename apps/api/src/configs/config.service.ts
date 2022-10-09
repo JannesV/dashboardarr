@@ -8,6 +8,7 @@ import { join } from "path";
 import { cwd } from "process";
 import { Config } from "./models/config.model";
 import { stripTypenames } from "src/utils/stripTypenames";
+import { ColorMode } from "./models/colorMode.enum";
 
 const DATA_FOLDER = join(cwd(), "data");
 const CONFIGS_FOLDER = join(DATA_FOLDER, "configs");
@@ -16,7 +17,9 @@ const SERVICES_PATH = join(DATA_FOLDER, "services.json");
 
 const EMPTY_CONFIG: Config = {
   name: "default",
-  settings: {},
+  settings: {
+    colorMode: ColorMode.Auto,
+  },
   modules: [],
 };
 

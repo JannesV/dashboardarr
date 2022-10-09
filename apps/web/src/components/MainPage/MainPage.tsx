@@ -6,6 +6,7 @@ import { UsernetOverview } from "../../modules/Usenet/UsenetOverview";
 import { Calendar } from "../Calendar/Calendar";
 import { useGetConfigQuery, useGetServicesQuery } from "@dashboardarr/graphql";
 import { ServiceItem } from "../ServiceItem/ServiceItem";
+import { useColorModeTracker } from "../../utils/useColorModeTracker";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface MainPageProps {}
@@ -15,6 +16,8 @@ export const MainPage: FunctionComponent<MainPageProps> = () => {
   const { data: configData } = useGetConfigQuery({
     variables: { configName: "default" },
   });
+
+  useColorModeTracker(configData?.config.settings.colorMode);
 
   return (
     <Box w="100%">
