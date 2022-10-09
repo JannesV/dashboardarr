@@ -31,11 +31,19 @@ export const MainPage: FunctionComponent<MainPageProps> = () => {
               <ServiceItem service={item} key={item.id} />
             ))}
           </Grid>
-          {configData?.config.modules.usenet?.enabled && <UsernetOverview />}
+          {configData?.config.modules.map((mod) => {
+            if (mod.__typename === "UsenetModule") {
+              return <UsernetOverview key={mod.id} config={mod} />;
+            }
+          })}
         </Flex>
         {/* SIDEBAR */}
         <Box>
-          {configData?.config.modules.calendar?.enabled && <Calendar />}
+          {configData?.config.modules.map((mod) => {
+            if (mod.__typename === "CalendarModule") {
+              return <Calendar key={mod.id} config={mod} />;
+            }
+          })}
         </Box>
       </Flex>
     </Box>

@@ -1,6 +1,6 @@
 import { Injectable, Scope } from "@nestjs/common";
 import { Client } from "sabnzbd-api";
-import dayjs from "dayjs";
+import dayjs, { unix } from "dayjs";
 import duration from "dayjs/plugin/duration";
 import { ConfigService } from "../configs/config.service";
 
@@ -39,6 +39,7 @@ export class SabnzbdService {
       name: slot.name,
       size: slot.bytes,
       time: slot.download_time,
+      completedOn: unix(slot.completed).toDate(),
     }));
 
     return {

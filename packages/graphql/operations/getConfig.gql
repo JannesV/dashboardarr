@@ -2,29 +2,19 @@ query getConfig($configName: String!) {
   config(configName: $configName) {
     name
     settings {
-      searchUrl
       title
       logo
       favicon
-      primaryColor
-      secondaryColor
-      primaryShade
-      background
-      customCSS
-      appOpacity
-      widgetPosition
-      appCardWidth
     }
     modules {
-      usenet {
-        enabled
-      }
-      docker {
-        enabled
-      }
-      calendar {
-        enabled
+      __typename
+      id
+      enabled
+      ... on CalendarModule {
         weekStart
+      }
+      ... on UsenetModule {
+        serviceId
       }
     }
   }

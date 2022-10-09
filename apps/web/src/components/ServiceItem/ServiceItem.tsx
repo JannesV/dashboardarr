@@ -99,10 +99,10 @@ export const ServiceItem: FunctionComponent<ServiceItemProps> = ({
               </MenuItem>
             </MenuList>
           </Menu>
-          <Text fontWeight={"bold"} pb={4}>
+          <Text fontWeight={"bold"} noOfLines={1} textAlign="center" mb={4}>
             {service.name}
           </Text>
-          <Image mb={6} boxSize={100} objectFit="cover" src={service.icon} />
+          <Image mb={6} boxSize={100} objectFit="contain" src={service.icon} />
         </Flex>
       </ModuleBox>
     </GridItem>

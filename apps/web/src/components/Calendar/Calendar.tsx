@@ -10,9 +10,9 @@ import {
   Text,
 } from "@chakra-ui/react";
 import {
+  CalendarModule,
   CalendarWeekStart,
   useGetCalendarQuery,
-  useGetConfigQuery,
 } from "@dashboardarr/graphql";
 import {
   add,
@@ -28,16 +28,12 @@ import { FunctionComponent, useState } from "react";
 import { ModuleBox } from "../ModuleBox/ModuleBox";
 import { CalendarDay } from "./CalendarDay/CalendarDay";
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface CalendarProps {}
+interface CalendarProps {
+  config: CalendarModule;
+}
 
-export const Calendar: FunctionComponent<CalendarProps> = () => {
-  const { data: configData } = useGetConfigQuery({
-    variables: { configName: "default" },
-  });
-
-  const weekStart =
-    configData?.config.modules.calendar?.weekStart || CalendarWeekStart.Monday;
+export const Calendar: FunctionComponent<CalendarProps> = ({ config }) => {
+  const weekStart = config.weekStart || CalendarWeekStart.Monday;
 
   const [month, setMonth] = useState(startOfMonth(new Date()));
 

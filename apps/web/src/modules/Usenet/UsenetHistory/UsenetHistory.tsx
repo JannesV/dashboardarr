@@ -13,7 +13,9 @@ import {
   AlertDescription,
   AlertIcon,
   AlertTitle,
+  Center,
   Code,
+  Spinner,
   Table,
   TableContainer,
   Tbody,
@@ -21,11 +23,14 @@ import {
   Text,
   Th,
   Thead,
+  Tooltip,
   Tr,
 } from "@chakra-ui/react";
 import { useGetUsenetHistoryQuery } from "@dashboardarr/graphql";
+import { parseISO } from "date-fns";
 import { FunctionComponent, useCallback, useEffect, useState } from "react";
 import { parseDuration } from "../../../utils/formatDuration";
+import { formatRelative } from "../../../utils/formatRelative";
 import { humanFileSize } from "../../../utils/humanFileSize";
 
 interface UsenetHistoryProps {
@@ -40,6 +45,7 @@ export const UsenetHistory: FunctionComponent<UsenetHistoryProps> = ({
   const {
     data: historyData,
     error,
+    loading,
     startPolling,
     stopPolling,
   } = useGetUsenetHistoryQuery({
@@ -97,6 +103,14 @@ export const UsenetHistory: FunctionComponent<UsenetHistoryProps> = ({
     );
   }
 
+  if (loading) {
+    return (
+      <Center height={32}>
+        <Spinner size="xl" />
+      </Center>
+    );
+  }
+
   if (!historyData || !historyData.usenetHistory.total) {
     return (
       <Alert
@@ -128,8 +142,8 @@ export const UsenetHistory: FunctionComponent<UsenetHistoryProps> = ({
               Name
             </Th>
             <Th w={100}>Size</Th>
-            <Th textAlign="right" w={250}>
-              Duration
+            <Th textAlign="right" w={175}>
+              Date Completed
             </Th>
           </Tr>
         </Thead>
@@ -146,7 +160,11 @@ export const UsenetHistory: FunctionComponent<UsenetHistoryProps> = ({
                 </Text>
               </Td>
               <Td>{humanFileSize(item.size)}</Td>
-              <Td textAlign="right">{parseDuration(item.time)}</Td>
+              <Td textAlign="right">
+                <Tooltip label={`Completed in ${parseDuration(item.time)}`}>
+                  {formatRelative(parseISO(item.completedOn))}
+                </Tooltip>
+              </Td>
             </Tr>
           ))}
         </Tbody>

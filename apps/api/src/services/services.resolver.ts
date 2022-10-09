@@ -27,13 +27,15 @@ export class ServicesResolver {
   async deleteService(
     @Args("ids", { type: () => [String] }) ids: string[]
   ): Promise<boolean> {
-    await this.configService.deleteService(...ids);
+    // await this.configService.deleteService(...ids);
 
     return true;
   }
 
   @Query(() => [Service])
   async services() {
-    return this.configService.getServices();
+    return (await this.configService.getServices()).sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
   }
 }

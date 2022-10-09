@@ -1,4 +1,4 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType } from "@nestjs/graphql";
 
 @ObjectType()
 export class UsenetHistoryItem {
@@ -16,4 +16,7 @@ export class UsenetHistoryItem {
 
   @Field()
   time: number;
+
+  @Field()
+  completedOn: Date;
 }

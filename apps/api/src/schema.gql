@@ -2,7 +2,13 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type CalendarConfig {
+interface ConfigModule {
+  id: String!
+  enabled: Boolean!
+}
+
+type CalendarModule implements ConfigModule {
+  id: String!
   enabled: Boolean!
   weekStart: CalendarWeekStart!
 }
@@ -12,39 +18,27 @@ enum CalendarWeekStart {
   MONDAY
 }
 
-type DockerConfig {
+type DockerModule implements ConfigModule {
+  id: String!
   enabled: Boolean!
 }
 
-type UsenetConfig {
+type UsenetModule implements ConfigModule {
+  id: String!
   enabled: Boolean!
-}
-
-type Modules {
-  usenet: UsenetConfig
-  docker: DockerConfig
-  calendar: CalendarConfig
+  serviceId: String!
 }
 
 type Settings {
-  searchUrl: String!
   title: String
   logo: String
   favicon: String
-  primaryColor: String
-  secondaryColor: String
-  primaryShade: String
-  background: String
-  customCSS: String
-  appOpacity: Float
-  widgetPosition: String
-  appCardWidth: Float
 }
 
 type Config {
   name: String!
   settings: Settings!
-  modules: Modules!
+  modules: [ConfigModule!]!
 }
 
 type DockerPort {
@@ -78,7 +72,13 @@ type UsenetHistoryItem {
   size: Float!
   id: String!
   time: Float!
+  completedOn: DateTime!
 }
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
 
 type UsenetHistory {
   items: [UsenetHistoryItem!]!
@@ -164,11 +164,6 @@ type MovieCalendarItem {
   overview: String!
   voteAverage: Float
 }
-
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
 
 type TvCalendarItem {
   seriesTitle: String!

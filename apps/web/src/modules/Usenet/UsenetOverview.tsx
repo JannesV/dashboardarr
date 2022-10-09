@@ -13,13 +13,12 @@ import {
   GetUsenetInfoDocument,
   GetUsenetInfoQuery,
   GetUsenetInfoQueryVariables,
-  ServiceType,
-  useGetServicesQuery,
   useGetUsenetInfoQuery,
+  UsenetModule,
   usePauseUsenetQueueMutation,
   useResumeUsenetQueueMutation,
 } from "@dashboardarr/graphql";
-import { FC, useEffect, useState } from "react";
+import { FunctionComponent, useEffect, useState } from "react";
 import { ModuleBox } from "../../components/ModuleBox/ModuleBox";
 import { parseEta } from "../../utils/formatDuration";
 import { humanFileSize } from "../../utils/humanFileSize";
@@ -27,16 +26,14 @@ import { UsenetDownloads } from "./UsenetDownloads/UsenetDownloads";
 import { UsenetHistory } from "./UsenetHistory/UsenetHistory";
 import { MdPause, MdPlayArrow } from "react-icons/md";
 
-export const UsernetOverview: FC = () => {
+interface UsernetOverviewProps {
+  config: UsenetModule;
+}
+
+export const UsernetOverview: FunctionComponent<UsernetOverviewProps> = ({
+  config: { serviceId },
+}) => {
   const [tabIndex, setTabIndex] = useState(0);
-
-  // TODO Get services in a better way
-  const { data: servicesData } = useGetServicesQuery();
-  const sabSevice = servicesData?.services.find(
-    (s) => s.type === ServiceType.Sabnzbd
-  );
-
-  const serviceId = sabSevice?.id || "";
 
   const handleTabsChange = (index: number) => {
     setTabIndex(index);
@@ -51,7 +48,6 @@ export const UsernetOverview: FC = () => {
     variables: {
       serviceId,
     },
-    skip: !sabSevice,
   });
 
   useEffect(() => {

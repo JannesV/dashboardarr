@@ -3,8 +3,10 @@ import {
   AlertDescription,
   AlertIcon,
   AlertTitle,
+  Center,
   Code,
   Progress,
+  Spinner,
   Table,
   TableContainer,
   Tbody,
@@ -31,6 +33,7 @@ export const UsenetDownloads: FunctionComponent<UsenetDownloadsProps> = ({
   const {
     data: queueData,
     error,
+    loading,
     startPolling,
     stopPolling,
   } = useGetUsenetQueueQuery({
@@ -64,6 +67,14 @@ export const UsenetDownloads: FunctionComponent<UsenetDownloadsProps> = ({
           <Code>{error.message}</Code>
         </AlertDescription>
       </Alert>
+    );
+  }
+
+  if (loading) {
+    return (
+      <Center height={32}>
+        <Spinner size="xl" />
+      </Center>
     );
   }
 

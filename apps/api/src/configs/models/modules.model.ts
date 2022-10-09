@@ -1,16 +1,12 @@
-import { Field, ObjectType } from '@nestjs/graphql';
-import { CalendarConfig } from '../../calendar/models/calendarConfig.model';
-import { DockerConfig } from '../../docker/models/dockerConfig.model';
-import { UsenetConfig } from '../../usenet/usenetConfig.model';
+import { createUnionType } from "@nestjs/graphql";
+import { CalendarModule } from "../../calendar/models/calendarModule.model";
+import { DockerModule } from "../../docker/models/dockerModule.model";
+import { UsenetModule } from "../../usenet/usenetModule.model";
 
-@ObjectType()
-export class Modules {
-  @Field({ nullable: true })
-  usenet?: UsenetConfig;
-
-  @Field({ nullable: true })
-  docker?: DockerConfig;
-
-  @Field({ nullable: true })
-  calendar?: CalendarConfig;
-}
+export const Module = createUnionType({
+  name: "Module",
+  types: () => [CalendarModule, DockerModule, UsenetModule] as const,
+  resolveType(item: CalendarModule | DockerModule | UsenetModule) {
+    return UsenetModule;
+  },
+});

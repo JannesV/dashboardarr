@@ -1,37 +1,23 @@
 import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
 import { mkdir, readdir, readFile, stat, writeFile } from "fs/promises";
 import { v4 } from "uuid";
-import { Config as ConfigModel } from "./models/config.model";
-import { Config } from "./config.types";
 import { ServiceType } from "../services/models/serviceType.enum";
 import { Service } from "../services/models/service.model";
 import { ServiceInput } from "../services/models/serviceInput.model";
-import { CalendarWeekStart } from "src/calendar/models/calendarWeekStart.enum";
 import { join } from "path";
 import { cwd } from "process";
+import { Config } from "./models/config.model";
+import { stripTypenames } from "src/utils/stripTypenames";
 
 const DATA_FOLDER = join(cwd(), "data");
 const CONFIGS_FOLDER = join(DATA_FOLDER, "configs");
 
 const SERVICES_PATH = join(DATA_FOLDER, "services.json");
 
-const EMPTY_CONFIG: ConfigModel = {
+const EMPTY_CONFIG: Config = {
   name: "default",
-  settings: {
-    searchUrl: "https://google.com/search?q=",
-  },
-  modules: {
-    usenet: {
-      enabled: true,
-    },
-    docker: {
-      enabled: true,
-    },
-    calendar: {
-      enabled: true,
-      weekStart: CalendarWeekStart.MONDAY,
-    },
-  },
+  settings: {},
+  modules: [],
 };
 
 @Injectable()
@@ -56,7 +42,7 @@ export class ConfigService implements OnModuleInit {
     }
   }
 
-  public async getConfigs(): Promise<ConfigModel[]> {
+  public async getConfigs(): Promise<Config[]> {
     const files = await readdir(CONFIGS_FOLDER);
     const configs = files.map((file) => file.replace(".json", ""));
 
@@ -65,7 +51,7 @@ export class ConfigService implements OnModuleInit {
     );
   }
 
-  public async getConfig(configName: string): Promise<ConfigModel> {
+  public async getConfig(configName: string): Promise<Config> {
     const path = join(CONFIGS_FOLDER, `${configName}.json`);
 
     const config = JSON.parse(await readFile(path, "utf8")) as Config;
@@ -123,7 +109,10 @@ export class ConfigService implements OnModuleInit {
       services.push(updatedService);
     }
 
-    await writeFile(SERVICES_PATH, JSON.stringify(services, null, 2));
+    await writeFile(
+      SERVICES_PATH,
+      JSON.stringify(stripTypenames(services), null, 2)
+    );
 
     return {
       services,
@@ -150,7 +139,7 @@ export class ConfigService implements OnModuleInit {
   ): Promise<Config> {
     const path = join(CONFIGS_FOLDER, `${configName}.json`);
 
-    await writeFile(path, JSON.stringify(config, null, 2));
+    await writeFile(path, JSON.stringify(stripTypenames(config), null, 2));
 
     return config;
   }
