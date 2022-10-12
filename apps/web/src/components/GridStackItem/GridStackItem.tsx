@@ -5,12 +5,14 @@ import { ModuleBox } from "../ModuleBox/ModuleBox";
 
 interface GridStackItemProps {
   position: ModulePosition;
+  minHeight?: number;
+  minWidth?: number;
   id: string;
   children: ReactNode;
 }
 
 export const GridStackItem = forwardRef<HTMLDivElement, GridStackItemProps>(
-  ({ position, id, children }, ref) => {
+  ({ position, id, minHeight, minWidth, children }, ref) => {
     return (
       <Box
         ref={ref}
@@ -20,6 +22,8 @@ export const GridStackItem = forwardRef<HTMLDivElement, GridStackItemProps>(
         gs-y={position.y}
         gs-w={position.w}
         gs-h={position.h}
+        gs-min-h={minHeight}
+        gs-min-w={minWidth}
       >
         <ModuleBox className="grid-stack-item-content">{children}</ModuleBox>
       </Box>

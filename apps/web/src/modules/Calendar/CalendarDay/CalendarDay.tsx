@@ -59,9 +59,10 @@ export const CalendarDay: FunctionComponent<CalendarDayProps> = ({
           _hover={{ backgroundColor: hoverColor }}
           alignItems="center"
           justifyContent="center"
+          flexDir="column"
           borderRadius="md"
-          h="40px"
-          w="40px"
+          h="full"
+          w="full"
           opacity={isSameMonth(date, selectedMonth) ? 1 : 0.3}
           cursor="pointer"
           pos="relative"
@@ -69,14 +70,7 @@ export const CalendarDay: FunctionComponent<CalendarDayProps> = ({
           borderWidth={isToday(date) ? 1 : 0}
         >
           {getDate(date)}
-          <HStack
-            spacing="2px"
-            justifyContent="center"
-            pos="absolute"
-            bottom="5px"
-            left="5px"
-            right="5px"
-          >
+          <HStack spacing="2px" h="5px" justifyContent="center">
             {!!tvItems?.length && (
               <Box
                 w="5px"

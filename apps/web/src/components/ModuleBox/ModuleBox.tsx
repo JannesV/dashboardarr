@@ -12,13 +12,13 @@ export const ModuleBox = forwardRef<any, ModuleBoxProps>(
     return (
       <Box
         shadow="md"
-        rounded={15}
+        rounded={10}
         alignItems="center"
         justifyContent="center"
         border="1px"
         bgColor={bgColor}
         borderColor={border}
-        p="4"
+        p={3}
         ref={ref}
         {...boxProps}
       >

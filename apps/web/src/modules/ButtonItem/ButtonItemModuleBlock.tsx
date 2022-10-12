@@ -1,4 +1,4 @@
-import { Flex, Text, Image } from "@chakra-ui/react";
+import { Flex, Image } from "@chakra-ui/react";
 import { ButtonModule } from "@dashboardarr/graphql";
 import { FunctionComponent } from "react";
 
@@ -19,10 +19,12 @@ export const ButtonItemModuleBlock: FunctionComponent<
       h="full"
       w="full"
     >
-      <Text fontWeight={"bold"} noOfLines={1} textAlign="center" mb={4}>
+      {/* <Text fontWeight={"bold"} noOfLines={1} textAlign="center" mb={4}>
         {service.name}
-      </Text>
-      <Image mb={6} boxSize={100} objectFit="contain" src={service.icon} />
+      </Text> */}
+      {/* <Box w="full" h="full"> */}
+      <Image h="full" objectFit="contain" src={service.icon} />
+      {/* </Box> */}
     </Flex>
   );
 };

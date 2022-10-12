@@ -4,6 +4,7 @@ import {
   FunctionComponent,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
 } from "react";
 
@@ -40,7 +41,10 @@ export const MainPage: FunctionComponent<MainPageProps> = () => {
 
   useColorModeTracker(configData?.config.settings.colorMode);
 
-  const moduleItems = configData?.config.modules || [];
+  const moduleItems = useMemo(
+    () => configData?.config.modules || [],
+    [configData?.config.modules]
+  );
 
   if (Object.keys(refs.current).length !== data?.services.length) {
     moduleItems.forEach(({ id }) => {
@@ -65,7 +69,7 @@ export const MainPage: FunctionComponent<MainPageProps> = () => {
     }
 
     grid.current = GridStack.init({
-      cellHeight: 200,
+      cellHeight: 100,
       column: 6,
       margin: 10,
       float: true,
@@ -115,6 +119,8 @@ export const MainPage: FunctionComponent<MainPageProps> = () => {
                 id={item.id}
                 position={item.position}
                 ref={refs.current[item.id]}
+                minHeight={item.__typename === "CalendarModule" ? 2 : 0}
+                minWidth={item.__typename === "UsenetModule" ? 2 : 0}
               >
                 {module}
               </GridStackItem>

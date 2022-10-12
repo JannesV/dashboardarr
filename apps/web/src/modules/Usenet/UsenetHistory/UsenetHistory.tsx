@@ -178,7 +178,8 @@ export const UsenetHistory: FunctionComponent<UsenetHistoryProps> = ({
         <PaginationContainer justifyContent="center" mt={4}>
           <PaginationPrevious
             bg="none"
-            w={10}
+            w={8}
+            h={8}
             borderWidth={1}
             borderColor="whiteAlpha.200"
             _hover={{
@@ -192,7 +193,9 @@ export const UsenetHistory: FunctionComponent<UsenetHistoryProps> = ({
             {pages.map((page) => (
               <PaginationPage
                 bg="none"
-                w={10}
+                w={8}
+                h={8}
+                fontSize="small"
                 borderWidth={1}
                 borderColor="whiteAlpha.200"
                 key={`page_${page}`}
@@ -209,7 +212,8 @@ export const UsenetHistory: FunctionComponent<UsenetHistoryProps> = ({
           </PaginationPageGroup>
           <PaginationNext
             bg="none"
-            w={10}
+            w={8}
+            h={8}
             borderWidth={1}
             borderColor="whiteAlpha.200"
             _hover={{

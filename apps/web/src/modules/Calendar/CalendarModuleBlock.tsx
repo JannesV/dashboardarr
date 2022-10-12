@@ -71,11 +71,12 @@ export const CalendarModuleBlock: FunctionComponent<
         </Button>
       </Flex>
       <Grid
-        templateColumns="repeat(7, 40px)"
+        templateColumns="repeat(7, 1fr)"
         gridGap={1}
         alignItems="center"
         justifyItems="center"
         fontSize="sm"
+        height="calc(100% - 58px)"
       >
         {/* {weekStart === CalendarWeekStart.Sunday && <Flex>Zo</Flex>} */}
         <Flex>Ma</Flex>

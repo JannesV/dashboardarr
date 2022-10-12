@@ -9,7 +9,7 @@ const theme = extendTheme({
   styles: {
     global: () => ({
       ".grid-stack-placeholder .placeholder-content": {
-        borderRadius: 15,
+        borderRadius: 10,
       },
     }),
   },
