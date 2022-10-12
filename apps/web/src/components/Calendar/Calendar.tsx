@@ -9,11 +9,7 @@ import {
   Grid,
   Text,
 } from "@chakra-ui/react";
-import {
-  CalendarModule,
-  CalendarWeekStart,
-  useGetCalendarQuery,
-} from "@dashboardarr/graphql";
+import { useGetCalendarQuery } from "@dashboardarr/graphql";
 import {
   add,
   eachDayOfInterval,
@@ -28,17 +24,15 @@ import { FunctionComponent, useState } from "react";
 import { ModuleBox } from "../ModuleBox/ModuleBox";
 import { CalendarDay } from "./CalendarDay/CalendarDay";
 
-interface CalendarProps {
-  config: CalendarModule;
-}
+interface CalendarProps {}
 
-export const Calendar: FunctionComponent<CalendarProps> = ({ config }) => {
-  const weekStart = config.weekStart || CalendarWeekStart.Monday;
+export const Calendar: FunctionComponent<CalendarProps> = ({}) => {
+  // const weekStart = config.weekStart || CalendarWeekStart.Monday;
 
   const [month, setMonth] = useState(startOfMonth(new Date()));
 
   const startDate = startOfWeek(month, {
-    weekStartsOn: weekStart === CalendarWeekStart.Monday ? 1 : 0,
+    weekStartsOn: 1, //weekStart === CalendarWeekStart.Monday ? 1 : 0,
   });
   const endDate = endOfWeek(endOfMonth(month));
 
@@ -82,14 +76,15 @@ export const Calendar: FunctionComponent<CalendarProps> = ({ config }) => {
         justifyItems="center"
         fontSize="sm"
       >
-        {weekStart === CalendarWeekStart.Sunday && <Flex>Zo</Flex>}
+        {/* {weekStart === CalendarWeekStart.Sunday && <Flex>Zo</Flex>} */}
         <Flex>Ma</Flex>
         <Flex>Di</Flex>
         <Flex>Wo</Flex>
         <Flex>Do</Flex>
         <Flex>Vr</Flex>
         <Flex>Za</Flex>
-        {weekStart === CalendarWeekStart.Monday && <Flex>Zo</Flex>}
+        <Flex>Zo</Flex>
+        {/* {weekStart === CalendarWeekStart.Monday && <Flex>Zo</Flex>} */}
         {dates.map((date) => (
           <CalendarDay
             key={date.toISOString()}

@@ -9,6 +9,7 @@
     "prebuild": "npx rimraf dist"
   },
   "dependencies": {
+    "@dashboardarr/common": "*",
     "@nestjs/apollo": "^10.1.0",
     "@nestjs/cli": "^9.1.1",
     "@nestjs/common": "^9.0.11",

@@ -1,0 +1,8 @@
+mutation updateModulePositions(
+  $configName: String!
+  $positions: [ModulePositionInput!]!
+) {
+  updateModulePositions(configName: $configName, positions: $positions) {
+    ...Config
+  }
+}

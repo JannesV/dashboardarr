@@ -14,7 +14,6 @@ import {
   GetUsenetInfoQuery,
   GetUsenetInfoQueryVariables,
   useGetUsenetInfoQuery,
-  UsenetModule,
   usePauseUsenetQueueMutation,
   useResumeUsenetQueueMutation,
 } from "@dashboardarr/graphql";
@@ -27,11 +26,11 @@ import { UsenetHistory } from "./UsenetHistory/UsenetHistory";
 import { MdPause, MdPlayArrow } from "react-icons/md";
 
 interface UsernetOverviewProps {
-  config: UsenetModule;
+  serviceId: string;
 }
 
 export const UsernetOverview: FunctionComponent<UsernetOverviewProps> = ({
-  config: { serviceId },
+  serviceId,
 }) => {
   const [tabIndex, setTabIndex] = useState(0);
 

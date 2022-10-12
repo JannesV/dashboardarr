@@ -16,8 +16,6 @@ module.exports = {
     project: "./tsconfig.json",
   },
   rules: {
-    "react/react-in-jsx-scope": "off",
-    "react/no-children-prop": "off",
     "max-classes-per-file": "off",
     "unused-imports/no-unused-imports": "warn",
     "@typescript-eslint/no-unused-vars": "off",

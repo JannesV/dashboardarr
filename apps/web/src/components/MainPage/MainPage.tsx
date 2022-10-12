@@ -1,54 +1,115 @@
-import { Box, Flex, Grid } from "@chakra-ui/react";
-import { FunctionComponent } from "react";
+import { Box, Center, Spinner } from "@chakra-ui/react";
+import {
+  createRef,
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useRef,
+} from "react";
 
 import { NavBar } from "../NavBar/NavBar";
-import { UsernetOverview } from "../../modules/Usenet/UsenetOverview";
-import { Calendar } from "../Calendar/Calendar";
-import { useGetConfigQuery, useGetServicesQuery } from "@dashboardarr/graphql";
-import { ServiceItem } from "../ServiceItem/ServiceItem";
+import {
+  ModulePositionInput,
+  useGetConfigQuery,
+  useGetServicesQuery,
+  useUpdateModulePositionsMutation,
+} from "@dashboardarr/graphql";
 import { useColorModeTracker } from "../../utils/useColorModeTracker";
+import { ServiceModal } from "../ServiceModal/ServiceModal";
+import { SettingsDrawer } from "../SettingsDrawer/SettingsDrawer";
+
+import { GridStack } from "gridstack";
+import "gridstack/dist/gridstack.min.css";
+import "gridstack/dist/gridstack-extra.min.css";
+import { GridStackItem } from "../GridStackItem/GridStackItem";
+import { ButtonItem } from "../ButtonItem/ButtonItem";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface MainPageProps {}
 
 export const MainPage: FunctionComponent<MainPageProps> = () => {
+  const grid = useRef<GridStack>();
+  const refs = useRef<any>({});
   const { data } = useGetServicesQuery();
-  const { data: configData } = useGetConfigQuery({
+  const { data: configData, loading } = useGetConfigQuery({
     variables: { configName: "default" },
   });
+  const [updateModulePositions] = useUpdateModulePositionsMutation();
 
   useColorModeTracker(configData?.config.settings.colorMode);
 
-  return (
-    <Box w="100%">
-      <NavBar />
+  const moduleItems = configData?.config.modules || [];
 
-      <Flex>
-        <Flex w="full" direction="column">
-          <Grid
-            p={4}
-            templateColumns="repeat(auto-fill, minmax(200px, 1fr))"
-            gap={4}
-          >
-            {data?.services.map((item) => (
-              <ServiceItem service={item} key={item.id} />
-            ))}
-          </Grid>
-          {configData?.config.modules.map((mod) => {
-            if (mod.__typename === "UsenetModule") {
-              return <UsernetOverview key={mod.id} config={mod} />;
-            }
-          })}
-        </Flex>
-        {/* SIDEBAR */}
-        <Box>
-          {configData?.config.modules.map((mod) => {
-            if (mod.__typename === "CalendarModule") {
-              return <Calendar key={mod.id} config={mod} />;
-            }
+  if (Object.keys(refs.current).length !== data?.services.length) {
+    moduleItems.forEach(({ id }) => {
+      refs.current[id] = refs.current[id] || createRef();
+    });
+  }
+
+  const handleSave = useCallback(() => {
+    const gridData = grid.current?.save(false) as ModulePositionInput;
+
+    updateModulePositions({
+      variables: {
+        configName: "default",
+        positions: gridData,
+      },
+    });
+  }, [updateModulePositions]);
+
+  useEffect(() => {
+    if (!data || loading) {
+      return;
+    }
+
+    grid.current = GridStack.init({
+      cellHeight: 220,
+      column: 6,
+      margin: 10,
+    });
+
+    grid.current.removeAll(false);
+    moduleItems.forEach(({ id }) => {
+      grid.current!.makeWidget(refs.current[id].current);
+    });
+
+    grid.current.on("change", handleSave);
+
+    return () => {
+      grid.current!.off("change");
+    };
+  }, [moduleItems, loading, data, handleSave]);
+
+  if (loading) {
+    return (
+      <Center h="100vh">
+        <Spinner size="xl" />
+      </Center>
+    );
+  }
+
+  return (
+    <>
+      <ServiceModal />
+      <SettingsDrawer />
+      <Box w="100%">
+        <NavBar />
+
+        <Box className="grid-stack">
+          {moduleItems.map((item, i) => {
+            return (
+              <GridStackItem
+                key={item.id}
+                id={item.id}
+                position={item.position}
+                ref={refs.current[item.id]}
+              >
+                <ButtonItem item={item} />
+              </GridStackItem>
+            );
           })}
         </Box>
-      </Flex>
-    </Box>
+      </Box>
+    </>
   );
 };

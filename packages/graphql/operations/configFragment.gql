@@ -7,14 +7,22 @@ fragment Config on Config {
     colorMode
   }
   modules {
-    __typename
     id
-    enabled
-    ... on CalendarModule {
-      weekStart
+    position {
+      x
+      y
+      w
+      h
     }
-    ... on UsenetModule {
-      serviceId
+    ... on ButtonModule {
+      service {
+        name
+        id
+        type
+        icon
+        url
+        externalUrl
+      }
     }
   }
 }

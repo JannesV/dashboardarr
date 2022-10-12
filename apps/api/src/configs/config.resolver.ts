@@ -1,6 +1,8 @@
 import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { Config } from "./models/config.model";
 import { ConfigService } from "./config.service";
+import { SettingsInput } from "./models/settingsInput.model";
+import { ModulePositionInput } from "./models/modulePositionInput.model";
 
 @Resolver(() => Config)
 export class ConfigResolver {
@@ -22,5 +24,22 @@ export class ConfigResolver {
     @Args("body") configBody: string
   ): Promise<Config> {
     return this.configService.writeConfig(configName, JSON.parse(configBody));
+  }
+
+  @Mutation(() => Config)
+  async updateSettings(
+    @Args("configName") configName: string,
+    @Args("settings") settings: SettingsInput
+  ): Promise<Config> {
+    return this.configService.updateSettings(configName, settings);
+  }
+
+  @Mutation(() => Config)
+  async updateModulePositions(
+    @Args("configName") configName: string,
+    @Args("positions", { type: () => [ModulePositionInput] })
+    positions: ModulePositionInput[]
+  ): Promise<Config> {
+    return this.configService.updateModulePositions(configName, positions);
   }
 }

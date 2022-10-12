@@ -19,19 +19,14 @@ export type Scalars = {
   DateTime: string;
 };
 
-export type CalendarItem = MovieCalendarItem | TvCalendarItem;
-
-export type CalendarModule = ConfigModule & {
-  __typename?: 'CalendarModule';
-  enabled: Scalars['Boolean'];
+export type ButtonModule = ModuleItem & {
+  __typename?: 'ButtonModule';
   id: Scalars['String'];
-  weekStart: CalendarWeekStart;
+  position: ModulePosition;
+  service: Service;
 };
 
-export enum CalendarWeekStart {
-  Monday = 'MONDAY',
-  Sunday = 'SUNDAY'
-}
+export type CalendarItem = MovieCalendarItem | TvCalendarItem;
 
 export enum ColorMode {
   Auto = 'Auto',
@@ -41,14 +36,9 @@ export enum ColorMode {
 
 export type Config = {
   __typename?: 'Config';
-  modules: Array<ConfigModule>;
+  modules: Array<ModuleItem>;
   name: Scalars['String'];
   settings: Settings;
-};
-
-export type ConfigModule = {
-  enabled: Scalars['Boolean'];
-  id: Scalars['String'];
 };
 
 export enum DockerAction {
@@ -67,12 +57,6 @@ export type DockerContainer = {
   status: DockerStatus;
 };
 
-export type DockerModule = ConfigModule & {
-  __typename?: 'DockerModule';
-  enabled: Scalars['Boolean'];
-  id: Scalars['String'];
-};
-
 export type DockerPort = {
   __typename?: 'DockerPort';
   private: Scalars['Float'];
@@ -85,6 +69,27 @@ export enum DockerStatus {
   Running = 'Running',
   Unknown = 'Unknown'
 }
+
+export type ModuleItem = {
+  id: Scalars['String'];
+  position: ModulePosition;
+};
+
+export type ModulePosition = {
+  __typename?: 'ModulePosition';
+  h?: Maybe<Scalars['Float']>;
+  w?: Maybe<Scalars['Float']>;
+  x: Scalars['Float'];
+  y: Scalars['Float'];
+};
+
+export type ModulePositionInput = {
+  h?: InputMaybe<Scalars['Float']>;
+  id: Scalars['String'];
+  w?: InputMaybe<Scalars['Float']>;
+  x: Scalars['Float'];
+  y: Scalars['Float'];
+};
 
 export type MovieCalendarItem = {
   __typename?: 'MovieCalendarItem';
@@ -106,7 +111,9 @@ export type Mutation = {
   resumeUsenetQueue: UsenetInfo;
   updateConfig: Config;
   updateContainers: Array<DockerContainer>;
+  updateModulePositions: Config;
   updateService: Service;
+  updateSettings: Config;
 };
 
 
@@ -142,9 +149,21 @@ export type MutationUpdateContainersArgs = {
 };
 
 
+export type MutationUpdateModulePositionsArgs = {
+  configName: Scalars['String'];
+  positions: Array<ModulePositionInput>;
+};
+
+
 export type MutationUpdateServiceArgs = {
   id: Scalars['String'];
   service: ServiceInput;
+};
+
+
+export type MutationUpdateSettingsArgs = {
+  configName: Scalars['String'];
+  settings: SettingsInput;
 };
 
 export type Query = {
@@ -247,6 +266,13 @@ export type Settings = {
   title?: Maybe<Scalars['String']>;
 };
 
+export type SettingsInput = {
+  colorMode?: InputMaybe<ColorMode>;
+  favicon?: InputMaybe<Scalars['String']>;
+  logo?: InputMaybe<Scalars['String']>;
+  title?: InputMaybe<Scalars['String']>;
+};
+
 export type TvCalendarItem = {
   __typename?: 'TvCalendarItem';
   airDate: Scalars['DateTime'];
@@ -285,13 +311,6 @@ export type UsenetInfo = {
   speed: Scalars['Float'];
 };
 
-export type UsenetModule = ConfigModule & {
-  __typename?: 'UsenetModule';
-  enabled: Scalars['Boolean'];
-  id: Scalars['String'];
-  serviceId: Scalars['String'];
-};
-
 export type UsenetQueue = {
   __typename?: 'UsenetQueue';
   items: Array<UsenetQueueItem>;
@@ -313,6 +332,8 @@ export enum UsenetQueueStatus {
   Paused = 'Paused',
   Queued = 'Queued'
 }
+
+export type ConfigFragment = { __typename?: 'Config', name: string, settings: { __typename?: 'Settings', title?: string | null, logo?: string | null, favicon?: string | null, colorMode: ColorMode }, modules: Array<{ __typename?: 'ButtonModule', id: string, service: { __typename?: 'Service', name: string, id: string, type: ServiceType, icon: string, url: string, externalUrl?: string | null }, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } }> };
 
 export type CreateServiceMutationVariables = Exact<{
   service: ServiceInput;
@@ -341,7 +362,7 @@ export type GetConfigQueryVariables = Exact<{
 }>;
 
 
-export type GetConfigQuery = { __typename?: 'Query', config: { __typename?: 'Config', name: string, settings: { __typename?: 'Settings', title?: string | null, logo?: string | null, favicon?: string | null, colorMode: ColorMode }, modules: Array<{ __typename: 'CalendarModule', weekStart: CalendarWeekStart, id: string, enabled: boolean } | { __typename: 'DockerModule', id: string, enabled: boolean } | { __typename: 'UsenetModule', serviceId: string, id: string, enabled: boolean }> } };
+export type GetConfigQuery = { __typename?: 'Query', config: { __typename?: 'Config', name: string, settings: { __typename?: 'Settings', title?: string | null, logo?: string | null, favicon?: string | null, colorMode: ColorMode }, modules: Array<{ __typename?: 'ButtonModule', id: string, service: { __typename?: 'Service', name: string, id: string, type: ServiceType, icon: string, url: string, externalUrl?: string | null }, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } }> } };
 
 export type GetConfigListQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -412,7 +433,7 @@ export type UpdateConfigMutationVariables = Exact<{
 }>;
 
 
-export type UpdateConfigMutation = { __typename?: 'Mutation', updateConfig: { __typename?: 'Config', name: string, settings: { __typename?: 'Settings', title?: string | null, logo?: string | null, favicon?: string | null }, modules: Array<{ __typename: 'CalendarModule', weekStart: CalendarWeekStart, id: string, enabled: boolean } | { __typename: 'DockerModule', id: string, enabled: boolean } | { __typename: 'UsenetModule', id: string, enabled: boolean }> } };
+export type UpdateConfigMutation = { __typename?: 'Mutation', updateConfig: { __typename?: 'Config', name: string, settings: { __typename?: 'Settings', title?: string | null, logo?: string | null, favicon?: string | null, colorMode: ColorMode }, modules: Array<{ __typename?: 'ButtonModule', id: string, service: { __typename?: 'Service', name: string, id: string, type: ServiceType, icon: string, url: string, externalUrl?: string | null }, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } }> } };
 
 export type UpdateContainersMutationVariables = Exact<{
   ids: Array<Scalars['String']> | Scalars['String'];
@@ -422,6 +443,14 @@ export type UpdateContainersMutationVariables = Exact<{
 
 export type UpdateContainersMutation = { __typename?: 'Mutation', updateContainers: Array<{ __typename?: 'DockerContainer', id: string, name: string, image: string, status: DockerStatus, ports: Array<{ __typename?: 'DockerPort', private: number, public: number }> }> };
 
+export type UpdateModulePositionsMutationVariables = Exact<{
+  configName: Scalars['String'];
+  positions: Array<ModulePositionInput> | ModulePositionInput;
+}>;
+
+
+export type UpdateModulePositionsMutation = { __typename?: 'Mutation', updateModulePositions: { __typename?: 'Config', name: string, settings: { __typename?: 'Settings', title?: string | null, logo?: string | null, favicon?: string | null, colorMode: ColorMode }, modules: Array<{ __typename?: 'ButtonModule', id: string, service: { __typename?: 'Service', name: string, id: string, type: ServiceType, icon: string, url: string, externalUrl?: string | null }, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } }> } };
+
 export type UpdateServiceMutationVariables = Exact<{
   id: Scalars['String'];
   service: ServiceInput;
@@ -430,8 +459,46 @@ export type UpdateServiceMutationVariables = Exact<{
 
 export type UpdateServiceMutation = { __typename?: 'Mutation', updateService: { __typename?: 'Service', name: string, id: string, type: ServiceType, icon: string, url: string, externalUrl?: string | null, apiKey?: string | null } };
 
+export type UpdateSettingsMutationVariables = Exact<{
+  configName: Scalars['String'];
+  settings: SettingsInput;
+}>;
+
+
+export type UpdateSettingsMutation = { __typename?: 'Mutation', updateSettings: { __typename?: 'Config', name: string, settings: { __typename?: 'Settings', title?: string | null, logo?: string | null, favicon?: string | null, colorMode: ColorMode }, modules: Array<{ __typename?: 'ButtonModule', id: string, service: { __typename?: 'Service', name: string, id: string, type: ServiceType, icon: string, url: string, externalUrl?: string | null }, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } }> } };
+
 export type UsenetInfoFragment = { __typename?: 'UsenetInfo', paused: boolean, sizeLeft: number, speed: number, eta: number, itemsRemaining: number };
 
+export const ConfigFragmentDoc = gql`
+    fragment Config on Config {
+  name
+  settings {
+    title
+    logo
+    favicon
+    colorMode
+  }
+  modules {
+    id
+    position {
+      x
+      y
+      w
+      h
+    }
+    ... on ButtonModule {
+      service {
+        name
+        id
+        type
+        icon
+        url
+        externalUrl
+      }
+    }
+  }
+}
+    `;
 export const ServiceFragmentDoc = gql`
     fragment Service on Service {
   name
@@ -576,27 +643,10 @@ export type GetCalendarQueryResult = Apollo.QueryResult<GetCalendarQuery, GetCal
 export const GetConfigDocument = gql`
     query getConfig($configName: String!) {
   config(configName: $configName) {
-    name
-    settings {
-      title
-      logo
-      favicon
-      colorMode
-    }
-    modules {
-      __typename
-      id
-      enabled
-      ... on CalendarModule {
-        weekStart
-      }
-      ... on UsenetModule {
-        serviceId
-      }
-    }
+    ...Config
   }
 }
-    `;
+    ${ConfigFragmentDoc}`;
 
 /**
  * __useGetConfigQuery__
@@ -964,23 +1014,10 @@ export type SearchQueryResult = Apollo.QueryResult<SearchQuery, SearchQueryVaria
 export const UpdateConfigDocument = gql`
     mutation updateConfig($configName: String!, $body: String!) {
   updateConfig(configName: $configName, body: $body) {
-    name
-    settings {
-      title
-      logo
-      favicon
-    }
-    modules {
-      __typename
-      id
-      enabled
-      ... on CalendarModule {
-        weekStart
-      }
-    }
+    ...Config
   }
 }
-    `;
+    ${ConfigFragmentDoc}`;
 export type UpdateConfigMutationFn = Apollo.MutationFunction<UpdateConfigMutation, UpdateConfigMutationVariables>;
 
 /**
@@ -1049,6 +1086,40 @@ export function useUpdateContainersMutation(baseOptions?: Apollo.MutationHookOpt
 export type UpdateContainersMutationHookResult = ReturnType<typeof useUpdateContainersMutation>;
 export type UpdateContainersMutationResult = Apollo.MutationResult<UpdateContainersMutation>;
 export type UpdateContainersMutationOptions = Apollo.BaseMutationOptions<UpdateContainersMutation, UpdateContainersMutationVariables>;
+export const UpdateModulePositionsDocument = gql`
+    mutation updateModulePositions($configName: String!, $positions: [ModulePositionInput!]!) {
+  updateModulePositions(configName: $configName, positions: $positions) {
+    ...Config
+  }
+}
+    ${ConfigFragmentDoc}`;
+export type UpdateModulePositionsMutationFn = Apollo.MutationFunction<UpdateModulePositionsMutation, UpdateModulePositionsMutationVariables>;
+
+/**
+ * __useUpdateModulePositionsMutation__
+ *
+ * To run a mutation, you first call `useUpdateModulePositionsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateModulePositionsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateModulePositionsMutation, { data, loading, error }] = useUpdateModulePositionsMutation({
+ *   variables: {
+ *      configName: // value for 'configName'
+ *      positions: // value for 'positions'
+ *   },
+ * });
+ */
+export function useUpdateModulePositionsMutation(baseOptions?: Apollo.MutationHookOptions<UpdateModulePositionsMutation, UpdateModulePositionsMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateModulePositionsMutation, UpdateModulePositionsMutationVariables>(UpdateModulePositionsDocument, options);
+      }
+export type UpdateModulePositionsMutationHookResult = ReturnType<typeof useUpdateModulePositionsMutation>;
+export type UpdateModulePositionsMutationResult = Apollo.MutationResult<UpdateModulePositionsMutation>;
+export type UpdateModulePositionsMutationOptions = Apollo.BaseMutationOptions<UpdateModulePositionsMutation, UpdateModulePositionsMutationVariables>;
 export const UpdateServiceDocument = gql`
     mutation updateService($id: String!, $service: ServiceInput!) {
   updateService(id: $id, service: $service) {
@@ -1083,3 +1154,37 @@ export function useUpdateServiceMutation(baseOptions?: Apollo.MutationHookOption
 export type UpdateServiceMutationHookResult = ReturnType<typeof useUpdateServiceMutation>;
 export type UpdateServiceMutationResult = Apollo.MutationResult<UpdateServiceMutation>;
 export type UpdateServiceMutationOptions = Apollo.BaseMutationOptions<UpdateServiceMutation, UpdateServiceMutationVariables>;
+export const UpdateSettingsDocument = gql`
+    mutation updateSettings($configName: String!, $settings: SettingsInput!) {
+  updateSettings(configName: $configName, settings: $settings) {
+    ...Config
+  }
+}
+    ${ConfigFragmentDoc}`;
+export type UpdateSettingsMutationFn = Apollo.MutationFunction<UpdateSettingsMutation, UpdateSettingsMutationVariables>;
+
+/**
+ * __useUpdateSettingsMutation__
+ *
+ * To run a mutation, you first call `useUpdateSettingsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateSettingsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateSettingsMutation, { data, loading, error }] = useUpdateSettingsMutation({
+ *   variables: {
+ *      configName: // value for 'configName'
+ *      settings: // value for 'settings'
+ *   },
+ * });
+ */
+export function useUpdateSettingsMutation(baseOptions?: Apollo.MutationHookOptions<UpdateSettingsMutation, UpdateSettingsMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateSettingsMutation, UpdateSettingsMutationVariables>(UpdateSettingsDocument, options);
+      }
+export type UpdateSettingsMutationHookResult = ReturnType<typeof useUpdateSettingsMutation>;
+export type UpdateSettingsMutationResult = Apollo.MutationResult<UpdateSettingsMutation>;
+export type UpdateSettingsMutationOptions = Apollo.BaseMutationOptions<UpdateSettingsMutation, UpdateSettingsMutationVariables>;

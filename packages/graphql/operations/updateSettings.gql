@@ -1,0 +1,5 @@
+mutation updateSettings($configName: String!, $settings: SettingsInput!) {
+  updateSettings(configName: $configName, settings: $settings) {
+    ...Config
+  }
+}

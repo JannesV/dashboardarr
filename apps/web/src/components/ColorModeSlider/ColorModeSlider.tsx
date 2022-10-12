@@ -1,33 +1,30 @@
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
 import { Box, Flex, useColorModeValue } from "@chakra-ui/react";
 import { ColorMode } from "@dashboardarr/graphql";
-import { FunctionComponent, useState } from "react";
+import { useField } from "formik";
+import { FunctionComponent } from "react";
 
 interface ColorModeSliderProps {
-  value?: ColorMode;
-  onChange(val: ColorMode): void;
+  name: string;
 }
 
 export const ColorModeSlider: FunctionComponent<ColorModeSliderProps> = ({
-  value,
-  onChange,
+  name,
 }) => {
-  const [mode, setMode] = useState<ColorMode>(value || ColorMode.Auto);
+  const [{ onChange }, { value }, { setValue }] = useField<ColorMode>({ name });
+
   const { bgColor } = useColorModeValue(
     { bgColor: "gray.300" },
     { bgColor: "whiteAlpha.400" }
   );
 
   const handleClick = () => {
-    if (mode === ColorMode.Light) {
-      setMode(ColorMode.Auto);
-      onChange(ColorMode.Auto);
-    } else if (mode === ColorMode.Auto) {
-      setMode(ColorMode.Dark);
-      onChange(ColorMode.Dark);
+    if (value === ColorMode.Light) {
+      setValue(ColorMode.Auto);
+    } else if (value === ColorMode.Auto) {
+      setValue(ColorMode.Dark);
     } else {
-      setMode(ColorMode.Light);
-      onChange(ColorMode.Light);
+      setValue(ColorMode.Light);
     }
   };
 
@@ -44,9 +41,9 @@ export const ColorModeSlider: FunctionComponent<ColorModeSliderProps> = ({
       >
         <Flex
           transform={`translateX(${
-            mode === ColorMode.Auto
+            value === ColorMode.Auto
               ? "12px"
-              : mode === ColorMode.Dark
+              : value === ColorMode.Dark
               ? "24px"
               : 0
           })`}
@@ -60,9 +57,9 @@ export const ColorModeSlider: FunctionComponent<ColorModeSliderProps> = ({
           alignItems="center"
           fontSize="xs"
         >
-          {mode === ColorMode.Light ? (
+          {value === ColorMode.Light ? (
             <SunIcon color="black" />
-          ) : mode === ColorMode.Dark ? (
+          ) : value === ColorMode.Dark ? (
             <MoonIcon color="black" />
           ) : (
             "A"

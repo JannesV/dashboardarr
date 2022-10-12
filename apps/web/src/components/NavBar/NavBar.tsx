@@ -22,10 +22,15 @@ import { useHotkeys } from "react-hotkeys-hook";
 import { useAtom } from "jotai";
 import { createServiceAtom } from "../../state/service";
 import { settingsOpenAtom } from "../../state/settings";
+import { useConfig } from "../../utils/useConfig";
 
 export const NavBar = () => {
   const [, setIsCreateService] = useAtom(createServiceAtom);
   const [, setSettingsOpen] = useAtom(settingsOpenAtom);
+
+  const {
+    settings: { title },
+  } = useConfig();
   const { border } = useColorModeValue(
     { border: "gray.200" },
     { border: "gray.700" }
@@ -66,7 +71,7 @@ export const NavBar = () => {
               fontSize="3xl"
               fontWeight="extrabold"
             >
-              Dashboardarr
+              {title || "Dashboardarr"}
             </Text>
           </Flex>
           <HStack display="flex" alignItems="center" spacing={1}>

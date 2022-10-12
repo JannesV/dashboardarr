@@ -1,10 +1,8 @@
-import { Field, InputType } from '@nestjs/graphql';
+import { Field, InputType } from "@nestjs/graphql";
+import { ColorMode } from "./colorMode.enum";
 
 @InputType()
 export class SettingsInput {
-  @Field()
-  searchUrl: string;
-
   @Field({ nullable: true })
   title?: string;
 
@@ -14,27 +12,6 @@ export class SettingsInput {
   @Field({ nullable: true })
   favicon?: string;
 
-  @Field(() => String, { nullable: true })
-  primaryColor?: string;
-
-  @Field(() => String, { nullable: true })
-  secondaryColor?: string;
-
-  @Field(() => String, { nullable: true })
-  primaryShade?: string;
-
-  @Field({ nullable: true })
-  background?: string;
-
-  @Field({ nullable: true })
-  customCSS?: string;
-
-  @Field({ nullable: true })
-  appOpacity?: number;
-
-  @Field({ nullable: true })
-  widgetPosition?: string;
-
-  @Field({ nullable: true })
-  appCardWidth?: number;
+  @Field((type) => ColorMode, { nullable: true })
+  colorMode?: ColorMode;
 }

@@ -1,4 +1,5 @@
 import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
+import { stripTypenames } from "@dashboardarr/common";
 import { mkdir, readdir, readFile, stat, writeFile } from "fs/promises";
 import { v4 } from "uuid";
 import { ServiceType } from "../services/models/serviceType.enum";
@@ -7,8 +8,9 @@ import { ServiceInput } from "../services/models/serviceInput.model";
 import { join } from "path";
 import { cwd } from "process";
 import { Config } from "./models/config.model";
-import { stripTypenames } from "src/utils/stripTypenames";
 import { ColorMode } from "./models/colorMode.enum";
+import { SettingsInput } from "./models/settingsInput.model";
+import { ModulePositionInput } from "./models/modulePositionInput.model";
 
 const DATA_FOLDER = join(cwd(), "data");
 const CONFIGS_FOLDER = join(DATA_FOLDER, "configs");
@@ -145,5 +147,38 @@ export class ConfigService implements OnModuleInit {
     await writeFile(path, JSON.stringify(stripTypenames(config), null, 2));
 
     return config;
+  }
+
+  public async updateSettings(
+    configName: string,
+    settings: SettingsInput
+  ): Promise<Config> {
+    const config = await this.getConfig(configName);
+
+    return await this.writeConfig(configName, {
+      ...config,
+      settings: {
+        ...config.settings,
+        ...settings,
+      },
+    });
+  }
+
+  public async updateModulePositions(
+    configName: string,
+    modulePositions: ModulePositionInput[]
+  ): Promise<Config> {
+    const config = await this.getConfig(configName);
+
+    return await this.writeConfig(configName, {
+      ...config,
+      modules: config.modules.map((mod) => ({
+        ...mod,
+        position: {
+          ...(modulePositions.find((pos) => pos.id === mod.id) || mod.position),
+          id: undefined,
+        },
+      })),
+    });
   }
 }

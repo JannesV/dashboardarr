@@ -7,7 +7,7 @@
       ],
       "outputs": [
         "dist/**",
-        ".next/**"
+        "build/**"
       ]
     },
     "lint": {
