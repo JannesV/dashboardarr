@@ -2,13 +2,13 @@ import { Flex, Text, Image } from "@chakra-ui/react";
 import { ButtonModule } from "@dashboardarr/graphql";
 import { FunctionComponent } from "react";
 
-interface ButtonItemProps {
+interface ButtonItemModuleBlockProps {
   item: ButtonModule;
 }
 
-export const ButtonItem: FunctionComponent<ButtonItemProps> = ({
-  item: { service },
-}) => {
+export const ButtonItemModuleBlock: FunctionComponent<
+  ButtonItemModuleBlockProps
+> = ({ item: { service } }) => {
   return (
     <Flex
       alignItems="center"

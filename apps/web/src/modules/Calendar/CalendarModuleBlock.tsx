@@ -21,12 +21,13 @@ import {
 } from "date-fns";
 import { endOfWeek } from "date-fns/esm";
 import { FunctionComponent, useState } from "react";
-import { ModuleBox } from "../ModuleBox/ModuleBox";
 import { CalendarDay } from "./CalendarDay/CalendarDay";
 
-interface CalendarProps {}
+interface CalendarModuleBlockProps {}
 
-export const Calendar: FunctionComponent<CalendarProps> = ({}) => {
+export const CalendarModuleBlock: FunctionComponent<
+  CalendarModuleBlockProps
+> = () => {
   // const weekStart = config.weekStart || CalendarWeekStart.Monday;
 
   const [month, setMonth] = useState(startOfMonth(new Date()));
@@ -49,7 +50,7 @@ export const Calendar: FunctionComponent<CalendarProps> = ({}) => {
   });
 
   return (
-    <ModuleBox>
+    <>
       <Flex justifyContent="center" mb={4}>
         <Button
           variant="ghost"
@@ -102,6 +103,6 @@ export const Calendar: FunctionComponent<CalendarProps> = ({}) => {
           </AlertDescription>
         </Alert>
       )}
-    </ModuleBox>
+    </>
   );
 };

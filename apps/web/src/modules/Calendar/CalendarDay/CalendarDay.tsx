@@ -10,6 +10,7 @@ import {
   StackDivider,
   Box,
   useColorModeValue,
+  Portal,
 } from "@chakra-ui/react";
 import { MovieCalendarItem, TvCalendarItem } from "@dashboardarr/graphql";
 import { isSameDay, parseISO, isSameMonth, getDate, isToday } from "date-fns";
@@ -95,48 +96,50 @@ export const CalendarDay: FunctionComponent<CalendarDayProps> = ({
           </HStack>
         </Flex>
       </PopoverTrigger>
-      <PopoverContent w="400px">
-        <PopoverArrow />
-        <PopoverBody>
-          <VStack
-            maxH="450px"
-            overflowX="hidden"
-            overflowY="auto"
-            css={{
-              "&::-webkit-scrollbar": {
-                width: "4px",
-              },
-              "&::-webkit-scrollbar-track": {
-                width: "4px",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                background: "rgba(255,255,255,0.4)",
-                borderRadius: "4px",
-              },
-            }}
-            divider={<StackDivider />}
-            spacing={3}
-            p={2}
-          >
-            {movieItems?.map((item, index) => (
-              <MovieItem
-                movie={item}
-                type={
-                  item.inCinemasDate &&
-                  isSameDay(date, parseISO(item.inCinemasDate))
-                    ? "cinema"
-                    : "digital"
-                }
-                key={index}
-              />
-            ))}
+      <Portal>
+        <PopoverContent w="400px">
+          <PopoverArrow />
+          <PopoverBody>
+            <VStack
+              maxH="450px"
+              overflowX="hidden"
+              overflowY="auto"
+              css={{
+                "&::-webkit-scrollbar": {
+                  width: "4px",
+                },
+                "&::-webkit-scrollbar-track": {
+                  width: "4px",
+                },
+                "&::-webkit-scrollbar-thumb": {
+                  background: "rgba(255,255,255,0.4)",
+                  borderRadius: "4px",
+                },
+              }}
+              divider={<StackDivider />}
+              spacing={3}
+              p={2}
+            >
+              {movieItems?.map((item, index) => (
+                <MovieItem
+                  movie={item}
+                  type={
+                    item.inCinemasDate &&
+                    isSameDay(date, parseISO(item.inCinemasDate))
+                      ? "cinema"
+                      : "digital"
+                  }
+                  key={index}
+                />
+              ))}
 
-            {tvItems?.map((item, index) => (
-              <TvItem series={item} key={index} />
-            ))}
-          </VStack>
-        </PopoverBody>
-      </PopoverContent>
+              {tvItems?.map((item, index) => (
+                <TvItem series={item} key={index} />
+              ))}
+            </VStack>
+          </PopoverBody>
+        </PopoverContent>
+      </Portal>
     </Popover>
   );
 };

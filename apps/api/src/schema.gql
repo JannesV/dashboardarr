@@ -34,6 +34,12 @@ enum ServiceType {
   Sabnzbd
 }
 
+type UsenetModule implements ModuleItem {
+  id: String!
+  position: ModulePosition!
+  service: Service!
+}
+
 type ButtonModule implements ModuleItem {
   id: String!
   position: ModulePosition!
@@ -45,6 +51,18 @@ type ModulePosition {
   y: Float!
   w: Float
   h: Float
+}
+
+type CalendarModule implements ModuleItem {
+  id: String!
+  position: ModulePosition!
+  services: [Service!]!
+  startOfWeek: CalendarWeekStart!
+}
+
+enum CalendarWeekStart {
+  SUNDAY
+  MONDAY
 }
 
 type Settings {

@@ -22,7 +22,9 @@ import { GridStack } from "gridstack";
 import "gridstack/dist/gridstack.min.css";
 import "gridstack/dist/gridstack-extra.min.css";
 import { GridStackItem } from "../GridStackItem/GridStackItem";
-import { ButtonItem } from "../ButtonItem/ButtonItem";
+import { ButtonItemModuleBlock } from "../../modules/ButtonItem/ButtonItemModuleBlock";
+import { UsernetModuleBlock } from "../../modules/Usenet/UsenetModuleBlock";
+import { CalendarModuleBlock } from "../../modules/Calendar/CalendarModuleBlock";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface MainPageProps {}
@@ -63,9 +65,10 @@ export const MainPage: FunctionComponent<MainPageProps> = () => {
     }
 
     grid.current = GridStack.init({
-      cellHeight: 220,
+      cellHeight: 200,
       column: 6,
       margin: 10,
+      float: true,
     });
 
     grid.current.removeAll(false);
@@ -97,6 +100,15 @@ export const MainPage: FunctionComponent<MainPageProps> = () => {
 
         <Box className="grid-stack">
           {moduleItems.map((item, i) => {
+            let module = null;
+
+            if (item.__typename === "ButtonModule") {
+              module = <ButtonItemModuleBlock item={item} />;
+            } else if (item.__typename === "UsenetModule") {
+              module = <UsernetModuleBlock serviceId={item.service.id} />;
+            } else if (item.__typename === "CalendarModule") {
+              module = <CalendarModuleBlock />;
+            }
             return (
               <GridStackItem
                 key={item.id}
@@ -104,7 +116,7 @@ export const MainPage: FunctionComponent<MainPageProps> = () => {
                 position={item.position}
                 ref={refs.current[item.id]}
               >
-                <ButtonItem item={item} />
+                {module}
               </GridStackItem>
             );
           })}
