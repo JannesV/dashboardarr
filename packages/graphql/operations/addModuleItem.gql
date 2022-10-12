@@ -1,0 +1,5 @@
+mutation addModuleItem($configName: String!, $module: ModuleItemInput!) {
+  addModuleItem(configName: $configName, module: $module) {
+    ...Config
+  }
+}

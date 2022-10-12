@@ -3,6 +3,7 @@ import { Config } from "./models/config.model";
 import { ConfigService } from "./config.service";
 import { SettingsInput } from "./models/settingsInput.model";
 import { ModulePositionInput } from "./models/modulePositionInput.model";
+import { ModuleItemInput } from "./models/moduleItemInput.model";
 
 @Resolver(() => Config)
 export class ConfigResolver {
@@ -41,5 +42,14 @@ export class ConfigResolver {
     positions: ModulePositionInput[]
   ): Promise<Config> {
     return this.configService.updateModulePositions(configName, positions);
+  }
+
+  @Mutation(() => Config)
+  async addModuleItem(
+    @Args("configName") configName: string,
+    @Args("module", { type: () => ModuleItemInput })
+    module: ModuleItemInput
+  ): Promise<Config> {
+    return this.configService.addModule(configName, module);
   }
 }

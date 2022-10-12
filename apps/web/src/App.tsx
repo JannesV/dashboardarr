@@ -1,10 +1,11 @@
 import { ApolloProvider } from "@apollo/client";
-import { ChakraProvider, extendTheme } from "@chakra-ui/react";
-import React from "react";
+import { Center, ChakraProvider, extendTheme, Spinner } from "@chakra-ui/react";
+import React, { FunctionComponent, ReactNode } from "react";
 import { MainPage } from "./components/MainPage/MainPage";
 import { client } from "./utils/client";
 
 import {} from "@chakra-ui/theme-tools";
+import { useGetConfigQuery } from "@dashboardarr/graphql";
 const theme = extendTheme({
   styles: {
     global: () => ({
@@ -15,11 +16,32 @@ const theme = extendTheme({
   },
 });
 
+// TODO CLEANUP
+export const LoadWrapper: FunctionComponent<{ children: ReactNode }> = ({
+  children,
+}) => {
+  const { data: configData, loading } = useGetConfigQuery({
+    variables: { configName: "default" },
+  });
+
+  if (loading) {
+    return (
+      <Center h="100vh">
+        <Spinner size="xl" />
+      </Center>
+    );
+  }
+
+  return <>{children}</>;
+};
+
 export const App = () => {
   return (
     <ApolloProvider client={client}>
       <ChakraProvider theme={theme}>
-        <MainPage />
+        <LoadWrapper>
+          <MainPage />
+        </LoadWrapper>
       </ChakraProvider>
     </ApolloProvider>
   );

@@ -1,3 +1,4 @@
+import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import {
   Button,
   Drawer,
@@ -9,6 +10,7 @@ import {
   FormControl,
   FormHelperText,
   FormLabel,
+  IconButton,
   Tab,
   TabList,
   TabPanel,
@@ -22,13 +24,16 @@ import {
   GetConfigDocument,
   GetConfigQuery,
   GetConfigQueryVariables,
+  Service,
   SettingsInput,
+  useDeleteServiceMutation,
   useUpdateSettingsMutation,
 } from "@dashboardarr/graphql";
 import { Formik, FormikHelpers } from "formik";
 import { InputControl } from "formik-chakra-ui";
 import { useAtom } from "jotai";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useCallback } from "react";
+import { editServiceAtom } from "../../state/service";
 import { settingsOpenAtom } from "../../state/settings";
 import { useConfig } from "../../utils/useConfig";
 import { ColorModeSlider } from "../ColorModeSlider/ColorModeSlider";
@@ -39,6 +44,11 @@ interface SettingsDrawerProps {}
 export const SettingsDrawer: FunctionComponent<SettingsDrawerProps> = () => {
   const [isOpen, setIsOpen] = useAtom(settingsOpenAtom);
   const { name, settings } = useConfig();
+
+  const [, setEditServiceId] = useAtom(editServiceAtom);
+
+  const [deleteService, { loading: deleteLoading }] =
+    useDeleteServiceMutation();
 
   const [updateSettings, { loading }] = useUpdateSettingsMutation({
     update(cache, { data }) {
@@ -55,6 +65,43 @@ export const SettingsDrawer: FunctionComponent<SettingsDrawerProps> = () => {
       }
     },
   });
+
+  const serviceAddon = useCallback(
+    (service: Service) => (
+      <>
+        <IconButton
+          size="sm"
+          aria-label="Edit"
+          variant="ghost"
+          icon={<EditIcon />}
+          onClick={() => setEditServiceId(service.id)}
+        />
+        <IconButton
+          ml={2}
+          size="sm"
+          aria-label="Delete"
+          colorScheme="red"
+          variant="ghost"
+          icon={<DeleteIcon />}
+          isLoading={deleteLoading}
+          onClick={() =>
+            deleteService({
+              variables: { ids: [service.id] },
+              update(cache) {
+                const normalizedId = cache.identify({
+                  id: service.id,
+                  __typename: "Service",
+                });
+                cache.evict({ id: normalizedId });
+                cache.gc();
+              },
+            })
+          }
+        />
+      </>
+    ),
+    [deleteLoading, deleteService, setEditServiceId]
+  );
 
   const handleSubmit = (
     values: SettingsInput,
@@ -120,7 +167,7 @@ export const SettingsDrawer: FunctionComponent<SettingsDrawerProps> = () => {
                       </VStack>
                     </TabPanel>
                     <TabPanel>
-                      <ServicesList />
+                      <ServicesList addon={serviceAddon} />
                     </TabPanel>
                   </TabPanels>
                 </Tabs>

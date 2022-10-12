@@ -3,12 +3,7 @@ import { CalendarModule } from "src/calendar/models/calendarModule.model";
 import { UsenetModule } from "src/usenet/models/usenetModule.model";
 import { ButtonModule } from "./buttonModule.model";
 import { ModulePosition } from "./modulePosition.model";
-
-export enum ModuleType {
-  Button = "button",
-  Usenet = "usenet",
-  Calendar = "calendar",
-}
+import { ModuleType } from "@dashboardarr/common";
 
 @InterfaceType({
   resolveType(item: ModuleItem) {

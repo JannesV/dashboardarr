@@ -1,18 +1,15 @@
-import { Box, Center, Spinner } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import {
   createRef,
   FunctionComponent,
   useCallback,
   useEffect,
-  useMemo,
   useRef,
 } from "react";
 
 import { NavBar } from "../NavBar/NavBar";
 import {
   ModulePositionInput,
-  useGetConfigQuery,
-  useGetServicesQuery,
   useUpdateModulePositionsMutation,
 } from "@dashboardarr/graphql";
 import { useColorModeTracker } from "../../utils/useColorModeTracker";
@@ -26,6 +23,9 @@ import { GridStackItem } from "../GridStackItem/GridStackItem";
 import { ButtonItemModuleBlock } from "../../modules/ButtonItem/ButtonItemModuleBlock";
 import { UsernetModuleBlock } from "../../modules/Usenet/UsenetModuleBlock";
 import { CalendarModuleBlock } from "../../modules/Calendar/CalendarModuleBlock";
+import { AddModuleModal } from "../AddModuleModal/AddModuleModal";
+import { GRID_COLUMNS } from "@dashboardarr/common";
+import { useConfig } from "../../utils/useConfig";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface MainPageProps {}
@@ -33,51 +33,45 @@ interface MainPageProps {}
 export const MainPage: FunctionComponent<MainPageProps> = () => {
   const grid = useRef<GridStack>();
   const refs = useRef<any>({});
-  const { data } = useGetServicesQuery();
-  const { data: configData, loading } = useGetConfigQuery({
-    variables: { configName: "default" },
-  });
+  const { settings, modules } = useConfig();
   const [updateModulePositions] = useUpdateModulePositionsMutation();
 
-  useColorModeTracker(configData?.config.settings.colorMode);
+  useColorModeTracker(settings.colorMode);
 
-  const moduleItems = useMemo(
-    () => configData?.config.modules || [],
-    [configData?.config.modules]
-  );
-
-  if (Object.keys(refs.current).length !== data?.services.length) {
-    moduleItems.forEach(({ id }) => {
+  if (Object.keys(refs.current).length !== modules.length) {
+    modules.forEach(({ id }) => {
       refs.current[id] = refs.current[id] || createRef();
     });
   }
 
   const handleSave = useCallback(() => {
-    const gridData = grid.current?.save(false) as ModulePositionInput;
+    const gridData = grid.current?.save(false) as ModulePositionInput[];
 
     updateModulePositions({
       variables: {
         configName: "default",
-        positions: gridData,
+        positions: gridData.map((d) => ({
+          id: d.id,
+          x: d.x,
+          y: d.y,
+          h: d.h,
+          w: d.w,
+        })),
       },
     });
   }, [updateModulePositions]);
 
   useEffect(() => {
-    if (!data || loading) {
-      return;
-    }
-
     grid.current = GridStack.init({
       cellHeight: 100,
-      column: 6,
+      column: GRID_COLUMNS,
       margin: 10,
       float: true,
     });
 
     grid.current.removeAll(false);
-    moduleItems.forEach(({ id }) => {
-      grid.current!.makeWidget(refs.current[id].current);
+    modules.forEach(({ id }) => {
+      grid.current?.makeWidget(refs.current[id].current);
     });
 
     grid.current.on("change", handleSave);
@@ -85,25 +79,18 @@ export const MainPage: FunctionComponent<MainPageProps> = () => {
     return () => {
       grid.current!.off("change");
     };
-  }, [moduleItems, loading, data, handleSave]);
-
-  if (loading) {
-    return (
-      <Center h="100vh">
-        <Spinner size="xl" />
-      </Center>
-    );
-  }
+  }, [modules, handleSave]);
 
   return (
     <>
       <ServiceModal />
+      <AddModuleModal />
       <SettingsDrawer />
       <Box w="100%">
         <NavBar />
 
         <Box className="grid-stack">
-          {moduleItems.map((item, i) => {
+          {modules.map((item, i) => {
             let module = null;
 
             if (item.__typename === "ButtonModule") {

@@ -198,6 +198,7 @@ type Mutation {
   updateConfig(configName: String!, body: String!): Config!
   updateSettings(configName: String!, settings: SettingsInput!): Config!
   updateModulePositions(configName: String!, positions: [ModulePositionInput!]!): Config!
+  addModuleItem(configName: String!, module: ModuleItemInput!): Config!
   updateContainers(ids: [String!]!, action: DockerAction!): [DockerContainer!]!
   pauseUsenetQueue(serviceId: String!): UsenetInfo!
   resumeUsenetQueue(serviceId: String!): UsenetInfo!
@@ -219,6 +220,24 @@ input ModulePositionInput {
   y: Float!
   w: Float
   h: Float
+}
+
+input ModuleItemInput {
+  usenet: UsenetModuleInput
+  button: ButtonModuleInput
+  calendar: CalendarModuleInput
+}
+
+input UsenetModuleInput {
+  serviceId: String!
+}
+
+input ButtonModuleInput {
+  serviceId: String!
+}
+
+input CalendarModuleInput {
+  startOfWeek: CalendarWeekStart!
 }
 
 enum DockerAction {

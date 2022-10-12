@@ -11,6 +11,8 @@ import { Config } from "./models/config.model";
 import { ColorMode } from "./models/colorMode.enum";
 import { SettingsInput } from "./models/settingsInput.model";
 import { ModulePositionInput } from "./models/modulePositionInput.model";
+import { ModuleItemInput } from "./models/moduleItemInput.model";
+import { getModuleFromInput } from "src/utils/getModuleFromInput";
 
 const DATA_FOLDER = join(cwd(), "data");
 const CONFIGS_FOLDER = join(DATA_FOLDER, "configs");
@@ -179,6 +181,39 @@ export class ConfigService implements OnModuleInit {
           id: undefined,
         },
       })),
+    });
+  }
+
+  public async addModule(
+    configName: string,
+    input: ModuleItemInput
+  ): Promise<Config> {
+    const config = await this.getConfig(configName);
+
+    const { module, type, constraint } = getModuleFromInput(input);
+
+    // TODO Get position on first row with enough space
+    const maxY = config.modules.reduce(
+      (prev, { position }) => Math.max(prev, position.y + (position.h || 1)),
+      0
+    );
+
+    return await this.writeConfig(configName, {
+      ...config,
+      modules: [
+        ...config.modules,
+        {
+          id: v4(),
+          position: {
+            x: 0,
+            y: maxY,
+            h: constraint.minHeight,
+            w: constraint.minWidth,
+          },
+          type,
+          ...module,
+        },
+      ],
     });
   }
 }

@@ -20,12 +20,12 @@ import { AddIcon, HamburgerIcon, SettingsIcon } from "@chakra-ui/icons";
 import { SearchModal } from "../Search/SearchModal";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useAtom } from "jotai";
-import { createServiceAtom } from "../../state/service";
 import { settingsOpenAtom } from "../../state/settings";
 import { useConfig } from "../../utils/useConfig";
+import { createModuleItemAtom } from "../../state/module";
 
 export const NavBar = () => {
-  const [, setIsCreateService] = useAtom(createServiceAtom);
+  const [, setisCreateModuleItem] = useAtom(createModuleItemAtom);
   const [, setSettingsOpen] = useAtom(settingsOpenAtom);
 
   const {
@@ -95,7 +95,7 @@ export const NavBar = () => {
             <IconButton
               aria-label="Add a new service"
               icon={<AddIcon />}
-              onClick={() => setIsCreateService(true)}
+              onClick={() => setisCreateModuleItem(true)}
               variant="solid"
             />
             <IconButton

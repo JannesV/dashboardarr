@@ -1,60 +1,48 @@
-import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
-import { Flex, IconButton, Image, Text } from "@chakra-ui/react";
-import { Service, useDeleteServiceMutation } from "@dashboardarr/graphql";
-import { useAtom } from "jotai";
-import { FunctionComponent } from "react";
-import { editServiceAtom } from "../../../state/service";
+import { Box, Flex, Image, Text, useColorModeValue } from "@chakra-ui/react";
+import { Service } from "@dashboardarr/graphql";
+import { FunctionComponent, ReactNode } from "react";
 
 interface ServiceListItemProps {
   service: Service;
+  onClick?(item: Service): void;
+  addon?(item: Service): ReactNode;
 }
 
 export const ServiceListItem: FunctionComponent<ServiceListItemProps> = ({
   service,
+  onClick,
+  addon,
 }) => {
-  const [, setEditServiceId] = useAtom(editServiceAtom);
-
-  const [deleteService, { loading: deleteLoading }] = useDeleteServiceMutation({
-    update(cache) {
-      const normalizedId = cache.identify({
-        id: service.id,
-        __typename: "Service",
-      });
-      cache.evict({ id: normalizedId });
-      cache.gc();
+  const { borderColor } = useColorModeValue(
+    {
+      borderColor: "gray.300",
     },
-  });
+    { borderColor: "white.300" }
+  );
 
   return (
     <Flex
       borderWidth={1}
-      borderColor="gray.300"
+      borderColor={borderColor}
       borderRadius="md"
       w="full"
       p={2}
       key={service.id}
       alignItems="center"
+      cursor={onClick ? "pointer" : "default"}
+      _hover={
+        onClick
+          ? {
+              bgColor: "blue.200",
+            }
+          : undefined
+      }
+      transition=".2s"
+      onClick={() => onClick?.(service)}
     >
       <Image mr={3} boxSize={25} objectFit="contain" src={service.icon} />
       <Text noOfLines={1}>{service.name}</Text>
-      <IconButton
-        ml="auto"
-        size="sm"
-        aria-label="Edit"
-        variant="ghost"
-        icon={<EditIcon />}
-        onClick={() => setEditServiceId(service.id)}
-      />
-      <IconButton
-        ml={2}
-        size="sm"
-        aria-label="Delete"
-        colorScheme="red"
-        variant="ghost"
-        icon={<DeleteIcon />}
-        isLoading={deleteLoading}
-        onClick={() => deleteService({ variables: { ids: [service.id] } })}
-      />
+      {addon && <Box ml="auto">{addon(service)}</Box>}
     </Flex>
   );
 };

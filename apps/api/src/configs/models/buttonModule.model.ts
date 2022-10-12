@@ -1,6 +1,7 @@
+import { ModuleType } from "@dashboardarr/common";
 import { Field, ObjectType } from "@nestjs/graphql";
 import { Service } from "src/services/models/service.model";
-import { ModuleItem, ModuleType } from "./moduleItem.model";
+import { ModuleItem } from "./moduleItem.model";
 import { ModulePosition } from "./modulePosition.model";
 
 @ObjectType({
