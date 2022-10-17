@@ -35,10 +35,12 @@ import { humanFileSize } from "../../../utils/humanFileSize";
 
 interface UsenetHistoryProps {
   serviceId: string;
+  pageSize: number;
 }
 
 export const UsenetHistory: FunctionComponent<UsenetHistoryProps> = ({
   serviceId,
+  pageSize,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -51,8 +53,8 @@ export const UsenetHistory: FunctionComponent<UsenetHistoryProps> = ({
   } = useGetUsenetHistoryQuery({
     variables: {
       serviceId,
-      limit: 10,
-      offset: (currentPage - 1) * 10,
+      limit: pageSize,
+      offset: (currentPage - 1) * pageSize,
     },
   });
 
@@ -64,15 +66,23 @@ export const UsenetHistory: FunctionComponent<UsenetHistoryProps> = ({
   const {
     pages,
     setCurrentPage: setPaginationPage,
+    setPageSize,
     pagesCount,
+    pageSize: currentPageSize,
   } = usePagination({
-    initialState: { currentPage: 1, pageSize: 10 },
+    initialState: { currentPage: 1, pageSize },
     total: historyData?.usenetHistory.total || 0,
     limits: {
       inner: 2,
       outer: 2,
     },
   });
+
+  useEffect(() => {
+    if (currentPageSize !== pageSize) {
+      setPageSize(pageSize);
+    }
+  }, [currentPageSize, pageSize, setPageSize]);
 
   const handleChangePage = useCallback(
     (page: number) => {
@@ -90,7 +100,7 @@ export const UsenetHistory: FunctionComponent<UsenetHistoryProps> = ({
         alignItems="center"
         justifyContent="center"
         textAlign="center"
-        height="200px"
+        height="full"
       >
         <AlertIcon boxSize="40px" mr={0} />
         <AlertTitle mt={4} mb={1} fontSize="lg">
@@ -119,7 +129,7 @@ export const UsenetHistory: FunctionComponent<UsenetHistoryProps> = ({
         alignItems="center"
         justifyContent="center"
         textAlign="center"
-        height="200px"
+        height="full"
         background="blackAlpha.100"
       >
         <AlertIcon boxSize="40px" mr={0} />

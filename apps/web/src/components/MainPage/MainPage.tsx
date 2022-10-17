@@ -24,8 +24,10 @@ import { ButtonItemModuleBlock } from "../../modules/ButtonItem/ButtonItemModule
 import { UsernetModuleBlock } from "../../modules/Usenet/UsenetModuleBlock";
 import { CalendarModuleBlock } from "../../modules/Calendar/CalendarModuleBlock";
 import { AddModuleModal } from "../AddModuleModal/AddModuleModal";
-import { GRID_COLUMNS } from "@dashboardarr/common";
+import { GRID_COLUMNS, ModuleSizeContraints } from "@dashboardarr/common";
 import { useConfig } from "../../utils/useConfig";
+import { useAtomValue } from "jotai";
+import { editDashboardModulesAtom } from "../../state/module";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface MainPageProps {}
@@ -35,6 +37,7 @@ export const MainPage: FunctionComponent<MainPageProps> = () => {
   const refs = useRef<any>({});
   const { settings, modules } = useConfig();
   const [updateModulePositions] = useUpdateModulePositionsMutation();
+  const isEditting = useAtomValue(editDashboardModulesAtom);
 
   useColorModeTracker(settings.colorMode);
 
@@ -63,10 +66,12 @@ export const MainPage: FunctionComponent<MainPageProps> = () => {
 
   useEffect(() => {
     grid.current = GridStack.init({
-      cellHeight: 100,
+      cellHeight: 120,
       column: GRID_COLUMNS,
       margin: 10,
       float: true,
+      disableDrag: !isEditting,
+      disableResize: !isEditting,
     });
 
     grid.current.removeAll(false);
@@ -79,7 +84,15 @@ export const MainPage: FunctionComponent<MainPageProps> = () => {
     return () => {
       grid.current!.off("change");
     };
-  }, [modules, handleSave]);
+  }, [modules, handleSave, isEditting]);
+
+  useEffect(() => {
+    if (isEditting) {
+      grid.current?.enable();
+    } else {
+      grid.current?.disable();
+    }
+  }, [isEditting]);
 
   return (
     <>
@@ -92,13 +105,17 @@ export const MainPage: FunctionComponent<MainPageProps> = () => {
         <Box className="grid-stack">
           {modules.map((item, i) => {
             let module = null;
+            let constraints = {};
 
             if (item.__typename === "ButtonModule") {
               module = <ButtonItemModuleBlock item={item} />;
+              constraints = ModuleSizeContraints.button;
             } else if (item.__typename === "UsenetModule") {
               module = <UsernetModuleBlock serviceId={item.service.id} />;
+              constraints = ModuleSizeContraints.usenet;
             } else if (item.__typename === "CalendarModule") {
-              module = <CalendarModuleBlock />;
+              module = <CalendarModuleBlock weekStart={item.startOfWeek} />;
+              constraints = ModuleSizeContraints.calendar;
             }
             return (
               <GridStackItem
@@ -106,8 +123,7 @@ export const MainPage: FunctionComponent<MainPageProps> = () => {
                 id={item.id}
                 position={item.position}
                 ref={refs.current[item.id]}
-                minHeight={item.__typename === "CalendarModule" ? 2 : 0}
-                minWidth={item.__typename === "UsenetModule" ? 2 : 0}
+                {...constraints}
               >
                 {module}
               </GridStackItem>

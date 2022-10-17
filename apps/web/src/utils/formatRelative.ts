@@ -1,32 +1,48 @@
 import {
   differenceInMonths,
-  isToday,
   differenceInDays,
   differenceInYears,
+  differenceInMinutes,
+  differenceInHours,
 } from "date-fns";
 
 export const formatRelative = (date: Date) => {
-  if (isToday(date)) {
-    return "today";
-  } else if (differenceInMonths(new Date(), date) === 0) {
-    const diffDays = differenceInDays(new Date(), date);
+  const diffMinutes = differenceInMinutes(new Date(), date, {
+    roundingMethod: "round",
+  });
+  const diffHours = differenceInHours(new Date(), date, {
+    roundingMethod: "round",
+  });
+  const diffDays = differenceInDays(new Date(), date);
+  const diffMonths = differenceInMonths(new Date(), date);
+  const diffYears = differenceInYears(new Date(), date);
 
+  if (diffHours === 0) {
+    if (diffMinutes === 1) {
+      return "a minute ago";
+    }
+
+    return `${diffMinutes} minutes ago`;
+  }
+  if (diffDays === 0) {
+    if (diffMinutes === 1) {
+      return "an hour ago";
+    }
+
+    return `${diffHours} hours ago`;
+  } else if (diffMonths === 0) {
     if (diffDays === 1) {
       return "a day ago";
     }
 
     return `${diffDays} days ago`;
-  } else if (differenceInYears(new Date(), date) === 0) {
-    const diffMonths = differenceInMonths(new Date(), date);
-
+  } else if (diffYears === 0) {
     if (diffMonths === 1) {
       return "a month ago";
     }
 
     return `${diffMonths} months ago`;
   } else {
-    const diffYears = differenceInYears(new Date(), date);
-
     if (diffYears === 1) {
       return "a year ago";
     }

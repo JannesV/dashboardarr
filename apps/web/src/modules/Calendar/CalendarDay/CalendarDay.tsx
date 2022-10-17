@@ -51,7 +51,7 @@ export const CalendarDay: FunctionComponent<CalendarDayProps> = ({
   return (
     <Popover
       isOpen={hasItems ? undefined : false}
-      trigger="hover"
+      trigger="click"
       placement="bottom-end"
     >
       <PopoverTrigger>
@@ -70,7 +70,7 @@ export const CalendarDay: FunctionComponent<CalendarDayProps> = ({
           borderWidth={isToday(date) ? 1 : 0}
         >
           {getDate(date)}
-          <HStack spacing="2px" h="5px" justifyContent="center">
+          <HStack spacing="2px" h="5px" mb={1} justifyContent="center">
             {!!tvItems?.length && (
               <Box
                 w="5px"

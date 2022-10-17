@@ -1,6 +1,6 @@
-import { CalendarIcon } from "@chakra-ui/icons";
 import {
-  HStack,
+  Button,
+  Flex,
   Modal,
   ModalBody,
   ModalContent,
@@ -10,36 +10,41 @@ import {
 } from "@chakra-ui/react";
 import { ModuleType } from "@dashboardarr/common";
 import {
-  CalendarWeekStart,
   GetConfigDocument,
   GetConfigQuery,
   GetConfigQueryVariables,
-  Service,
-  ServiceType,
+  ModuleItemInput,
   useAddModuleItemMutation,
 } from "@dashboardarr/graphql";
 import { useAtom } from "jotai";
 import { FunctionComponent, useCallback, useState } from "react";
-import { GiButtonFinger } from "react-icons/gi";
-import { TbWorldDownload } from "react-icons/tb";
 import { createModuleItemAtom } from "../../state/module";
 import { useConfig } from "../../utils/useConfig";
-import { ServicesList } from "../SettingsDrawer/ServiceList/ServicesList";
-import { ModuleTypeButton } from "./ModuleTypeButton";
+
+import { Step, Steps, useSteps } from "chakra-ui-steps";
+import { ModuleTypeSelector } from "./ModuleTypeSelector";
+import { ButtonModuleStep } from "./ModuleSteps/ButtonModuleStep";
+import { CalendarModuleStep } from "./ModuleSteps/CalendarModuleStep";
+import { UsenetModuleStep } from "./ModuleSteps/UsenetModuleStep";
+import { hasRequiredFields } from "../../utils/requiredModuleFields";
 
 interface AddModuleModalProps {}
 
 export const AddModuleModal: FunctionComponent<AddModuleModalProps> = () => {
+  const { nextStep, prevStep, setStep, reset, activeStep } = useSteps({
+    initialStep: 0,
+  });
   const [isOpen, setIsOpen] = useAtom(createModuleItemAtom);
   const { name } = useConfig();
   const [moduleType, setModuleType] = useState<ModuleType>();
+  const [moduleItemInput, setModuleItemInput] = useState<ModuleItemInput>({});
 
   const handleClose = useCallback(() => {
     setIsOpen(false);
     setModuleType(undefined);
   }, [setIsOpen]);
 
-  const [addModule] = useAddModuleItemMutation({
+  const [addModule, { loading }] = useAddModuleItemMutation({
     update(cache, { data }) {
       if (data) {
         cache.updateQuery<GetConfigQuery, GetConfigQueryVariables>(
@@ -55,82 +60,73 @@ export const AddModuleModal: FunctionComponent<AddModuleModalProps> = () => {
     },
   });
 
-  const handleAddUsenetItem = useCallback(
-    async (service: Service) => {
-      await addModule({
-        variables: {
-          configName: name,
-          module: {
-            usenet: {
-              serviceId: service.id,
-            },
-          },
-        },
-      });
-
-      handleClose();
-    },
-    [addModule, name, handleClose]
-  );
-
-  const handleAddCalendar = useCallback(async () => {
+  const handleAddModule = useCallback(async () => {
     await addModule({
       variables: {
         configName: name,
-        module: {
-          calendar: {
-            startOfWeek: CalendarWeekStart.Monday,
-          },
-        },
+        module: moduleItemInput,
       },
     });
-
     handleClose();
-  }, [addModule, name, handleClose]);
+  }, [addModule, handleClose, moduleItemInput, name]);
 
-  const TypeSelector = () => {
-    if (moduleType) {
-      return null;
-    }
-
-    return (
-      <HStack>
-        <ModuleTypeButton
-          icon={GiButtonFinger}
-          label="Button"
-          onClick={() => setModuleType(ModuleType.Button)}
-        />
-        <ModuleTypeButton
-          icon={TbWorldDownload}
-          label="Usenet"
-          onClick={() => setModuleType(ModuleType.Usenet)}
-        />
-        <ModuleTypeButton
-          icon={CalendarIcon}
-          label="Calendar"
-          onClick={handleAddCalendar}
-        />
-      </HStack>
-    );
+  const handleUpdateModuleInput = <K extends keyof ModuleItemInput>(
+    type: K
+  ) => {
+    return (val: Partial<ModuleItemInput[K]>) => {
+      setModuleItemInput({
+        [type]: { ...(moduleItemInput[type] || {}), ...val },
+      });
+    };
   };
 
-  const handleAddButtonItem = useCallback(
-    async (service: Service) => {
-      await addModule({
-        variables: {
-          configName: name,
-          module: {
-            button: {
-              serviceId: service.id,
-            },
-          },
-        },
-      });
-
-      handleClose();
+  const handleButtonClick = useCallback(
+    (type: ModuleType) => {
+      setModuleType(type);
+      nextStep();
     },
-    [addModule, name, handleClose]
+    [nextStep]
   );
+
+  const steps = [
+    {
+      label: "Step 1",
+      description: "Choose your module type",
+      content: () => <ModuleTypeSelector onButtonClick={handleButtonClick} />,
+    },
+    {
+      label: "Step 2",
+      description: "Customize your module",
+      content: () => {
+        switch (moduleType) {
+          case ModuleType.Button:
+            return (
+              <ButtonModuleStep
+                onChange={handleUpdateModuleInput("button")}
+                module={moduleItemInput.button || {}}
+              />
+            );
+          case ModuleType.Calendar:
+            return (
+              <CalendarModuleStep
+                onChange={handleUpdateModuleInput("calendar")}
+                module={moduleItemInput.calendar || {}}
+              />
+            );
+          case ModuleType.Usenet:
+            return (
+              <UsenetModuleStep
+                onChange={handleUpdateModuleInput("usenet")}
+                module={moduleItemInput.usenet || {}}
+              />
+            );
+
+          default:
+            return null;
+        }
+      },
+    },
+  ];
 
   return (
     <Modal size="lg" isOpen={isOpen} onClose={handleClose}>
@@ -138,18 +134,38 @@ export const AddModuleModal: FunctionComponent<AddModuleModalProps> = () => {
       <ModalContent>
         <ModalHeader>Add a new module to your Dahsboard</ModalHeader>
         <ModalBody>
-          {moduleType === ModuleType.Button && (
-            <ServicesList onItemClick={handleAddButtonItem} />
-          )}
-          {moduleType === ModuleType.Usenet && (
-            <ServicesList
-              onItemClick={handleAddUsenetItem}
-              filterByType={ServiceType.Sabnzbd}
-            />
-          )}
-          <TypeSelector />
+          <Flex flexDir="column" width="100%">
+            <Steps size="sm" mb={6} activeStep={activeStep} colorScheme="blue">
+              {steps.map(({ label, content, description }) => (
+                <Step label={label} description={description} key={label}>
+                  {content()}
+                </Step>
+              ))}
+            </Steps>
+          </Flex>
         </ModalBody>
-        <ModalFooter></ModalFooter>
+        <ModalFooter>
+          <Flex width="100%" justify="flex-end">
+            {activeStep > 0 && (
+              <Button mr={4} onClick={prevStep} size="sm" variant="ghost">
+                Previous
+              </Button>
+            )}
+            {activeStep === steps.length - 1 && (
+              <Button
+                disabled={
+                  !moduleType || !hasRequiredFields(moduleItemInput, moduleType)
+                }
+                size="sm"
+                colorScheme={"blue"}
+                isLoading={loading}
+                onClick={handleAddModule}
+              >
+                Finish
+              </Button>
+            )}
+          </Flex>
+        </ModalFooter>
       </ModalContent>
     </Modal>
   );

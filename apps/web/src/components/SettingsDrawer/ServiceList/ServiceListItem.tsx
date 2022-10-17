@@ -6,12 +6,14 @@ interface ServiceListItemProps {
   service: Service;
   onClick?(item: Service): void;
   addon?(item: Service): ReactNode;
+  selected?: boolean;
 }
 
 export const ServiceListItem: FunctionComponent<ServiceListItemProps> = ({
   service,
   onClick,
   addon,
+  selected,
 }) => {
   const { borderColor } = useColorModeValue(
     {
@@ -23,17 +25,18 @@ export const ServiceListItem: FunctionComponent<ServiceListItemProps> = ({
   return (
     <Flex
       borderWidth={1}
-      borderColor={borderColor}
+      borderColor={selected ? "blue.300" : borderColor}
       borderRadius="md"
       w="full"
       p={2}
       key={service.id}
       alignItems="center"
       cursor={onClick ? "pointer" : "default"}
+      bgColor={selected ? "blue.100" : undefined}
       _hover={
         onClick
           ? {
-              bgColor: "blue.200",
+              bgColor: selected ? "blue100" : "blue.50",
             }
           : undefined
       }

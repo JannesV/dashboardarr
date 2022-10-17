@@ -11,12 +11,14 @@ interface ServicesListProps {
   onItemClick?(item: Service): void;
   addon?(item: Service): ReactNode;
   filterByType?: ServiceType;
+  selectedItemId?: string;
 }
 
 export const ServicesList: FunctionComponent<ServicesListProps> = ({
   addon,
   onItemClick,
   filterByType,
+  selectedItemId,
 }) => {
   const { data } = useGetServicesQuery();
 
@@ -32,6 +34,7 @@ export const ServicesList: FunctionComponent<ServicesListProps> = ({
           service={service}
           addon={addon}
           onClick={onItemClick}
+          selected={service.id === selectedItemId}
         />
       ))}
     </VStack>

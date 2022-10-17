@@ -15,18 +15,26 @@ import {
   InputRightElement,
   Kbd,
   useBoolean,
+  Tooltip,
+  Icon,
 } from "@chakra-ui/react";
-import { AddIcon, HamburgerIcon, SettingsIcon } from "@chakra-ui/icons";
+import { HamburgerIcon, SettingsIcon } from "@chakra-ui/icons";
 import { SearchModal } from "../Search/SearchModal";
 import { useHotkeys } from "react-hotkeys-hook";
-import { useAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { settingsOpenAtom } from "../../state/settings";
 import { useConfig } from "../../utils/useConfig";
-import { createModuleItemAtom } from "../../state/module";
+import {
+  createModuleItemAtom,
+  editDashboardModulesAtom,
+} from "../../state/module";
+import { MdDashboardCustomize } from "react-icons/md";
+import { DashboardEditToggle } from "./DashboardEditToggle";
 
 export const NavBar = () => {
-  const [, setisCreateModuleItem] = useAtom(createModuleItemAtom);
-  const [, setSettingsOpen] = useAtom(settingsOpenAtom);
+  const isEditting = useAtomValue(editDashboardModulesAtom);
+  const setisCreateModuleItem = useSetAtom(createModuleItemAtom);
+  const setSettingsOpen = useSetAtom(settingsOpenAtom);
 
   const {
     settings: { title },
@@ -74,82 +82,83 @@ export const NavBar = () => {
               {title || "Dashboardarr"}
             </Text>
           </Flex>
-          <HStack display="flex" alignItems="center" spacing={1}>
-            <HStack
-              spacing={1}
-              mr={1}
-              color="brand.500"
-              display={{
-                base: "none",
-                md: "inline-flex",
-              }}
-            >
+          {isEditting ? (
+            <DashboardEditToggle />
+          ) : (
+            <HStack display="flex" alignItems="center" spacing={1}>
               <InputGroup variant="filled">
-                <Input onClick={setSearchModalOpen.on} placeholder="Search" />
+                <Input
+                  onClick={setSearchModalOpen.on}
+                  w={72}
+                  placeholder="Search"
+                />
                 <InputRightElement pr={6}>
                   <Kbd>⌘</Kbd>&nbsp;
                   <Kbd>K</Kbd>
                 </InputRightElement>
               </InputGroup>
-            </HStack>
-            <IconButton
-              aria-label="Add a new service"
-              icon={<AddIcon />}
-              onClick={() => setisCreateModuleItem(true)}
-              variant="solid"
-            />
-            <IconButton
-              aria-label="Open the settings drawer"
-              icon={<SettingsIcon />}
-              onClick={() => setSettingsOpen(true)}
-              variant="solid"
-            />
-
-            <Box
-              display={{
-                base: "inline-flex",
-                md: "none",
-              }}
-            >
+              <DashboardEditToggle />
+              <Tooltip hasArrow placement="bottom-end" label="Add a new module">
+                <IconButton
+                  aria-label="Add a new module"
+                  icon={<Icon fontSize={20} as={MdDashboardCustomize} />}
+                  onClick={() => setisCreateModuleItem(true)}
+                  variant="solid"
+                />
+              </Tooltip>
               <IconButton
-                display={{
-                  base: "flex",
-                  md: "none",
-                }}
-                aria-label="Open menu"
-                fontSize="20px"
-                color="gray.800"
-                _dark={{
-                  color: "inherit",
-                }}
-                variant="ghost"
-                onClick={mobileNav.onOpen}
-                icon={<HamburgerIcon />}
+                aria-label="Open the settings drawer"
+                icon={<SettingsIcon />}
+                onClick={() => setSettingsOpen(true)}
+                variant="solid"
               />
 
-              <VStack
-                pos="absolute"
-                top={0}
-                left={0}
-                right={0}
-                display={mobileNav.isOpen ? "flex" : "none"}
-                flexDirection="column"
-                p={2}
-                pb={4}
-                m={2}
-                bg={border}
-                spacing={3}
-                rounded="sm"
-                shadow="sm"
+              <Box
+                display={{
+                  base: "inline-flex",
+                  md: "none",
+                }}
               >
-                <CloseButton
-                  aria-label="Close menu"
-                  onClick={mobileNav.onClose}
+                <IconButton
+                  display={{
+                    base: "flex",
+                    md: "none",
+                  }}
+                  aria-label="Open menu"
+                  fontSize="20px"
+                  color="gray.800"
+                  _dark={{
+                    color: "inherit",
+                  }}
+                  variant="ghost"
+                  onClick={mobileNav.onOpen}
+                  icon={<HamburgerIcon />}
                 />
-                {/* ITEMS GO HERE */}
-              </VStack>
-            </Box>
-          </HStack>
+
+                <VStack
+                  pos="absolute"
+                  top={0}
+                  left={0}
+                  right={0}
+                  display={mobileNav.isOpen ? "flex" : "none"}
+                  flexDirection="column"
+                  p={2}
+                  pb={4}
+                  m={2}
+                  bg={border}
+                  spacing={3}
+                  rounded="sm"
+                  shadow="sm"
+                >
+                  <CloseButton
+                    aria-label="Close menu"
+                    onClick={mobileNav.onClose}
+                  />
+                  {/* ITEMS GO HERE */}
+                </VStack>
+              </Box>
+            </HStack>
+          )}
         </Flex>
       </chakra.header>
     </React.Fragment>

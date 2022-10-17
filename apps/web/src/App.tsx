@@ -3,6 +3,7 @@ import { Center, ChakraProvider, extendTheme, Spinner } from "@chakra-ui/react";
 import React, { FunctionComponent, ReactNode } from "react";
 import { MainPage } from "./components/MainPage/MainPage";
 import { client } from "./utils/client";
+import { StepsStyleConfig as Steps } from "chakra-ui-steps";
 
 import {} from "@chakra-ui/theme-tools";
 import { useGetConfigQuery } from "@dashboardarr/graphql";
@@ -13,6 +14,9 @@ const theme = extendTheme({
         borderRadius: 10,
       },
     }),
+  },
+  components: {
+    Steps,
   },
 });
 

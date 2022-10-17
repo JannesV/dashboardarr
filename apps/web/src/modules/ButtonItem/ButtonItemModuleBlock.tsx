@@ -18,6 +18,8 @@ export const ButtonItemModuleBlock: FunctionComponent<
       data-id={service.id}
       h="full"
       w="full"
+      onClick={() => window.open(service.externalUrl || service.url, "_blank")}
+      cursor="pointer"
     >
       {/* <Text fontWeight={"bold"} noOfLines={1} textAlign="center" mb={4}>
         {service.name}

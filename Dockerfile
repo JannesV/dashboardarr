@@ -6,6 +6,7 @@ ENV NODE_ENV production
 COPY ./package*.json ./
 COPY ./apps/api ./apps/api
 COPY ./apps/web/build ./web
+COPY ./packages ./packages
 
 RUN npm ci --only=production
 

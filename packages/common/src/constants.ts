@@ -15,7 +15,7 @@ export const ModuleSizeContraints: Record<ModuleType, SizeConstraint> = {
   },
   calendar: {
     minHeight: 3,
-    minWidth: 2,
+    minWidth: 1,
   },
   usenet: {
     minHeight: 2,

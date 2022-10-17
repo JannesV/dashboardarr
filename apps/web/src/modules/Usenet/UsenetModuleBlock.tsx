@@ -23,6 +23,7 @@ import { humanFileSize } from "../../utils/humanFileSize";
 import { UsenetDownloads } from "./UsenetDownloads/UsenetDownloads";
 import { UsenetHistory } from "./UsenetHistory/UsenetHistory";
 import { MdPause, MdPlayArrow } from "react-icons/md";
+import { useResizeDetector } from "react-resize-detector";
 
 interface UsernetModuleBlockProps {
   serviceId: string;
@@ -32,6 +33,14 @@ export const UsernetModuleBlock: FunctionComponent<UsernetModuleBlockProps> = ({
   serviceId,
 }) => {
   const [tabIndex, setTabIndex] = useState(0);
+
+  const { ref, height } = useResizeDetector({
+    handleWidth: false,
+    refreshMode: "debounce",
+    refreshRate: 200,
+  });
+
+  const pageSize = Math.floor(((height || 200) - 90) / 33);
 
   const handleTabsChange = (index: number) => {
     setTabIndex(index);
@@ -100,6 +109,7 @@ export const UsernetModuleBlock: FunctionComponent<UsernetModuleBlockProps> = ({
       justifyContent="center"
       index={tabIndex}
       onChange={handleTabsChange}
+      h="full"
     >
       <TabList>
         <Tab>Queue</Tab>
@@ -136,15 +146,16 @@ export const UsernetModuleBlock: FunctionComponent<UsernetModuleBlockProps> = ({
         </HStack>
       </TabList>
 
-      <TabPanels>
-        <TabPanel p={0} pt={5}>
+      <TabPanels h="calc(100% - 42px)" ref={ref}>
+        <TabPanel h="full" p={0} pt={5}>
           <UsenetDownloads
+            pageSize={pageSize}
             paused={usenetInfoData?.usenetInfo.paused ?? true}
             serviceId={serviceId}
           />
         </TabPanel>
-        <TabPanel p={0} pt={5}>
-          <UsenetHistory serviceId={serviceId} />
+        <TabPanel h="full" p={0} pt={5}>
+          <UsenetHistory serviceId={serviceId} pageSize={pageSize} />
         </TabPanel>
       </TabPanels>
     </Tabs>
