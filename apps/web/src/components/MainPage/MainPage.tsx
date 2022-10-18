@@ -2,6 +2,7 @@ import { Box } from "@chakra-ui/react";
 import {
   createRef,
   FunctionComponent,
+  ReactNode,
   useCallback,
   useEffect,
   useRef,
@@ -24,12 +25,15 @@ import { ButtonItemModuleBlock } from "../../modules/ButtonItem/ButtonItemModule
 import { UsernetModuleBlock } from "../../modules/Usenet/UsenetModuleBlock";
 import { CalendarModuleBlock } from "../../modules/Calendar/CalendarModuleBlock";
 import { AddModuleModal } from "../AddModuleModal/AddModuleModal";
-import { GRID_COLUMNS, ModuleSizeContraints } from "@dashboardarr/common";
+import {
+  GRID_COLUMNS,
+  ModuleSizeContraints,
+  SizeConstraint,
+} from "@dashboardarr/common";
 import { useConfig } from "../../utils/useConfig";
 import { useAtomValue } from "jotai";
 import { editDashboardModulesAtom } from "../../state/module";
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface MainPageProps {}
 
 export const MainPage: FunctionComponent<MainPageProps> = () => {
@@ -104,24 +108,31 @@ export const MainPage: FunctionComponent<MainPageProps> = () => {
 
         <Box className="grid-stack">
           {modules.map((item, i) => {
-            let module = null;
-            let constraints = {};
+            let module: ReactNode = null;
+            let constraints: Partial<SizeConstraint> = {};
 
-            if (item.__typename === "ButtonModule") {
-              module = <ButtonItemModuleBlock item={item} />;
-              constraints = ModuleSizeContraints.button;
-            } else if (item.__typename === "UsenetModule") {
-              module = <UsernetModuleBlock serviceId={item.service.id} />;
-              constraints = ModuleSizeContraints.usenet;
-            } else if (item.__typename === "CalendarModule") {
-              module = <CalendarModuleBlock weekStart={item.startOfWeek} />;
-              constraints = ModuleSizeContraints.calendar;
+            switch (item.__typename) {
+              case "ButtonModule":
+                module = <ButtonItemModuleBlock item={item} />;
+                constraints = ModuleSizeContraints.button;
+                break;
+
+              case "CalendarModule":
+                module = <CalendarModuleBlock weekStart={item.startOfWeek} />;
+                constraints = ModuleSizeContraints.calendar;
+                break;
+
+              case "UsenetModule":
+                module = <UsernetModuleBlock serviceId={item.service.id} />;
+                constraints = ModuleSizeContraints.usenet;
+                break;
             }
+
             return (
               <GridStackItem
                 key={item.id}
                 id={item.id}
-                position={item.position}
+                modulePosition={item.position}
                 ref={refs.current[item.id]}
                 {...constraints}
               >

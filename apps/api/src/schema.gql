@@ -199,6 +199,7 @@ type Mutation {
   updateSettings(configName: String!, settings: SettingsInput!): Config!
   updateModulePositions(configName: String!, positions: [ModulePositionInput!]!): Config!
   addModuleItem(configName: String!, module: ModuleItemInput!): Config!
+  deleteModuleItem(configName: String!, moduleId: String!): Config!
   updateContainers(ids: [String!]!, action: DockerAction!): [DockerContainer!]!
   pauseUsenetQueue(serviceId: String!): UsenetInfo!
   resumeUsenetQueue(serviceId: String!): UsenetInfo!

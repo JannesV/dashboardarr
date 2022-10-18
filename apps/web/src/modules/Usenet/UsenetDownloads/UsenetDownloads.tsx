@@ -24,7 +24,7 @@ import { humanFileSize } from "../../../utils/humanFileSize";
 interface UsenetDownloadsProps {
   serviceId: string;
   paused: boolean;
-  pageSize: number;
+  pageSize: number | null;
 }
 
 export const UsenetDownloads: FunctionComponent<UsenetDownloadsProps> = ({
@@ -41,7 +41,7 @@ export const UsenetDownloads: FunctionComponent<UsenetDownloadsProps> = ({
   } = useGetUsenetQueueQuery({
     variables: {
       serviceId,
-      limit: pageSize,
+      limit: pageSize!,
       offset: 0,
     },
   });

@@ -1,0 +1,5 @@
+mutation deleteModuleItem($configName: String!, $moduleId: String!) {
+  deleteModuleItem(configName: $configName, moduleId: $moduleId) {
+    ...Config
+  }
+}

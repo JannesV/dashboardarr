@@ -21,6 +21,7 @@ import {
 } from "date-fns";
 import { endOfWeek } from "date-fns/esm";
 import { FunctionComponent, useState } from "react";
+import { ModuleBox } from "../../components/ModuleBox/ModuleBox";
 import { CalendarDay } from "./CalendarDay/CalendarDay";
 
 interface CalendarModuleBlockProps {
@@ -50,7 +51,7 @@ export const CalendarModuleBlock: FunctionComponent<
   });
 
   return (
-    <>
+    <ModuleBox>
       <Flex justifyContent="center" mb={4}>
         <Button
           variant="ghost"
@@ -103,6 +104,6 @@ export const CalendarModuleBlock: FunctionComponent<
           </AlertDescription>
         </Alert>
       )}
-    </>
+    </ModuleBox>
   );
 };

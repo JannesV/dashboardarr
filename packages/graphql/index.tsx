@@ -134,6 +134,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   addModuleItem: Config;
   createService: Service;
+  deleteModuleItem: Config;
   deleteService: Scalars['Boolean'];
   pauseUsenetQueue: UsenetInfo;
   resumeUsenetQueue: UsenetInfo;
@@ -153,6 +154,12 @@ export type MutationAddModuleItemArgs = {
 
 export type MutationCreateServiceArgs = {
   service: ServiceInput;
+};
+
+
+export type MutationDeleteModuleItemArgs = {
+  configName: Scalars['String'];
+  moduleId: Scalars['String'];
 };
 
 
@@ -394,6 +401,14 @@ export type CreateServiceMutationVariables = Exact<{
 
 
 export type CreateServiceMutation = { __typename?: 'Mutation', createService: { __typename?: 'Service', name: string, id: string, type: ServiceType, icon: string, url: string, externalUrl?: string | null, apiKey?: string | null } };
+
+export type DeleteModuleItemMutationVariables = Exact<{
+  configName: Scalars['String'];
+  moduleId: Scalars['String'];
+}>;
+
+
+export type DeleteModuleItemMutation = { __typename?: 'Mutation', deleteModuleItem: { __typename?: 'Config', name: string, settings: { __typename?: 'Settings', title?: string | null, logo?: string | null, favicon?: string | null, colorMode: ColorMode }, modules: Array<{ __typename?: 'ButtonModule', id: string, service: { __typename?: 'Service', name: string, id: string, type: ServiceType, icon: string, url: string, externalUrl?: string | null }, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'CalendarModule', startOfWeek: CalendarWeekStart, id: string, services: Array<{ __typename?: 'Service', id: string }>, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'UsenetModule', id: string, service: { __typename?: 'Service', id: string }, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } }> } };
 
 export type DeleteServiceMutationVariables = Exact<{
   ids: Array<Scalars['String']> | Scalars['String'];
@@ -650,6 +665,40 @@ export function useCreateServiceMutation(baseOptions?: Apollo.MutationHookOption
 export type CreateServiceMutationHookResult = ReturnType<typeof useCreateServiceMutation>;
 export type CreateServiceMutationResult = Apollo.MutationResult<CreateServiceMutation>;
 export type CreateServiceMutationOptions = Apollo.BaseMutationOptions<CreateServiceMutation, CreateServiceMutationVariables>;
+export const DeleteModuleItemDocument = gql`
+    mutation deleteModuleItem($configName: String!, $moduleId: String!) {
+  deleteModuleItem(configName: $configName, moduleId: $moduleId) {
+    ...Config
+  }
+}
+    ${ConfigFragmentDoc}`;
+export type DeleteModuleItemMutationFn = Apollo.MutationFunction<DeleteModuleItemMutation, DeleteModuleItemMutationVariables>;
+
+/**
+ * __useDeleteModuleItemMutation__
+ *
+ * To run a mutation, you first call `useDeleteModuleItemMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteModuleItemMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteModuleItemMutation, { data, loading, error }] = useDeleteModuleItemMutation({
+ *   variables: {
+ *      configName: // value for 'configName'
+ *      moduleId: // value for 'moduleId'
+ *   },
+ * });
+ */
+export function useDeleteModuleItemMutation(baseOptions?: Apollo.MutationHookOptions<DeleteModuleItemMutation, DeleteModuleItemMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteModuleItemMutation, DeleteModuleItemMutationVariables>(DeleteModuleItemDocument, options);
+      }
+export type DeleteModuleItemMutationHookResult = ReturnType<typeof useDeleteModuleItemMutation>;
+export type DeleteModuleItemMutationResult = Apollo.MutationResult<DeleteModuleItemMutation>;
+export type DeleteModuleItemMutationOptions = Apollo.BaseMutationOptions<DeleteModuleItemMutation, DeleteModuleItemMutationVariables>;
 export const DeleteServiceDocument = gql`
     mutation deleteService($ids: [String!]!) {
   deleteService(ids: $ids)

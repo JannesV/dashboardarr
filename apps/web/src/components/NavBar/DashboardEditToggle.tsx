@@ -1,7 +1,7 @@
 import { Badge, HStack, Icon, IconButton, Tooltip } from "@chakra-ui/react";
 import { FunctionComponent } from "react";
 import { VscEditorLayout } from "react-icons/vsc";
-import { MdClose, MdDone } from "react-icons/md";
+import { MdDone } from "react-icons/md";
 import { useAtom } from "jotai";
 import { editDashboardModulesAtom } from "../../state/module";
 
@@ -35,12 +35,6 @@ export const DashboardEditToggle: FunctionComponent<
         onClick={() => setIsEditting(false)}
         icon={<Icon as={MdDone} />}
         colorScheme="green"
-      />
-      <IconButton
-        aria-label="Cancel"
-        onClick={() => setIsEditting(false)}
-        icon={<Icon as={MdClose} />}
-        colorScheme="red"
       />
     </HStack>
   );

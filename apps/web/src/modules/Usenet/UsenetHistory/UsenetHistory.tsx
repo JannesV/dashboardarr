@@ -35,7 +35,7 @@ import { humanFileSize } from "../../../utils/humanFileSize";
 
 interface UsenetHistoryProps {
   serviceId: string;
-  pageSize: number;
+  pageSize: number | null;
 }
 
 export const UsenetHistory: FunctionComponent<UsenetHistoryProps> = ({
@@ -53,9 +53,10 @@ export const UsenetHistory: FunctionComponent<UsenetHistoryProps> = ({
   } = useGetUsenetHistoryQuery({
     variables: {
       serviceId,
-      limit: pageSize,
-      offset: (currentPage - 1) * pageSize,
+      limit: pageSize!,
+      offset: (currentPage - 1) * pageSize!,
     },
+    skip: !pageSize,
   });
 
   useEffect(() => {
@@ -70,7 +71,7 @@ export const UsenetHistory: FunctionComponent<UsenetHistoryProps> = ({
     pagesCount,
     pageSize: currentPageSize,
   } = usePagination({
-    initialState: { currentPage: 1, pageSize },
+    initialState: { currentPage: 1, pageSize: 1 },
     total: historyData?.usenetHistory.total || 0,
     limits: {
       inner: 2,
@@ -79,7 +80,7 @@ export const UsenetHistory: FunctionComponent<UsenetHistoryProps> = ({
   });
 
   useEffect(() => {
-    if (currentPageSize !== pageSize) {
+    if (pageSize && currentPageSize !== pageSize) {
       setPageSize(pageSize);
     }
   }, [currentPageSize, pageSize, setPageSize]);
@@ -113,7 +114,7 @@ export const UsenetHistory: FunctionComponent<UsenetHistoryProps> = ({
     );
   }
 
-  if (loading) {
+  if (loading || !historyData) {
     return (
       <Center height={32}>
         <Spinner size="xl" />

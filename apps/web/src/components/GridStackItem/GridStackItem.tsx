@@ -1,31 +1,88 @@
-import { Box } from "@chakra-ui/react";
-import { ModulePosition } from "@dashboardarr/graphql";
-import { forwardRef, ReactNode } from "react";
-import { ModuleBox } from "../ModuleBox/ModuleBox";
+import { Box, BoxProps, Icon } from "@chakra-ui/react";
+import {
+  GetConfigDocument,
+  GetConfigQuery,
+  GetConfigQueryVariables,
+  ModulePosition,
+  useDeleteModuleItemMutation,
+} from "@dashboardarr/graphql";
+import { useAtomValue } from "jotai";
+import { forwardRef } from "react";
+import { MdClose } from "react-icons/md";
+import { editDashboardModulesAtom } from "../../state/module";
+import { useConfig } from "../../utils/useConfig";
 
-interface GridStackItemProps {
-  position: ModulePosition;
-  minHeight?: number;
-  minWidth?: number;
+interface GridStackItemProps extends BoxProps {
+  modulePosition: ModulePosition;
+  minModuleHeight?: number;
+  minModuleWidth?: number;
   id: string;
-  children: ReactNode;
 }
 
 export const GridStackItem = forwardRef<HTMLDivElement, GridStackItemProps>(
-  ({ position, id, minHeight, minWidth, children }, ref) => {
+  (
+    { modulePosition, id, minModuleHeight, minModuleWidth, children, ...rest },
+    ref
+  ) => {
+    const { name } = useConfig();
+
+    const [deleteModule] = useDeleteModuleItemMutation({
+      variables: {
+        configName: name,
+        moduleId: id,
+      },
+      update(cache, { data }) {
+        if (data) {
+          cache.updateQuery<GetConfigQuery, GetConfigQueryVariables>(
+            {
+              query: GetConfigDocument,
+              variables: { configName: name },
+            },
+            () => ({
+              config: data.deleteModuleItem,
+            })
+          );
+        }
+      },
+    });
+
+    const isEditMode = useAtomValue(editDashboardModulesAtom);
     return (
       <Box
         ref={ref}
         className="grid-stack-item"
         gs-id={id}
-        gs-x={position.x}
-        gs-y={position.y}
-        gs-w={position.w}
-        gs-h={position.h}
-        gs-min-h={minHeight}
-        gs-min-w={minWidth}
+        gs-x={modulePosition.x}
+        gs-y={modulePosition.y}
+        gs-w={modulePosition.w}
+        gs-h={modulePosition.h}
+        gs-min-h={minModuleHeight}
+        gs-min-w={minModuleWidth}
+        pos="relative"
       >
-        <ModuleBox className="grid-stack-item-content">{children}</ModuleBox>
+        {isEditMode && (
+          <Icon
+            background="red.400"
+            color="white"
+            borderRadius="full"
+            position="absolute"
+            top={1}
+            right={1}
+            zIndex={4}
+            w={5}
+            h={5}
+            cursor="pointer"
+            _hover={{
+              bgColor: "red.600",
+              shadow: "md",
+            }}
+            onClick={() => deleteModule()}
+            shadow="base"
+            as={MdClose}
+          />
+        )}
+
+        {children}
       </Box>
     );
   }

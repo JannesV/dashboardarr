@@ -52,4 +52,13 @@ export class ConfigResolver {
   ): Promise<Config> {
     return this.configService.addModule(configName, module);
   }
+
+  @Mutation(() => Config)
+  async deleteModuleItem(
+    @Args("configName") configName: string,
+    @Args("moduleId")
+    moduleId: string
+  ): Promise<Config> {
+    return this.configService.deleteModule(configName, moduleId);
+  }
 }

@@ -4,17 +4,21 @@ import React, { FunctionComponent, ReactNode } from "react";
 import { MainPage } from "./components/MainPage/MainPage";
 import { client } from "./utils/client";
 import { StepsStyleConfig as Steps } from "chakra-ui-steps";
-
+import { mode } from "@chakra-ui/theme-tools";
 import {} from "@chakra-ui/theme-tools";
 import { useGetConfigQuery } from "@dashboardarr/graphql";
 const theme = extendTheme({
   styles: {
-    global: () => ({
+    global: (props: any) => ({
       ".grid-stack-placeholder .placeholder-content": {
         borderRadius: 10,
       },
+      body: {
+        bg: mode("white", "gray.900")(props),
+      },
     }),
   },
+
   components: {
     Steps,
   },

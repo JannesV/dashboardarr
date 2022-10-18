@@ -42,7 +42,9 @@ export const AddModuleModal: FunctionComponent<AddModuleModalProps> = () => {
   const handleClose = useCallback(() => {
     setIsOpen(false);
     setModuleType(undefined);
-  }, [setIsOpen]);
+    setStep(0);
+    setModuleItemInput({});
+  }, [setIsOpen, setStep]);
 
   const [addModule, { loading }] = useAddModuleItemMutation({
     update(cache, { data }) {

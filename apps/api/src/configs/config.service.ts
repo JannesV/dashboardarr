@@ -216,4 +216,16 @@ export class ConfigService implements OnModuleInit {
       ],
     });
   }
+
+  public async deleteModule(
+    configName: string,
+    moduleId: string
+  ): Promise<Config> {
+    const config = await this.getConfig(configName);
+
+    return await this.writeConfig(configName, {
+      ...config,
+      modules: config.modules.filter((m) => m.id !== moduleId),
+    });
+  }
 }

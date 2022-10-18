@@ -3,15 +3,16 @@ import { forwardRef, PropsWithChildren } from "react";
 
 interface ModuleBoxProps extends PropsWithChildren, BoxProps {}
 
-export const ModuleBox = forwardRef<any, ModuleBoxProps>(
+export const ModuleBox = forwardRef<HTMLDivElement, ModuleBoxProps>(
   ({ children, ...boxProps }, ref) => {
     const { border, bgColor } = useColorModeValue(
       { border: "gray.200", bgColor: "white" },
-      { border: "gray.700", bgColor: "whiteAlpha.100" }
+      { border: "gray.700", bgColor: "gray.800" }
     );
     return (
       <Box
-        shadow="md"
+        className="grid-stack-item-content"
+        shadow="base"
         rounded={10}
         alignItems="center"
         justifyContent="center"

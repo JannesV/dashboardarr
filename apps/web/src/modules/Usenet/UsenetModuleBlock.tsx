@@ -24,6 +24,7 @@ import { UsenetDownloads } from "./UsenetDownloads/UsenetDownloads";
 import { UsenetHistory } from "./UsenetHistory/UsenetHistory";
 import { MdPause, MdPlayArrow } from "react-icons/md";
 import { useResizeDetector } from "react-resize-detector";
+import { ModuleBox } from "../../components/ModuleBox/ModuleBox";
 
 interface UsernetModuleBlockProps {
   serviceId: string;
@@ -40,7 +41,7 @@ export const UsernetModuleBlock: FunctionComponent<UsernetModuleBlockProps> = ({
     refreshRate: 200,
   });
 
-  const pageSize = Math.floor(((height || 200) - 90) / 33);
+  const pageSize = height ? Math.floor((height - 90) / 33) : null;
 
   const handleTabsChange = (index: number) => {
     setTabIndex(index);
@@ -104,60 +105,62 @@ export const UsernetModuleBlock: FunctionComponent<UsernetModuleBlockProps> = ({
   }, [usenetInfoData, previousData]);
 
   return (
-    <Tabs
-      alignItems="center"
-      justifyContent="center"
-      index={tabIndex}
-      onChange={handleTabsChange}
-      h="full"
-    >
-      <TabList>
-        <Tab>Queue</Tab>
-        <Tab>History</Tab>
-        <HStack alignItems="center" h="6" spacing="5" ml="auto">
-          <Tag colorScheme="blue" size="sm" borderRadius="full">
-            {humanFileSize(usenetInfoData?.usenetInfo.speed || 0)}/s
-          </Tag>
-          <Tag colorScheme="blue" size="sm" borderRadius="full">
-            Size Remaining: &nbsp;
-            {humanFileSize(usenetInfoData?.usenetInfo.sizeLeft || 0)}
-          </Tag>
-          {usenetInfoData?.usenetInfo.paused ? (
-            <Button
-              onClick={() => resumeQueue()}
-              isLoading={resumeLoading}
-              size="sm"
-              borderRadius="full"
-            >
-              <Icon mr={2} as={MdPlayArrow} />
-              PAUSED
-            </Button>
-          ) : (
-            <Button
-              onClick={() => pauseQueue()}
-              isLoading={pauseLoading}
-              size="sm"
-              borderRadius="full"
-            >
-              <Icon mr={2} as={MdPause} />
-              {parseEta(usenetInfoData?.usenetInfo.eta || 0)}
-            </Button>
-          )}
-        </HStack>
-      </TabList>
+    <ModuleBox>
+      <Tabs
+        alignItems="center"
+        justifyContent="center"
+        index={tabIndex}
+        onChange={handleTabsChange}
+        h="full"
+      >
+        <TabList>
+          <Tab>Queue</Tab>
+          <Tab>History</Tab>
+          <HStack alignItems="center" h="6" spacing="5" ml="auto">
+            <Tag colorScheme="blue" size="sm" borderRadius="full">
+              {humanFileSize(usenetInfoData?.usenetInfo.speed || 0)}/s
+            </Tag>
+            <Tag colorScheme="blue" size="sm" borderRadius="full">
+              Size Remaining: &nbsp;
+              {humanFileSize(usenetInfoData?.usenetInfo.sizeLeft || 0)}
+            </Tag>
+            {usenetInfoData?.usenetInfo.paused ? (
+              <Button
+                onClick={() => resumeQueue()}
+                isLoading={resumeLoading}
+                size="sm"
+                borderRadius="full"
+              >
+                <Icon mr={2} as={MdPlayArrow} />
+                PAUSED
+              </Button>
+            ) : (
+              <Button
+                onClick={() => pauseQueue()}
+                isLoading={pauseLoading}
+                size="sm"
+                borderRadius="full"
+              >
+                <Icon mr={2} as={MdPause} />
+                {parseEta(usenetInfoData?.usenetInfo.eta || 0)}
+              </Button>
+            )}
+          </HStack>
+        </TabList>
 
-      <TabPanels h="calc(100% - 42px)" ref={ref}>
-        <TabPanel h="full" p={0} pt={5}>
-          <UsenetDownloads
-            pageSize={pageSize}
-            paused={usenetInfoData?.usenetInfo.paused ?? true}
-            serviceId={serviceId}
-          />
-        </TabPanel>
-        <TabPanel h="full" p={0} pt={5}>
-          <UsenetHistory serviceId={serviceId} pageSize={pageSize} />
-        </TabPanel>
-      </TabPanels>
-    </Tabs>
+        <TabPanels h="calc(100% - 42px)" ref={ref}>
+          <TabPanel h="full" p={0} pt={5}>
+            <UsenetDownloads
+              pageSize={pageSize}
+              paused={usenetInfoData?.usenetInfo.paused ?? true}
+              serviceId={serviceId}
+            />
+          </TabPanel>
+          <TabPanel h="full" p={0} pt={5}>
+            <UsenetHistory serviceId={serviceId} pageSize={pageSize} />
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
+    </ModuleBox>
   );
 };
