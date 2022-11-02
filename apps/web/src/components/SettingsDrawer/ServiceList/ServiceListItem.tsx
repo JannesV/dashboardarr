@@ -43,7 +43,13 @@ export const ServiceListItem: FunctionComponent<ServiceListItemProps> = ({
       transition=".2s"
       onClick={() => onClick?.(service)}
     >
-      <Image mr={3} boxSize={25} objectFit="contain" src={service.icon} />
+      <Image
+        mr={3}
+        boxSize={25}
+        objectFit="contain"
+        src={`/icons/${service.icon}`}
+      />
+
       <Text noOfLines={1}>{service.name}</Text>
       {addon && <Box ml="auto">{addon(service)}</Box>}
     </Flex>

@@ -1,6 +1,7 @@
 import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import {
   Button,
+  Divider,
   Drawer,
   DrawerBody,
   DrawerContent,
@@ -10,6 +11,7 @@ import {
   FormControl,
   FormHelperText,
   FormLabel,
+  Icon,
   IconButton,
   Tab,
   TabList,
@@ -31,13 +33,16 @@ import {
 } from "@dashboardarr/graphql";
 import { Formik, FormikHelpers } from "formik";
 import { InputControl } from "formik-chakra-ui";
-import { useAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { FunctionComponent, useCallback } from "react";
-import { editServiceAtom } from "../../state/service";
+import { createServiceAtom, editServiceAtom } from "../../state/service";
 import { settingsOpenAtom } from "../../state/settings";
 import { useConfig } from "../../utils/useConfig";
 import { ColorModeSlider } from "../ColorModeSlider/ColorModeSlider";
 import { ServicesList } from "./ServiceList/ServicesList";
+
+import { BiAddToQueue } from "react-icons/bi";
+import { PopConfirm } from "../PopConfirm/PopConfirm";
 
 interface SettingsDrawerProps {}
 
@@ -45,7 +50,8 @@ export const SettingsDrawer: FunctionComponent<SettingsDrawerProps> = () => {
   const [isOpen, setIsOpen] = useAtom(settingsOpenAtom);
   const { name, settings } = useConfig();
 
-  const [, setEditServiceId] = useAtom(editServiceAtom);
+  const setEditServiceId = useSetAtom(editServiceAtom);
+  const setCreateServiceModal = useSetAtom(createServiceAtom);
 
   const [deleteService, { loading: deleteLoading }] =
     useDeleteServiceMutation();
@@ -76,28 +82,30 @@ export const SettingsDrawer: FunctionComponent<SettingsDrawerProps> = () => {
           icon={<EditIcon />}
           onClick={() => setEditServiceId(service.id)}
         />
-        <IconButton
-          ml={2}
-          size="sm"
-          aria-label="Delete"
-          colorScheme="red"
-          variant="ghost"
-          icon={<DeleteIcon />}
-          isLoading={deleteLoading}
-          onClick={() =>
-            deleteService({
-              variables: { ids: [service.id] },
-              update(cache) {
-                const normalizedId = cache.identify({
-                  id: service.id,
-                  __typename: "Service",
-                });
-                cache.evict({ id: normalizedId });
-                cache.gc();
-              },
-            })
-          }
-        />
+        <PopConfirm placement="left-end">
+          <IconButton
+            ml={2}
+            size="sm"
+            aria-label="Delete"
+            colorScheme="red"
+            variant="ghost"
+            icon={<DeleteIcon />}
+            isLoading={deleteLoading}
+            onClick={() =>
+              deleteService({
+                variables: { ids: [service.id] },
+                update(cache) {
+                  const normalizedId = cache.identify({
+                    id: service.id,
+                    __typename: "Service",
+                  });
+                  cache.evict({ id: normalizedId });
+                  cache.gc();
+                },
+              })
+            }
+          />
+        </PopConfirm>
       </>
     ),
     [deleteLoading, deleteService, setEditServiceId]
@@ -165,18 +173,30 @@ export const SettingsDrawer: FunctionComponent<SettingsDrawerProps> = () => {
                           </FormHelperText>
                         </FormControl>
                       </VStack>
+                      <Divider my={4} />
+                      <Button
+                        colorScheme="blue"
+                        isLoading={loading}
+                        type="submit"
+                      >
+                        Save Settings
+                      </Button>
                     </TabPanel>
                     <TabPanel>
                       <ServicesList addon={serviceAddon} />
+                      <Divider my={4} />
+                      <Button
+                        colorScheme="blue"
+                        leftIcon={<Icon fontSize="1.2em" as={BiAddToQueue} />}
+                        onClick={() => setCreateServiceModal(true)}
+                      >
+                        Add Service
+                      </Button>
                     </TabPanel>
                   </TabPanels>
                 </Tabs>
               </DrawerBody>
-              <DrawerFooter>
-                <Button colorScheme="blue" isLoading={loading} type="submit">
-                  Save Settings
-                </Button>
-              </DrawerFooter>
+              <DrawerFooter></DrawerFooter>
             </DrawerContent>
           </form>
         )}

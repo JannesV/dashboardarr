@@ -251,8 +251,15 @@ enum DockerAction {
 input ServiceInput {
   name: String!
   type: ServiceType!
-  icon: String!
+  icon: Upload
   url: String!
   externalUrl: String
   apiKey: String
+}
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
+type Subscription {
+  usenetInfoUpdated(serviceId: String!): UsenetInfo!
 }

@@ -1,4 +1,4 @@
-import { RadarrApi } from './api/Api';
+import { RadarrApi } from "./api/Api";
 
 interface RadarrClientOptions {
   apiUrl: string;
@@ -21,6 +21,10 @@ export class RadarrClient {
       start: opts.startDate.toISOString(),
       end: opts.endDate.toISOString(),
     });
+
+    if (!Array.isArray(response.data)) {
+      throw new Error("Radarr did not return a valid response");
+    }
 
     return response.data;
   }

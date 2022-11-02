@@ -97,7 +97,7 @@ export const ButtonItemModuleBlock: FunctionComponent<
         zIndex={2}
         p={3}
       >
-        <Image h="full" objectFit="contain" src={service.icon} />
+        <Image h="full" objectFit="contain" src={`/icons/${service.icon}`} />
       </Flex>
     </ModuleBox>
   );

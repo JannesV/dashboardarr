@@ -1,5 +1,15 @@
 import { ApolloProvider } from "@apollo/client";
-import { Center, ChakraProvider, extendTheme, Spinner } from "@chakra-ui/react";
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
+  Center,
+  ChakraProvider,
+  Code,
+  extendTheme,
+  Spinner,
+} from "@chakra-ui/react";
 import React, { FunctionComponent, ReactNode } from "react";
 import { MainPage } from "./components/MainPage/MainPage";
 import { client } from "./utils/client";
@@ -7,6 +17,7 @@ import { StepsStyleConfig as Steps } from "chakra-ui-steps";
 import { mode } from "@chakra-ui/theme-tools";
 import {} from "@chakra-ui/theme-tools";
 import { useGetConfigQuery } from "@dashboardarr/graphql";
+
 const theme = extendTheme({
   styles: {
     global: (props: any) => ({
@@ -28,7 +39,7 @@ const theme = extendTheme({
 export const LoadWrapper: FunctionComponent<{ children: ReactNode }> = ({
   children,
 }) => {
-  const { data: configData, loading } = useGetConfigQuery({
+  const { loading, error } = useGetConfigQuery({
     variables: { configName: "default" },
   });
 
@@ -36,6 +47,30 @@ export const LoadWrapper: FunctionComponent<{ children: ReactNode }> = ({
     return (
       <Center h="100vh">
         <Spinner size="xl" />
+      </Center>
+    );
+  }
+
+  if (error) {
+    return (
+      <Center height="100vh">
+        <Alert
+          status="error"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          textAlign="center"
+          m={6}
+          borderRadius="xl"
+        >
+          <AlertIcon boxSize="40px" mr={0} />
+          <AlertTitle mt={4} mb={1} fontSize="lg">
+            An error occurred while fetching queue.
+          </AlertTitle>
+          <AlertDescription mt={4}>
+            <Code>{error.message}</Code>
+          </AlertDescription>
+        </Alert>
       </Center>
     );
   }

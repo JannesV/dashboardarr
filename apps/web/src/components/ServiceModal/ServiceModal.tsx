@@ -19,6 +19,7 @@ import {
 import {
   Service,
   ServiceFragmentDoc,
+  ServiceInput,
   ServiceType,
   useCreateServiceMutation,
   useGetServicesQuery,
@@ -31,6 +32,7 @@ import { Formik, FormikProps } from "formik";
 
 import { FormControl, InputControl, SelectControl } from "formik-chakra-ui";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+import { FileUpload } from "../FileUpload/FileUpload";
 
 const EMPTY_SERVICE: Service = {
   icon: "",
@@ -77,37 +79,30 @@ export const ServiceModal: FunctionComponent = () => {
       },
     });
 
-  const handleSubmit = async (service: Service) => {
+  const handleSubmit = async (input: Service) => {
+    const service: ServiceInput = {
+      icon: typeof input.icon !== "string" ? input.icon : undefined,
+      name: input.name,
+      type: input.type,
+      url: input.url,
+      apiKey: input.apiKey,
+      externalUrl: input.externalUrl,
+    };
     try {
       if (editServiceId) {
         await updateService({
           variables: {
-            service: {
-              icon: service.icon,
-              name: service.name,
-              type: service.type,
-              url: service.url,
-              apiKey: service.apiKey,
-              externalUrl: service.externalUrl,
-            },
+            service,
             id: editServiceId,
           },
         });
       } else {
         await createService({
           variables: {
-            service: {
-              icon: service.icon,
-              name: service.name,
-              type: service.type,
-              url: service.url,
-              apiKey: service.apiKey,
-              externalUrl: service.externalUrl,
-            },
+            service,
           },
         });
       }
-
       handleClose();
     } catch (err) {
       console.error(err);
@@ -138,17 +133,30 @@ export const ServiceModal: FunctionComponent = () => {
                         placeholder: "Name",
                       }}
                       name="name"
+                      isRequired
                     />
 
-                    <InputControl
+                    {/* <InputControl
                       label="Icon"
                       inputProps={{
                         placeholder: "Icon",
                       }}
                       name="icon"
+                    /> */}
+
+                    <FileUpload
+                      acceptedFileTypes="image/png, image/jpeg"
+                      label="Icon"
+                      name="icon"
+                      value={
+                        props.values.icon
+                          ? `/icons/${props.values.icon}`
+                          : undefined
+                      }
+                      onChange={(file) => props.setFieldValue("icon", file)}
                     />
 
-                    <SelectControl label="Service Type:" name="type">
+                    <SelectControl isRequired label="Service Type:" name="type">
                       {Object.values(ServiceType)
                         .sort()
                         .map((type) => (
@@ -158,12 +166,13 @@ export const ServiceModal: FunctionComponent = () => {
                         ))}
                     </SelectControl>
 
-                    <FormControl label="URL" name="url">
+                    <FormControl isRequired label="URL" name="url">
                       <InputControl
                         inputProps={{
                           placeholder: "URL",
                         }}
                         name="url"
+                        isRequired
                       />
                       <FormHelperText>
                         This URL will be used for internal requests and needs to
@@ -207,7 +216,8 @@ export const ServiceModal: FunctionComponent = () => {
               {(updateError || createError) && (
                 <Alert status="error">
                   <AlertIcon />
-                  An error occurred while processing the request.
+                  {createError?.message}
+                  {updateError?.message}
                 </Alert>
               )}
               <ModalFooter>
@@ -217,7 +227,7 @@ export const ServiceModal: FunctionComponent = () => {
                     type="submit"
                     colorScheme="blue"
                   >
-                    Submit
+                    Save
                   </Button>
                 </HStack>
               </ModalFooter>

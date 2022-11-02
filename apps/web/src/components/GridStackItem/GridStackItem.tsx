@@ -6,6 +6,7 @@ import {
   ModulePosition,
   useDeleteModuleItemMutation,
 } from "@dashboardarr/graphql";
+import { GridItemHTMLElement } from "gridstack";
 import { useAtomValue } from "jotai";
 import { forwardRef } from "react";
 import { MdClose } from "react-icons/md";
@@ -19,7 +20,10 @@ interface GridStackItemProps extends BoxProps {
   id: string;
 }
 
-export const GridStackItem = forwardRef<HTMLDivElement, GridStackItemProps>(
+export const GridStackItem = forwardRef<
+  GridItemHTMLElement,
+  GridStackItemProps
+>(
   (
     { modulePosition, id, minModuleHeight, minModuleWidth, children, ...rest },
     ref
@@ -49,7 +53,7 @@ export const GridStackItem = forwardRef<HTMLDivElement, GridStackItemProps>(
     const isEditMode = useAtomValue(editDashboardModulesAtom);
     return (
       <Box
-        ref={ref}
+        ref={ref as any}
         className="grid-stack-item"
         gs-id={id}
         gs-x={modulePosition.x}

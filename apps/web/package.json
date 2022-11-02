@@ -19,6 +19,7 @@
     "@types/node": "^16.11.56",
     "@types/react": "^18.0.18",
     "@types/react-dom": "^18.0.6",
+    "apollo-upload-client": "^17.0.0",
     "chakra-ui-steps": "^1.8.0",
     "date-fns": "^2.29.3",
     "duration-fns": "^3.0.1",
@@ -63,6 +64,7 @@
     ]
   },
   "devDependencies": {
+    "@types/apollo-upload-client": "^17.0.2",
     "@types/craco__craco": "^6.4.0"
   }
 }

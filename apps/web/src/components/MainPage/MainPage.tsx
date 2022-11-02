@@ -3,6 +3,7 @@ import {
   createRef,
   FunctionComponent,
   ReactNode,
+  RefObject,
   useCallback,
   useEffect,
   useRef,
@@ -17,7 +18,7 @@ import { useColorModeTracker } from "../../utils/useColorModeTracker";
 import { ServiceModal } from "../ServiceModal/ServiceModal";
 import { SettingsDrawer } from "../SettingsDrawer/SettingsDrawer";
 
-import { GridStack } from "gridstack";
+import { GridItemHTMLElement, GridStack } from "gridstack";
 import "gridstack/dist/gridstack.min.css";
 import "gridstack/dist/gridstack-extra.min.css";
 import { GridStackItem } from "../GridStackItem/GridStackItem";
@@ -38,7 +39,7 @@ interface MainPageProps {}
 
 export const MainPage: FunctionComponent<MainPageProps> = () => {
   const grid = useRef<GridStack>();
-  const refs = useRef<any>({});
+  const refs = useRef<Record<string, RefObject<GridItemHTMLElement>>>({});
   const { settings, modules } = useConfig();
   const [updateModulePositions] = useUpdateModulePositionsMutation();
   const isEditting = useAtomValue(editDashboardModulesAtom);
@@ -48,6 +49,12 @@ export const MainPage: FunctionComponent<MainPageProps> = () => {
   if (Object.keys(refs.current).length !== modules.length) {
     modules.forEach(({ id }) => {
       refs.current[id] = refs.current[id] || createRef();
+    });
+
+    Object.keys(refs.current).forEach((id) => {
+      if (!modules.some((m) => m.id === id)) {
+        delete refs.current[id];
+      }
     });
   }
 
@@ -80,7 +87,7 @@ export const MainPage: FunctionComponent<MainPageProps> = () => {
 
     grid.current.removeAll(false);
     modules.forEach(({ id }) => {
-      grid.current?.makeWidget(refs.current[id].current);
+      grid.current?.makeWidget(refs.current[id].current!);
     });
 
     grid.current.on("change", handleSave);

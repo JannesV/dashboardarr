@@ -59,6 +59,6 @@ export class ConfigResolver {
     @Args("moduleId")
     moduleId: string
   ): Promise<Config> {
-    return this.configService.deleteModule(configName, moduleId);
+    return this.configService.deleteModuleById(configName, moduleId);
   }
 }

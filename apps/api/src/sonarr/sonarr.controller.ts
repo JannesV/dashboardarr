@@ -1,5 +1,5 @@
 import { Controller, Get, Logger, Param, Res } from "@nestjs/common";
-import { Response } from "express";
+import type { Response } from "express";
 import axios from "axios";
 import { ConfigService } from "src/configs/config.service";
 import sharp from "sharp";

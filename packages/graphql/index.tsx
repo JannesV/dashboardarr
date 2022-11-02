@@ -17,6 +17,8 @@ export type Scalars = {
   Float: number;
   /** A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format. */
   DateTime: string;
+  /** The `Upload` scalar type represents a file upload. */
+  Upload: any;
 };
 
 export type ButtonModule = ModuleItem & {
@@ -276,7 +278,7 @@ export type Service = {
 export type ServiceInput = {
   apiKey?: InputMaybe<Scalars['String']>;
   externalUrl?: InputMaybe<Scalars['String']>;
-  icon: Scalars['String'];
+  icon: Scalars['Upload'];
   name: Scalars['String'];
   type: ServiceType;
   url: Scalars['String'];
@@ -312,6 +314,16 @@ export type SettingsInput = {
   favicon?: InputMaybe<Scalars['String']>;
   logo?: InputMaybe<Scalars['String']>;
   title?: InputMaybe<Scalars['String']>;
+};
+
+export type Subscription = {
+  __typename?: 'Subscription';
+  usenetInfoUpdated: UsenetInfo;
+};
+
+
+export type SubscriptionUsenetInfoUpdatedArgs = {
+  serviceId: Scalars['String'];
 };
 
 export type TvCalendarItem = {

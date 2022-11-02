@@ -5,7 +5,7 @@ import { v4 } from "uuid";
 import { ServiceType } from "../services/models/serviceType.enum";
 import { Service } from "../services/models/service.model";
 import { ServiceInput } from "../services/models/serviceInput.model";
-import { join } from "path";
+import { join, resolve } from "path";
 import { cwd } from "process";
 import { Config } from "./models/config.model";
 import { ColorMode } from "./models/colorMode.enum";
@@ -13,8 +13,11 @@ import { SettingsInput } from "./models/settingsInput.model";
 import { ModulePositionInput } from "./models/modulePositionInput.model";
 import { ModuleItemInput } from "./models/moduleItemInput.model";
 import { getModuleFromInput } from "src/utils/getModuleFromInput";
+import { FileUpload } from "graphql-upload/GraphQLUpload.js";
+import sharp from "sharp";
 
 const DATA_FOLDER = join(cwd(), "data");
+export const ICONS_FOLDER = join(DATA_FOLDER, "icons");
 const CONFIGS_FOLDER = join(DATA_FOLDER, "configs");
 
 const SERVICES_PATH = join(DATA_FOLDER, "services.json");
@@ -39,6 +42,7 @@ export class ConfigService implements OnModuleInit {
         "Data directory does not exist. Creating initial setup."
       );
       await mkdir(DATA_FOLDER, { recursive: true });
+      await mkdir(ICONS_FOLDER, { recursive: true });
       await mkdir(CONFIGS_FOLDER, { recursive: true });
 
       await writeFile(SERVICES_PATH, "[]");
@@ -96,10 +100,9 @@ export class ConfigService implements OnModuleInit {
   ): Promise<{ services: Service[]; updatedService: Service }> {
     const services = await this.getServices();
 
-    const updatedService = {
-      ...serviceInput,
-      id: serviceId || v4(),
-    };
+    const icon = await this.processImage(serviceInput.icon);
+
+    let updatedService: Service;
 
     if (serviceId) {
       const serviceIndex = services.findIndex((s) => s.id === serviceId);
@@ -108,11 +111,23 @@ export class ConfigService implements OnModuleInit {
         throw new Error(`Service with id: ${serviceId} is not found.`);
       }
 
-      services[serviceIndex] = {
+      updatedService = {
         ...services[serviceIndex],
         ...serviceInput,
+        icon: icon || services[serviceIndex].icon,
       };
+
+      services[serviceIndex] = updatedService;
     } else {
+      if (!icon) {
+        throw new Error("Icon is missing");
+      }
+
+      updatedService = {
+        ...serviceInput,
+        id: v4(),
+        icon,
+      };
       services.push(updatedService);
     }
 
@@ -129,6 +144,12 @@ export class ConfigService implements OnModuleInit {
 
   public async deleteService(...serviceIds: string[]) {
     const services = await this.getServices();
+
+    const configs = await this.getConfigs();
+
+    await Promise.all(
+      configs.map((c) => this.deleteModuleByServiceIds(c.name, serviceIds))
+    );
 
     await writeFile(
       SERVICES_PATH,
@@ -217,7 +238,7 @@ export class ConfigService implements OnModuleInit {
     });
   }
 
-  public async deleteModule(
+  public async deleteModuleById(
     configName: string,
     moduleId: string
   ): Promise<Config> {
@@ -227,5 +248,48 @@ export class ConfigService implements OnModuleInit {
       ...config,
       modules: config.modules.filter((m) => m.id !== moduleId),
     });
+  }
+  public async deleteModuleByServiceIds(
+    configName: string,
+    serviceIds: string[]
+  ): Promise<Config> {
+    const config = await this.getConfig(configName);
+
+    return await this.writeConfig(configName, {
+      ...config,
+      modules: config.modules.filter((m) => {
+        if ("serviceId" in m && serviceIds.includes((m as any).serviceId)) {
+          return false;
+        }
+
+        return true;
+      }),
+    });
+  }
+
+  private async processImage(
+    image: Promise<FileUpload> | undefined
+  ): Promise<string | void> {
+    if (!image) {
+      return;
+    }
+
+    const { createReadStream } = await image;
+
+    const chunks = [];
+    for await (const chunk of createReadStream()) {
+      chunks.push(chunk);
+    }
+    const buffer = Buffer.concat(chunks);
+
+    const filename = `${v4()}.png`;
+
+    const d = await sharp(buffer)
+      .png()
+      .resize(300)
+      .trim()
+      .toFile(resolve(ICONS_FOLDER, filename));
+
+    return filename;
   }
 }

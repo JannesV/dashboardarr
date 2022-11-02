@@ -1,4 +1,4 @@
-import { Injectable, Scope } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { Client } from "sabnzbd-api";
 import dayjs, { unix } from "dayjs";
 import duration from "dayjs/plugin/duration";
@@ -13,9 +13,7 @@ import { UsenetInfo } from "../usenet/models/usenetInfo.model";
 
 dayjs.extend(duration);
 
-@Injectable({
-  scope: Scope.REQUEST,
-})
+@Injectable()
 export class SabnzbdService {
   private readonly clients: Record<string, Client> = {};
 

@@ -29,6 +29,12 @@ import { ServeStaticModule } from "@nestjs/serve-static";
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), "src/schema.gql"),
+      installSubscriptionHandlers: true,
+
+      subscriptions: {
+        // "graphql-ws": true,
+        "subscriptions-transport-ws": true,
+      },
     }),
     ServeStaticModule.forRoot({
       rootPath: "./web",
