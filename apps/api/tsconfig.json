@@ -23,5 +23,6 @@
     "maxNodeModuleJsDepth": 10,
     "allowJs": true
   },
-  "exclude": ["dist"]
+  "exclude": ["dist"],
+  "include": ["src"]
 }
