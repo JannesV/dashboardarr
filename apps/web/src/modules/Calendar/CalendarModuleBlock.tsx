@@ -23,6 +23,7 @@ import { endOfWeek } from "date-fns/esm";
 import { FunctionComponent, useState } from "react";
 import { ModuleBox } from "../../components/ModuleBox/ModuleBox";
 import { CalendarDay } from "./CalendarDay/CalendarDay";
+import { Upcoming } from "./Upcoming";
 
 interface CalendarModuleBlockProps {
   weekStart: CalendarWeekStart;
@@ -77,7 +78,6 @@ export const CalendarModuleBlock: FunctionComponent<
         alignItems="center"
         justifyItems="center"
         fontSize="sm"
-        height="calc(100% - 58px)"
       >
         {weekStart === CalendarWeekStart.Sunday && <Flex>Zo</Flex>}
         <Flex>Ma</Flex>
@@ -96,6 +96,7 @@ export const CalendarModuleBlock: FunctionComponent<
           />
         ))}
       </Grid>
+      <Upcoming />
       {error && (
         <Alert borderRadius="md" status="error" mt={4}>
           <AlertIcon />

@@ -5,12 +5,13 @@ import { FunctionComponent } from "react";
 
 interface TvItemProps {
   series: TvCalendarItem;
+  small?: boolean;
 }
 
-export const TvItem: FunctionComponent<TvItemProps> = ({ series }) => {
+export const TvItem: FunctionComponent<TvItemProps> = ({ series, small }) => {
   return (
     <Flex w="full">
-      <Box w="100px" flexShrink={0} pos="relative">
+      <Box w={small ? "60px" : "100px"} flexShrink={0} pos="relative">
         <Image
           borderRadius="base"
           alignSelf="flex-start"
@@ -18,23 +19,26 @@ export const TvItem: FunctionComponent<TvItemProps> = ({ series }) => {
         />
         <Badge
           fontSize="x-small"
-          colorScheme="blue"
           pos="absolute"
+          variant="solid"
           top={1}
           left={1}
+          background="blue.700"
         >
           {format(parseISO(series.airDate), "HH:mm")}
         </Badge>
       </Box>
       <Box pl={3}>
-        <Heading size="md">{series.seriesTitle}</Heading>
+        <Heading size={small ? "xs" : "md"}>{series.seriesTitle}</Heading>
         <Badge my={3} colorScheme="green" size={"sm"} fontSize="x-small">
           S{series.seasonNumber} E{series.episodeNumber} - {series.episodeTitle}
         </Badge>
 
-        <Text noOfLines={5} fontSize="xs">
-          {series.overview}
-        </Text>
+        {!small && (
+          <Text noOfLines={5} fontSize="xs">
+            {series.overview}
+          </Text>
+        )}
       </Box>
     </Flex>
   );

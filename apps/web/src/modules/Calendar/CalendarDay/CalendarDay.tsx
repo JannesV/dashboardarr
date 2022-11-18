@@ -51,7 +51,7 @@ export const CalendarDay: FunctionComponent<CalendarDayProps> = ({
   return (
     <Popover
       isOpen={hasItems ? undefined : false}
-      trigger="click"
+      trigger="hover"
       placement="bottom-end"
     >
       <PopoverTrigger>
@@ -61,7 +61,7 @@ export const CalendarDay: FunctionComponent<CalendarDayProps> = ({
           justifyContent="center"
           flexDir="column"
           borderRadius="md"
-          h="full"
+          h="35px"
           w="full"
           opacity={isSameMonth(date, selectedMonth) ? 1 : 0.3}
           cursor="pointer"
@@ -91,7 +91,7 @@ export const CalendarDay: FunctionComponent<CalendarDayProps> = ({
         </Flex>
       </PopoverTrigger>
       <Portal>
-        <PopoverContent w="400px">
+        <PopoverContent _focus={{ boxShadow: "none" }} w="400px">
           <PopoverArrow />
           <PopoverBody>
             <VStack

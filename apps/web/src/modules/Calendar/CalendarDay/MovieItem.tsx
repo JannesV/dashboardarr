@@ -5,15 +5,17 @@ import { FunctionComponent } from "react";
 interface MovieItemProps {
   movie: MovieCalendarItem;
   type: "digital" | "cinema";
+  small?: boolean;
 }
 
 export const MovieItem: FunctionComponent<MovieItemProps> = ({
   movie,
   type,
+  small,
 }) => {
   return (
     <Flex w="full">
-      <Box w="100px" flexShrink={0} pos="relative">
+      <Box w={small ? "60px" : "100px"} flexShrink={0} pos="relative">
         <Image
           borderRadius="base"
           alignSelf="flex-start"
@@ -21,16 +23,17 @@ export const MovieItem: FunctionComponent<MovieItemProps> = ({
         />
         <Badge
           fontSize="x-small"
-          colorScheme="orange"
+          variant="solid"
           pos="absolute"
           top={1}
           left={1}
+          background="orange.500"
         >
           {type}
         </Badge>
       </Box>
       <Box pl={3}>
-        <Heading size="md">{movie.movieTitle}</Heading>
+        <Heading size={small ? "xs" : "md"}>{movie.movieTitle}</Heading>
 
         <Flex my={2}>
           {movie.genres.map((g) => (
@@ -46,9 +49,11 @@ export const MovieItem: FunctionComponent<MovieItemProps> = ({
             </Tag>
           ))}
         </Flex>
-        <Text noOfLines={5} fontSize="xs">
-          {movie.overview}
-        </Text>
+        {!small && (
+          <Text noOfLines={5} fontSize="xs">
+            {movie.overview}
+          </Text>
+        )}
       </Box>
     </Flex>
   );
