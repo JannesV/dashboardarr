@@ -55,7 +55,7 @@ export class SonarrService {
             type: "Sonarr",
             title: s.title,
             image: image
-              ? `http://localhost:3001/sonarr/images/${client.id}${image.url}`
+              ? `/sonarr/images/${client.id}${image.url}`
               : undefined,
           };
         });
