@@ -53,11 +53,20 @@ export const Upcoming: FunctionComponent<UpcomingProps> = () => {
 
       return prev;
     }, {})
-  ).filter(([date]) => {
-    const parsed = parse(date, "dd-MM-yyyy", new Date());
+  )
+    .filter(([date]) => {
+      const parsed = parse(date, "dd-MM-yyyy", new Date());
 
-    return isAfter(parsed, new Date()) && isBefore(parsed, endDate);
-  });
+      return isAfter(parsed, new Date()) && isBefore(parsed, endDate);
+    })
+    .sort(([aDate], [bDate]) =>
+      isBefore(
+        parse(aDate, "dd-MM-yyyy", new Date()),
+        parse(bDate, "dd-MM-yyyy", new Date())
+      )
+        ? -1
+        : 1
+    );
 
   return (
     <>
