@@ -1,4 +1,6 @@
-import { flatten, Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
+import { ConfigService } from "src/configs/config.service";
+import { SearchResult } from "src/search/searchResult.model";
 import { MovieCalendarItem } from "../calendar/models/movieCalendarItem.model";
 import { MediaCoverTypes } from "./api/data-contracts";
 import { RadarrClient } from "./radarr.client";
@@ -6,7 +8,10 @@ import { RADARR_CLIENT } from "./radarr.const";
 
 @Injectable()
 export class RadarrService {
-  constructor(@Inject(RADARR_CLIENT) private radarrClients: RadarrClient[]) {}
+  constructor(
+    @Inject(RADARR_CLIENT) private radarrClients: RadarrClient[],
+    private configService: ConfigService
+  ) {}
 
   public async getCalendar(opts: {
     startDate: Date;
@@ -39,6 +44,33 @@ export class RadarrService {
       })
     );
 
-    return flatten(items);
+    return items.flat();
+  }
+
+  public async searchItems(): Promise<SearchResult[]> {
+    const movies = await Promise.all(
+      this.radarrClients.map(async (client) => {
+        const movies = await client.movies();
+
+        const service = await this.configService.getServiceById(client.id);
+        const url = service.externalUrl || service.url;
+
+        return movies.data.map<SearchResult>((m) => {
+          const image = m.images.find(
+            (img) => img.coverType === MediaCoverTypes.Poster
+          );
+          return {
+            title: m.title,
+            type: "Radarr",
+            url: `${url}/movie/${m.titleSlug}`,
+            image: image
+              ? `/radarr/images/${client.id}${image.url}`
+              : undefined,
+          };
+        });
+      })
+    );
+
+    return movies.flat();
   }
 }

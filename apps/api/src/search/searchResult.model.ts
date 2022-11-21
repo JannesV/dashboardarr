@@ -10,4 +10,7 @@ export class SearchResult {
 
   @Field()
   type: string;
+
+  @Field()
+  url: string;
 }

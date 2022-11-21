@@ -108,6 +108,7 @@ type SearchResult {
   image: String
   title: String!
   type: String!
+  url: String!
 }
 
 type UsenetHistoryItem {

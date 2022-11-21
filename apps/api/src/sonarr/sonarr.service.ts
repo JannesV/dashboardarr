@@ -1,5 +1,5 @@
-import { flatten, Inject, Injectable } from "@nestjs/common";
-import Fuse from "fuse.js";
+import { Inject, Injectable } from "@nestjs/common";
+import { ConfigService } from "src/configs/config.service";
 import { SearchResult } from "src/search/searchResult.model";
 import { TvCalendarItem } from "../calendar/models/tvCalendarItem.model";
 import { SonarrClient } from "./sonarr.client";
@@ -8,7 +8,10 @@ import { CoverType } from "./sonarr.types";
 
 @Injectable()
 export class SonarrService {
-  constructor(@Inject(SONARR_CLIENT) private sonarrClients: SonarrClient[]) {}
+  constructor(
+    @Inject(SONARR_CLIENT) private sonarrClients: SonarrClient[],
+    private configService: ConfigService
+  ) {}
 
   public async getCalendar(
     startDate: Date,
@@ -39,14 +42,16 @@ export class SonarrService {
       })
     );
 
-    return flatten(items);
+    return items.flat();
   }
 
-  public async search(query: string): Promise<SearchResult[]> {
+  public async searchItems(): Promise<SearchResult[]> {
     const series = await Promise.all(
       this.sonarrClients.map(async (client) => {
         const series = await client.series();
 
+        const service = await this.configService.getServiceById(client.id);
+        const url = service.externalUrl || service.url;
         return series.map<SearchResult>((s) => {
           const image = s.images.find(
             (img) => img.coverType === CoverType.Poster
@@ -57,20 +62,12 @@ export class SonarrService {
             image: image
               ? `/sonarr/images/${client.id}${image.url}`
               : undefined,
+            url: `${url}/series/${s.titleSlug}`,
           };
         });
       })
     );
 
-    const fuse = new Fuse(flatten(series), {
-      keys: ["title"],
-      threshold: 0.4,
-      includeMatches: true,
-      includeScore: true,
-    });
-
-    return fuse.search(query).map((r) => ({
-      ...r.item,
-    }));
+    return series.flat();
   }
 }

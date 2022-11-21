@@ -262,6 +262,7 @@ export type SearchResult = {
   image?: Maybe<Scalars['String']>;
   title: Scalars['String'];
   type: Scalars['String'];
+  url: Scalars['String'];
 };
 
 export type Service = {
@@ -278,7 +279,7 @@ export type Service = {
 export type ServiceInput = {
   apiKey?: InputMaybe<Scalars['String']>;
   externalUrl?: InputMaybe<Scalars['String']>;
-  icon: Scalars['Upload'];
+  icon?: InputMaybe<Scalars['Upload']>;
   name: Scalars['String'];
   type: ServiceType;
   url: Scalars['String'];
@@ -503,7 +504,7 @@ export type SearchQueryVariables = Exact<{
 }>;
 
 
-export type SearchQuery = { __typename?: 'Query', search: Array<{ __typename?: 'SearchResult', image?: string | null, title: string, type: string }> };
+export type SearchQuery = { __typename?: 'Query', search: Array<{ __typename?: 'SearchResult', image?: string | null, title: string, type: string, url: string }> };
 
 export type ServiceFragment = { __typename?: 'Service', name: string, id: string, type: ServiceType, icon: string, url: string, externalUrl?: string | null, apiKey?: string | null };
 
@@ -1139,6 +1140,7 @@ export const SearchDocument = gql`
     image
     title
     type
+    url
   }
 }
     `;

@@ -45,7 +45,9 @@ export const ButtonItemModuleBlock: FunctionComponent<
 
   return (
     <ModuleBox
-      onClick={() => window.open(service.externalUrl || service.url, "_blank")}
+      as="a"
+      href={service.externalUrl || service.url}
+      target="_blank"
       cursor="pointer"
       transition=".2s"
       border="none"
@@ -82,7 +84,7 @@ export const ButtonItemModuleBlock: FunctionComponent<
         background: `radial-gradient(300px circle at var(--mouse-x) var(--mouse-y), ${borderColor}, transparent 40%)`,
         zIndex: 1,
       }}
-      ref={ref}
+      ref={ref as any}
     >
       <Flex
         alignItems="center"

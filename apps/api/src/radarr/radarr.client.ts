@@ -3,10 +3,12 @@ import { RadarrApi } from "./api/Api";
 interface RadarrClientOptions {
   apiUrl: string;
   apiKey: string;
+  id: string;
 }
 
 export class RadarrClient {
   private apiClient: RadarrApi;
+  public id: string;
   constructor(private readonly options: RadarrClientOptions) {
     this.apiClient = new RadarrApi({
       baseURL: this.options.apiUrl,
@@ -14,6 +16,7 @@ export class RadarrClient {
         apiKey: this.options.apiKey,
       },
     });
+    this.id = this.options.id;
   }
 
   public async getCalendar(opts: { startDate: Date; endDate: Date }) {
@@ -27,5 +30,11 @@ export class RadarrClient {
     }
 
     return response.data;
+  }
+
+  public async movies() {
+    const response = await this.apiClient.v3MovieList();
+
+    return response;
   }
 }

@@ -95,6 +95,8 @@ export const SearchModal: FunctionComponent<SearchModalProps> = ({
         setSelectedIndex(selectedIndex - 1);
       } else if (ev.code === "ArrowDown" && selectedIndex < items.length - 1) {
         setSelectedIndex(selectedIndex + 1);
+      } else if (ev.code === "Enter") {
+        window.open(items[selectedIndex].url, "_blank");
       }
     },
     [items, selectedIndex]
@@ -157,7 +159,9 @@ export const SearchModal: FunctionComponent<SearchModalProps> = ({
                               size="sm"
                               fontSize="0.6em"
                               variant="solid"
-                              colorScheme={"blue"}
+                              colorScheme={
+                                item.type === "Sonarr" ? "blue" : "orange" // TODO: Fix this
+                              }
                             >
                               {item.type}
                             </Badge>

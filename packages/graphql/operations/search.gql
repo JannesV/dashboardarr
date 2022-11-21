@@ -3,5 +3,6 @@ query search($search: String!) {
     image
     title
     type
+    url
   }
 }
