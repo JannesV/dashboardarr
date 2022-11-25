@@ -3,3 +3,9 @@ query getUsenetInfo($serviceId: String!) {
     ...UsenetInfo
   }
 }
+
+subscription getUsenetInfoSubscription($serviceId: String!) {
+  usenetInfo(serviceId: $serviceId) {
+    ...UsenetInfo
+  }
+}

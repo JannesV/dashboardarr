@@ -26,7 +26,10 @@ import {
   Tooltip,
   Tr,
 } from "@chakra-ui/react";
-import { useGetUsenetHistoryQuery } from "@dashboardarr/graphql";
+import {
+  GetUsenetHistorySubscriptionDocument,
+  useGetUsenetHistoryQuery,
+} from "@dashboardarr/graphql";
 import { parseISO } from "date-fns";
 import { FunctionComponent, useCallback, useEffect, useState } from "react";
 import { parseDuration } from "../../../utils/formatDuration";
@@ -48,8 +51,7 @@ export const UsenetHistory: FunctionComponent<UsenetHistoryProps> = ({
     data: historyData,
     error,
     loading,
-    startPolling,
-    stopPolling,
+    subscribeToMore,
   } = useGetUsenetHistoryQuery({
     variables: {
       serviceId,
@@ -60,9 +62,16 @@ export const UsenetHistory: FunctionComponent<UsenetHistoryProps> = ({
   });
 
   useEffect(() => {
-    startPolling(2000);
-    return stopPolling;
-  }, [startPolling, stopPolling]);
+    subscribeToMore({
+      document: GetUsenetHistorySubscriptionDocument,
+      variables: { serviceId, limit: pageSize!, offset: 0 },
+      updateQuery(prev, { subscriptionData }) {
+        if (!subscriptionData) return prev;
+
+        return subscriptionData.data;
+      },
+    });
+  }, [pageSize, serviceId, subscribeToMore]);
 
   const {
     pages,

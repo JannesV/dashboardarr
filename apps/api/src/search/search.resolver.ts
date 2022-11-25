@@ -1,4 +1,4 @@
-import { Resolver, Query, Args } from "@nestjs/graphql";
+import { Resolver, Query, Args, Int } from "@nestjs/graphql";
 import Fuse from "fuse.js";
 import { RadarrService } from "src/radarr/radar.service";
 import { SonarrService } from "src/sonarr/sonarr.service";
@@ -12,7 +12,10 @@ export class SearchResolver {
   ) {}
 
   @Query(() => [SearchResult])
-  async search(@Args("search") search: string): Promise<SearchResult[]> {
+  async search(
+    @Args("search") search: string,
+    @Args("limit", { type: () => Int }) limit: number
+  ): Promise<SearchResult[]> {
     const results = await Promise.all([
       this.sonarrService.searchItems(),
       this.radarrService.searchItems(),
@@ -25,8 +28,11 @@ export class SearchResolver {
       includeScore: true,
     });
 
-    return fuse.search(search).map((r) => ({
-      ...r.item,
-    }));
+    return fuse
+      .search(search)
+      .map((r) => ({
+        ...r.item,
+      }))
+      .slice(0, limit);
   }
 }

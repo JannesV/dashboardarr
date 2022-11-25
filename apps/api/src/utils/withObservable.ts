@@ -43,7 +43,6 @@ export const withStaticFields = (
 ) => {
   return {
     async next() {
-      console.log("NEXT");
       return asyncIterator.next();
     },
     return() {
@@ -51,7 +50,6 @@ export const withStaticFields = (
       return asyncIterator.return();
     },
     throw(error) {
-      console.log("Throw");
       return Promise.reject(error);
     },
     [$$asyncIterator]() {

@@ -1,4 +1,5 @@
 import axios, { AxiosInstance } from "axios";
+import { CacheManager } from "src/cache/cacheManager";
 import { Series, SonarrCalendarItem } from "./sonarr.types";
 
 interface SonarrClientOptions {
@@ -11,7 +12,10 @@ export class SonarrClient {
   private readonly apiClient: AxiosInstance;
   public readonly id: string;
 
-  constructor(private readonly options: SonarrClientOptions) {
+  constructor(
+    options: SonarrClientOptions,
+    private readonly cacheManager: CacheManager
+  ) {
     this.apiClient = axios.create({
       baseURL: options.apiUrl,
       params: {
@@ -36,8 +40,19 @@ export class SonarrClient {
   }
 
   public async series(): Promise<Series[]> {
-    const response = await this.apiClient.get<Series[]>("/api/series", {});
+    let series: Series[] = await this.cacheManager.get("sonarr-series");
 
-    return response.data;
+    if (!series) {
+      const response = await this.apiClient.get<Series[]>("/api/series", {});
+
+      if (!Array.isArray(response.data)) {
+        throw new Error("Sonarr did not return a valid response");
+      }
+
+      series = response.data;
+      await this.cacheManager.set("sonarr-series", series);
+    }
+
+    return series;
   }
 }

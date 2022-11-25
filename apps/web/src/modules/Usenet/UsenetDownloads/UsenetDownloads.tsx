@@ -16,7 +16,10 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react";
-import { useGetUsenetQueueQuery } from "@dashboardarr/graphql";
+import {
+  GetUsenetQueueSubscriptionDocument,
+  useGetUsenetQueueQuery,
+} from "@dashboardarr/graphql";
 import { FunctionComponent, useEffect } from "react";
 import { parseEta } from "../../../utils/formatDuration";
 import { humanFileSize } from "../../../utils/humanFileSize";
@@ -36,8 +39,7 @@ export const UsenetDownloads: FunctionComponent<UsenetDownloadsProps> = ({
     data: queueData,
     error,
     loading,
-    startPolling,
-    stopPolling,
+    subscribeToMore,
   } = useGetUsenetQueueQuery({
     variables: {
       serviceId,
@@ -47,9 +49,16 @@ export const UsenetDownloads: FunctionComponent<UsenetDownloadsProps> = ({
   });
 
   useEffect(() => {
-    startPolling(2000);
-    return stopPolling;
-  }, [startPolling, stopPolling]);
+    subscribeToMore({
+      document: GetUsenetQueueSubscriptionDocument,
+      variables: { serviceId, limit: pageSize!, offset: 0 },
+      updateQuery(prev, { subscriptionData }) {
+        if (!subscriptionData) return prev;
+
+        return subscriptionData.data;
+      },
+    });
+  }, [pageSize, serviceId, subscribeToMore]);
 
   if (error) {
     return (

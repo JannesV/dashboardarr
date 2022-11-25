@@ -1,4 +1,6 @@
+import { CacheManager } from "src/cache/cacheManager";
 import { RadarrApi } from "./api/Api";
+import { MovieResource } from "./api/data-contracts";
 
 interface RadarrClientOptions {
   apiUrl: string;
@@ -9,14 +11,17 @@ interface RadarrClientOptions {
 export class RadarrClient {
   private apiClient: RadarrApi;
   public id: string;
-  constructor(private readonly options: RadarrClientOptions) {
+  constructor(
+    options: RadarrClientOptions,
+    private readonly cacheManager: CacheManager
+  ) {
     this.apiClient = new RadarrApi({
-      baseURL: this.options.apiUrl,
+      baseURL: options.apiUrl,
       params: {
-        apiKey: this.options.apiKey,
+        apiKey: options.apiKey,
       },
     });
-    this.id = this.options.id;
+    this.id = options.id;
   }
 
   public async getCalendar(opts: { startDate: Date; endDate: Date }) {
@@ -33,8 +38,19 @@ export class RadarrClient {
   }
 
   public async movies() {
-    const response = await this.apiClient.v3MovieList();
+    let movies: MovieResource[] = await this.cacheManager.get("radarr-movies");
 
-    return response;
+    if (!movies) {
+      const response = await this.apiClient.v3MovieList();
+
+      if (!Array.isArray(response.data)) {
+        throw new Error("Radarr did not return a valid response");
+      }
+
+      movies = response.data;
+      await this.cacheManager.set("radarr-movies", movies);
+    }
+
+    return movies;
   }
 }

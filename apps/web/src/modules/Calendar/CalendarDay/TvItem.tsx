@@ -29,7 +29,7 @@ export const TvItem: FunctionComponent<TvItemProps> = ({ series, small }) => {
         </Badge>
       </Box>
       <Box pl={3}>
-        <Heading size={small ? "xs" : "md"}>{series.seriesTitle}</Heading>
+        <Heading size={small ? "xs" : "sm"}>{series.seriesTitle}</Heading>
         <Badge my={3} colorScheme="green" size={"sm"} fontSize="x-small">
           S{series.seasonNumber} E{series.episodeNumber} - {series.episodeTitle}
         </Badge>

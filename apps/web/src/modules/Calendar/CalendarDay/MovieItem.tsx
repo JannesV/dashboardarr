@@ -33,7 +33,7 @@ export const MovieItem: FunctionComponent<MovieItemProps> = ({
         </Badge>
       </Box>
       <Box pl={3}>
-        <Heading size={small ? "xs" : "md"}>{movie.movieTitle}</Heading>
+        <Heading size={small ? "xs" : "sm"}>{movie.movieTitle}</Heading>
 
         <Flex my={2}>
           {movie.genres.map((g) => (

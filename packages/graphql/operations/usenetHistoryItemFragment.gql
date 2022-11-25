@@ -1,0 +1,7 @@
+fragment UsenetHistoryItem on UsenetHistoryItem {
+  name
+  size
+  id
+  time
+  completedOn
+}

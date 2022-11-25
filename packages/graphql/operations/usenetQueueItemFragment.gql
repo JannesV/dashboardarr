@@ -1,0 +1,8 @@
+fragment UsenetQueueItem on UsenetQueueItem {
+  name
+  size
+  id
+  progress
+  state
+  eta
+}

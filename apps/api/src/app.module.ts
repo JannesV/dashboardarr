@@ -14,6 +14,7 @@ import { SabnzbdModule } from "./sabnzbd/sabnzbd.module";
 import { UsenetModule } from "./usenet/usenet.module";
 import { ServicesModule } from "./services/services.module";
 import { ServeStaticModule } from "@nestjs/serve-static";
+import { CacheModule } from "./cache/cache.module";
 
 @Module({
   imports: [
@@ -26,13 +27,14 @@ import { ServeStaticModule } from "@nestjs/serve-static";
     SabnzbdModule,
     UsenetModule,
     ServicesModule,
+    CacheModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), "src/schema.gql"),
       installSubscriptionHandlers: true,
 
       subscriptions: {
-        // "graphql-ws": true,
+        "graphql-ws": true,
         "subscriptions-transport-ws": true,
       },
     }),
@@ -41,6 +43,5 @@ import { ServeStaticModule } from "@nestjs/serve-static";
     }),
   ],
   controllers: [AppController],
-  providers: [],
 })
 export class AppModule {}

@@ -41,6 +41,7 @@ export const SearchModal: FunctionComponent<SearchModalProps> = ({
   const { data, previousData, loading } = useSearchQuery({
     variables: {
       search: searchValue,
+      limit: 20,
     },
     skip: !searchValue,
   });
@@ -136,6 +137,9 @@ export const SearchModal: FunctionComponent<SearchModalProps> = ({
                       shadow="base"
                       flexShrink={0}
                       ref={selected ? (selectedElementRef as any) : undefined}
+                      onClick={() => {
+                        window.open(item.url, "_blank");
+                      }}
                     >
                       <Flex>
                         <Box w={16}>

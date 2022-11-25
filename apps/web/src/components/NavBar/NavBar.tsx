@@ -93,7 +93,12 @@ export const NavBar = () => {
                   placeholder="Search"
                 />
                 <InputRightElement pr={6}>
-                  <Kbd>⌘</Kbd>&nbsp;
+                  <Kbd>
+                    {navigator.platform.toLowerCase().includes("mac")
+                      ? "⌘"
+                      : "CTRL"}
+                  </Kbd>
+                  &nbsp;
                   <Kbd>K</Kbd>
                 </InputRightElement>
               </InputGroup>

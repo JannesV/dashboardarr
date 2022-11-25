@@ -161,7 +161,7 @@ type Query {
   config(configName: String!): Config!
   configs: [Config!]!
   containers: [DockerContainer!]!
-  search(search: String!): [SearchResult!]!
+  search(search: String!, limit: Int!): [SearchResult!]!
   calendar(startDate: DateTime!, endDate: DateTime!): [CalendarItem!]!
   usenetHistory(serviceId: String!, limit: Int!, offset: Int!): UsenetHistory!
   usenetQueue(serviceId: String!, limit: Int!, offset: Int!): UsenetQueue!
@@ -262,5 +262,7 @@ input ServiceInput {
 scalar Upload
 
 type Subscription {
-  usenetInfoUpdated(serviceId: String!): UsenetInfo!
+  usenetInfo(serviceId: String!): UsenetInfo!
+  usenetQueue(serviceId: String!, limit: Int!, offset: Int!): UsenetQueue!
+  usenetHistory(serviceId: String!, limit: Int!, offset: Int!): UsenetHistory!
 }

@@ -235,6 +235,7 @@ export type QueryConfigArgs = {
 
 
 export type QuerySearchArgs = {
+  limit: Scalars['Int'];
   search: Scalars['String'];
 };
 
@@ -319,11 +320,27 @@ export type SettingsInput = {
 
 export type Subscription = {
   __typename?: 'Subscription';
-  usenetInfoUpdated: UsenetInfo;
+  usenetHistory: UsenetHistory;
+  usenetInfo: UsenetInfo;
+  usenetQueue: UsenetQueue;
 };
 
 
-export type SubscriptionUsenetInfoUpdatedArgs = {
+export type SubscriptionUsenetHistoryArgs = {
+  limit: Scalars['Int'];
+  offset: Scalars['Int'];
+  serviceId: Scalars['String'];
+};
+
+
+export type SubscriptionUsenetInfoArgs = {
+  serviceId: Scalars['String'];
+};
+
+
+export type SubscriptionUsenetQueueArgs = {
+  limit: Scalars['Int'];
+  offset: Scalars['Int'];
   serviceId: Scalars['String'];
 };
 
@@ -469,12 +486,28 @@ export type GetUsenetHistoryQueryVariables = Exact<{
 
 export type GetUsenetHistoryQuery = { __typename?: 'Query', usenetHistory: { __typename?: 'UsenetHistory', total: number, items: Array<{ __typename?: 'UsenetHistoryItem', name: string, size: number, id: string, time: number, completedOn: string }> } };
 
+export type GetUsenetHistorySubscriptionSubscriptionVariables = Exact<{
+  serviceId: Scalars['String'];
+  limit: Scalars['Int'];
+  offset: Scalars['Int'];
+}>;
+
+
+export type GetUsenetHistorySubscriptionSubscription = { __typename?: 'Subscription', usenetHistory: { __typename?: 'UsenetHistory', total: number, items: Array<{ __typename?: 'UsenetHistoryItem', name: string, size: number, id: string, time: number, completedOn: string }> } };
+
 export type GetUsenetInfoQueryVariables = Exact<{
   serviceId: Scalars['String'];
 }>;
 
 
 export type GetUsenetInfoQuery = { __typename?: 'Query', usenetInfo: { __typename?: 'UsenetInfo', paused: boolean, sizeLeft: number, speed: number, eta: number, itemsRemaining: number } };
+
+export type GetUsenetInfoSubscriptionSubscriptionVariables = Exact<{
+  serviceId: Scalars['String'];
+}>;
+
+
+export type GetUsenetInfoSubscriptionSubscription = { __typename?: 'Subscription', usenetInfo: { __typename?: 'UsenetInfo', paused: boolean, sizeLeft: number, speed: number, eta: number, itemsRemaining: number } };
 
 export type GetUsenetQueueQueryVariables = Exact<{
   serviceId: Scalars['String'];
@@ -484,6 +517,15 @@ export type GetUsenetQueueQueryVariables = Exact<{
 
 
 export type GetUsenetQueueQuery = { __typename?: 'Query', usenetQueue: { __typename?: 'UsenetQueue', total: number, items: Array<{ __typename?: 'UsenetQueueItem', name: string, size: number, id: string, progress: number, state: UsenetQueueStatus, eta: number }> } };
+
+export type GetUsenetQueueSubscriptionSubscriptionVariables = Exact<{
+  serviceId: Scalars['String'];
+  limit: Scalars['Int'];
+  offset: Scalars['Int'];
+}>;
+
+
+export type GetUsenetQueueSubscriptionSubscription = { __typename?: 'Subscription', usenetQueue: { __typename?: 'UsenetQueue', total: number, items: Array<{ __typename?: 'UsenetQueueItem', name: string, size: number, id: string, progress: number, state: UsenetQueueStatus, eta: number }> } };
 
 export type PauseUsenetQueueMutationVariables = Exact<{
   serviceId: Scalars['String'];
@@ -501,6 +543,7 @@ export type ResumeUsenetQueueMutation = { __typename?: 'Mutation', resumeUsenetQ
 
 export type SearchQueryVariables = Exact<{
   search: Scalars['String'];
+  limit: Scalars['Int'];
 }>;
 
 
@@ -548,7 +591,11 @@ export type UpdateSettingsMutationVariables = Exact<{
 
 export type UpdateSettingsMutation = { __typename?: 'Mutation', updateSettings: { __typename?: 'Config', name: string, settings: { __typename?: 'Settings', title?: string | null, logo?: string | null, favicon?: string | null, colorMode: ColorMode }, modules: Array<{ __typename?: 'ButtonModule', id: string, service: { __typename?: 'Service', name: string, id: string, type: ServiceType, icon: string, url: string, externalUrl?: string | null }, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'CalendarModule', startOfWeek: CalendarWeekStart, id: string, services: Array<{ __typename?: 'Service', id: string }>, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'UsenetModule', id: string, service: { __typename?: 'Service', id: string }, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } }> } };
 
+export type UsenetHistoryItemFragment = { __typename?: 'UsenetHistoryItem', name: string, size: number, id: string, time: number, completedOn: string };
+
 export type UsenetInfoFragment = { __typename?: 'UsenetInfo', paused: boolean, sizeLeft: number, speed: number, eta: number, itemsRemaining: number };
+
+export type UsenetQueueItemFragment = { __typename?: 'UsenetQueueItem', name: string, size: number, id: string, progress: number, state: UsenetQueueStatus, eta: number };
 
 export const ConfigFragmentDoc = gql`
     fragment Config on Config {
@@ -602,6 +649,15 @@ export const ServiceFragmentDoc = gql`
   apiKey
 }
     `;
+export const UsenetHistoryItemFragmentDoc = gql`
+    fragment UsenetHistoryItem on UsenetHistoryItem {
+  name
+  size
+  id
+  time
+  completedOn
+}
+    `;
 export const UsenetInfoFragmentDoc = gql`
     fragment UsenetInfo on UsenetInfo {
   paused
@@ -609,6 +665,16 @@ export const UsenetInfoFragmentDoc = gql`
   speed
   eta
   itemsRemaining
+}
+    `;
+export const UsenetQueueItemFragmentDoc = gql`
+    fragment UsenetQueueItem on UsenetQueueItem {
+  name
+  size
+  id
+  progress
+  state
+  eta
 }
     `;
 export const AddModuleItemDocument = gql`
@@ -948,16 +1014,12 @@ export const GetUsenetHistoryDocument = gql`
     query getUsenetHistory($serviceId: String!, $limit: Int!, $offset: Int!) {
   usenetHistory(serviceId: $serviceId, limit: $limit, offset: $offset) {
     items {
-      name
-      size
-      id
-      time
-      completedOn
+      ...UsenetHistoryItem
     }
     total
   }
 }
-    `;
+    ${UsenetHistoryItemFragmentDoc}`;
 
 /**
  * __useGetUsenetHistoryQuery__
@@ -988,6 +1050,41 @@ export function useGetUsenetHistoryLazyQuery(baseOptions?: Apollo.LazyQueryHookO
 export type GetUsenetHistoryQueryHookResult = ReturnType<typeof useGetUsenetHistoryQuery>;
 export type GetUsenetHistoryLazyQueryHookResult = ReturnType<typeof useGetUsenetHistoryLazyQuery>;
 export type GetUsenetHistoryQueryResult = Apollo.QueryResult<GetUsenetHistoryQuery, GetUsenetHistoryQueryVariables>;
+export const GetUsenetHistorySubscriptionDocument = gql`
+    subscription getUsenetHistorySubscription($serviceId: String!, $limit: Int!, $offset: Int!) {
+  usenetHistory(serviceId: $serviceId, limit: $limit, offset: $offset) {
+    items {
+      ...UsenetHistoryItem
+    }
+    total
+  }
+}
+    ${UsenetHistoryItemFragmentDoc}`;
+
+/**
+ * __useGetUsenetHistorySubscriptionSubscription__
+ *
+ * To run a query within a React component, call `useGetUsenetHistorySubscriptionSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useGetUsenetHistorySubscriptionSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUsenetHistorySubscriptionSubscription({
+ *   variables: {
+ *      serviceId: // value for 'serviceId'
+ *      limit: // value for 'limit'
+ *      offset: // value for 'offset'
+ *   },
+ * });
+ */
+export function useGetUsenetHistorySubscriptionSubscription(baseOptions: Apollo.SubscriptionHookOptions<GetUsenetHistorySubscriptionSubscription, GetUsenetHistorySubscriptionSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<GetUsenetHistorySubscriptionSubscription, GetUsenetHistorySubscriptionSubscriptionVariables>(GetUsenetHistorySubscriptionDocument, options);
+      }
+export type GetUsenetHistorySubscriptionSubscriptionHookResult = ReturnType<typeof useGetUsenetHistorySubscriptionSubscription>;
+export type GetUsenetHistorySubscriptionSubscriptionResult = Apollo.SubscriptionResult<GetUsenetHistorySubscriptionSubscription>;
 export const GetUsenetInfoDocument = gql`
     query getUsenetInfo($serviceId: String!) {
   usenetInfo(serviceId: $serviceId) {
@@ -1023,21 +1120,46 @@ export function useGetUsenetInfoLazyQuery(baseOptions?: Apollo.LazyQueryHookOpti
 export type GetUsenetInfoQueryHookResult = ReturnType<typeof useGetUsenetInfoQuery>;
 export type GetUsenetInfoLazyQueryHookResult = ReturnType<typeof useGetUsenetInfoLazyQuery>;
 export type GetUsenetInfoQueryResult = Apollo.QueryResult<GetUsenetInfoQuery, GetUsenetInfoQueryVariables>;
+export const GetUsenetInfoSubscriptionDocument = gql`
+    subscription getUsenetInfoSubscription($serviceId: String!) {
+  usenetInfo(serviceId: $serviceId) {
+    ...UsenetInfo
+  }
+}
+    ${UsenetInfoFragmentDoc}`;
+
+/**
+ * __useGetUsenetInfoSubscriptionSubscription__
+ *
+ * To run a query within a React component, call `useGetUsenetInfoSubscriptionSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useGetUsenetInfoSubscriptionSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUsenetInfoSubscriptionSubscription({
+ *   variables: {
+ *      serviceId: // value for 'serviceId'
+ *   },
+ * });
+ */
+export function useGetUsenetInfoSubscriptionSubscription(baseOptions: Apollo.SubscriptionHookOptions<GetUsenetInfoSubscriptionSubscription, GetUsenetInfoSubscriptionSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<GetUsenetInfoSubscriptionSubscription, GetUsenetInfoSubscriptionSubscriptionVariables>(GetUsenetInfoSubscriptionDocument, options);
+      }
+export type GetUsenetInfoSubscriptionSubscriptionHookResult = ReturnType<typeof useGetUsenetInfoSubscriptionSubscription>;
+export type GetUsenetInfoSubscriptionSubscriptionResult = Apollo.SubscriptionResult<GetUsenetInfoSubscriptionSubscription>;
 export const GetUsenetQueueDocument = gql`
     query getUsenetQueue($serviceId: String!, $limit: Int!, $offset: Int!) {
   usenetQueue(serviceId: $serviceId, limit: $limit, offset: $offset) {
     items {
-      name
-      size
-      id
-      progress
-      state
-      eta
+      ...UsenetQueueItem
     }
     total
   }
 }
-    `;
+    ${UsenetQueueItemFragmentDoc}`;
 
 /**
  * __useGetUsenetQueueQuery__
@@ -1068,6 +1190,41 @@ export function useGetUsenetQueueLazyQuery(baseOptions?: Apollo.LazyQueryHookOpt
 export type GetUsenetQueueQueryHookResult = ReturnType<typeof useGetUsenetQueueQuery>;
 export type GetUsenetQueueLazyQueryHookResult = ReturnType<typeof useGetUsenetQueueLazyQuery>;
 export type GetUsenetQueueQueryResult = Apollo.QueryResult<GetUsenetQueueQuery, GetUsenetQueueQueryVariables>;
+export const GetUsenetQueueSubscriptionDocument = gql`
+    subscription getUsenetQueueSubscription($serviceId: String!, $limit: Int!, $offset: Int!) {
+  usenetQueue(serviceId: $serviceId, limit: $limit, offset: $offset) {
+    items {
+      ...UsenetQueueItem
+    }
+    total
+  }
+}
+    ${UsenetQueueItemFragmentDoc}`;
+
+/**
+ * __useGetUsenetQueueSubscriptionSubscription__
+ *
+ * To run a query within a React component, call `useGetUsenetQueueSubscriptionSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useGetUsenetQueueSubscriptionSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUsenetQueueSubscriptionSubscription({
+ *   variables: {
+ *      serviceId: // value for 'serviceId'
+ *      limit: // value for 'limit'
+ *      offset: // value for 'offset'
+ *   },
+ * });
+ */
+export function useGetUsenetQueueSubscriptionSubscription(baseOptions: Apollo.SubscriptionHookOptions<GetUsenetQueueSubscriptionSubscription, GetUsenetQueueSubscriptionSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<GetUsenetQueueSubscriptionSubscription, GetUsenetQueueSubscriptionSubscriptionVariables>(GetUsenetQueueSubscriptionDocument, options);
+      }
+export type GetUsenetQueueSubscriptionSubscriptionHookResult = ReturnType<typeof useGetUsenetQueueSubscriptionSubscription>;
+export type GetUsenetQueueSubscriptionSubscriptionResult = Apollo.SubscriptionResult<GetUsenetQueueSubscriptionSubscription>;
 export const PauseUsenetQueueDocument = gql`
     mutation pauseUsenetQueue($serviceId: String!) {
   pauseUsenetQueue(serviceId: $serviceId) {
@@ -1135,8 +1292,8 @@ export type ResumeUsenetQueueMutationHookResult = ReturnType<typeof useResumeUse
 export type ResumeUsenetQueueMutationResult = Apollo.MutationResult<ResumeUsenetQueueMutation>;
 export type ResumeUsenetQueueMutationOptions = Apollo.BaseMutationOptions<ResumeUsenetQueueMutation, ResumeUsenetQueueMutationVariables>;
 export const SearchDocument = gql`
-    query search($search: String!) {
-  search(search: $search) {
+    query search($search: String!, $limit: Int!) {
+  search(search: $search, limit: $limit) {
     image
     title
     type
@@ -1158,6 +1315,7 @@ export const SearchDocument = gql`
  * const { data, loading, error } = useSearchQuery({
  *   variables: {
  *      search: // value for 'search'
+ *      limit: // value for 'limit'
  *   },
  * });
  */

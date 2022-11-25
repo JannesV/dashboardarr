@@ -1,5 +1,5 @@
-query search($search: String!) {
-  search(search: $search) {
+query search($search: String!, $limit: Int!) {
+  search(search: $search, limit: $limit) {
     image
     title
     type

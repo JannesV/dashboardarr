@@ -13,6 +13,7 @@ import {
   GetUsenetInfoDocument,
   GetUsenetInfoQuery,
   GetUsenetInfoQueryVariables,
+  GetUsenetInfoSubscriptionDocument,
   useGetUsenetInfoQuery,
   usePauseUsenetQueueMutation,
   useResumeUsenetQueueMutation,
@@ -50,8 +51,7 @@ export const UsernetModuleBlock: FunctionComponent<UsernetModuleBlockProps> = ({
   const {
     data: usenetInfoData,
     previousData,
-    startPolling,
-    stopPolling,
+    subscribeToMore,
   } = useGetUsenetInfoQuery({
     variables: {
       serviceId,
@@ -59,9 +59,16 @@ export const UsernetModuleBlock: FunctionComponent<UsernetModuleBlockProps> = ({
   });
 
   useEffect(() => {
-    startPolling(2000);
-    return stopPolling;
-  }, [startPolling, stopPolling]);
+    subscribeToMore({
+      document: GetUsenetInfoSubscriptionDocument,
+      variables: { serviceId },
+      updateQuery(prev, { subscriptionData }) {
+        if (!subscriptionData) return prev;
+
+        return subscriptionData.data;
+      },
+    });
+  }, [serviceId, subscribeToMore]);
 
   const [resumeQueue, { loading: resumeLoading }] =
     useResumeUsenetQueueMutation({

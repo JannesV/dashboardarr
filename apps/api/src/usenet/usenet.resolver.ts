@@ -70,26 +70,64 @@ export class UsenetResolver {
     return this.sabnzbdService.getInfo(serviceId);
   }
 
-  @Subscription(() => UsenetInfo)
+  @Subscription(() => UsenetInfo, { name: "usenetInfo" })
   async usenetInfoUpdated(@Args("serviceId") serviceId: string) {
-    let prevValue: UsenetInfo = await this.sabnzbdService.getInfo(serviceId);
+    return sub(() => this.sabnzbdService.getInfo(serviceId), "usenetInfo");
+  }
 
-    const interval = setInterval(async () => {
-      const data = await this.sabnzbdService.getInfo(serviceId);
+  // Todo: More refined subscription on an item basis
+  @Subscription(() => UsenetQueue, { name: "usenetQueue" })
+  usenetQueueSubscription(
+    @Args("serviceId") serviceId: string,
+    @Args("limit", { type: () => Int }) limit: number,
+    @Args("offset", { type: () => Int }) offset: number
+  ) {
+    return sub(
+      () =>
+        this.sabnzbdService.getQueue({
+          serviceId,
+          limit,
+          offset,
+        }),
+      "usenetQueue"
+    );
+  }
 
-      // Todo better equal
-      if (JSON.stringify(prevValue) !== JSON.stringify(data)) {
-        console.log("Data changed");
-        prevValue = data;
-        pubSub.publish("usenetInfoUpdated", {
-          usenetInfoUpdated: data,
-        });
-      }
-    }, 1000);
-
-    return withStaticFields(pubSub.asyncIterator("usenetInfoUpdated"), () => {
-      clearInterval(interval);
-      console.log("Cleared interval");
-    });
+  // Todo: More refined subscription on an item basis
+  @Subscription(() => UsenetHistory, { name: "usenetHistory" })
+  usenetHistorySubscription(
+    @Args("serviceId") serviceId: string,
+    @Args("limit", { type: () => Int }) limit: number,
+    @Args("offset", { type: () => Int }) offset: number
+  ) {
+    return sub(
+      () =>
+        this.sabnzbdService.getHistory({
+          serviceId,
+          limit,
+          offset,
+        }),
+      "usenetHistory"
+    );
   }
 }
+
+// Todo clean this up
+const sub = async (dataFn: () => Promise<any>, key: string) => {
+  let prevValue: any = await dataFn();
+
+  const interval = setInterval(async () => {
+    const data = await dataFn();
+
+    if (JSON.stringify(prevValue) !== JSON.stringify(data)) {
+      prevValue = data;
+      pubSub.publish(key, {
+        [key]: data,
+      });
+    }
+  }, 1000);
+
+  return withStaticFields(pubSub.asyncIterator(key), () => {
+    clearInterval(interval);
+  });
+};

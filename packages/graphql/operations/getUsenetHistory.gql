@@ -1,11 +1,20 @@
 query getUsenetHistory($serviceId: String!, $limit: Int!, $offset: Int!) {
   usenetHistory(serviceId: $serviceId, limit: $limit, offset: $offset) {
     items {
-      name
-      size
-      id
-      time
-      completedOn
+      ...UsenetHistoryItem
+    }
+    total
+  }
+}
+
+subscription getUsenetHistorySubscription(
+  $serviceId: String!
+  $limit: Int!
+  $offset: Int!
+) {
+  usenetHistory(serviceId: $serviceId, limit: $limit, offset: $offset) {
+    items {
+      ...UsenetHistoryItem
     }
     total
   }

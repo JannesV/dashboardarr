@@ -55,7 +55,7 @@ export class RadarrService {
         const service = await this.configService.getServiceById(client.id);
         const url = service.externalUrl || service.url;
 
-        return movies.data.map<SearchResult>((m) => {
+        return movies.map((m) => {
           const image = m.images.find(
             (img) => img.coverType === MediaCoverTypes.Poster
           );
