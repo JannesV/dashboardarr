@@ -7,7 +7,7 @@ import { Kind, OperationTypeNode } from "graphql";
 
 const wsLink = new GraphQLWsLink(
   createClient({
-    url: `ws://${window.location.host}/graphql`,
+    url: `${window.location.protocol.includes('https') ? 'wss' : 'ws'}://${window.location.host}/graphql`,
   })
 );
 
