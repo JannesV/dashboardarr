@@ -5,11 +5,9 @@ import { createClient } from "graphql-ws";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { Kind, OperationTypeNode } from "graphql";
 
-console.log(window.location.host);
-
 const wsLink = new GraphQLWsLink(
   createClient({
-    url: "ws://localhost:3000/graphql",
+    url: `ws://${window.location.host}/graphql`,
   })
 );
 
