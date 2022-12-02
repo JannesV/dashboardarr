@@ -34,6 +34,7 @@ import { SystemInfoModule } from "./systemInfo/systemInfo.module";
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), "src/schema.gql"),
       installSubscriptionHandlers: true,
+      playground: true,
 
       subscriptions: {
         "graphql-ws": true,
