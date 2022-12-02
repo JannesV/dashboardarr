@@ -157,6 +157,14 @@ type UsenetQueue {
   total: Float!
 }
 
+type Info {
+  currentCpuLoad: Float!
+  coreLoads: [Float!]!
+  totalMemory: Float!
+  usedMemory: Float!
+  totalDiskSpace: Float!
+}
+
 type Query {
   config(configName: String!): Config!
   configs: [Config!]!
@@ -167,6 +175,7 @@ type Query {
   usenetQueue(serviceId: String!, limit: Int!, offset: Int!): UsenetQueue!
   usenetInfo(serviceId: String!): UsenetInfo!
   services: [Service!]!
+  getSystemInfo: Info!
 }
 
 union CalendarItem = MovieCalendarItem | TvCalendarItem

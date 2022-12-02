@@ -15,6 +15,7 @@ import { UsenetModule } from "./usenet/usenet.module";
 import { ServicesModule } from "./services/services.module";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { CacheModule } from "./cache/cache.module";
+import { SystemInfoModule } from "./systemInfo/systemInfo.module";
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { CacheModule } from "./cache/cache.module";
     UsenetModule,
     ServicesModule,
     CacheModule,
+    SystemInfoModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), "src/schema.gql"),
