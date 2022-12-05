@@ -3,6 +3,8 @@ WORKDIR /app
 
 ENV NODE_ENV production
 
+RUN apk update && apk --no-cache add lsblk lm-sensors
+
 COPY ./package*.json ./
 COPY ./apps/api ./apps/api
 COPY ./apps/web/build ./web
