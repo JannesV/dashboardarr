@@ -6,6 +6,7 @@ export const requiredModuleFields: {
   button: ["serviceId"],
   calendar: ["startOfWeek"],
   usenet: ["serviceId"],
+  systemInfo: [],
 };
 
 export const hasRequiredFields = (

@@ -46,18 +46,21 @@ export const UsenetDownloads: FunctionComponent<UsenetDownloadsProps> = ({
       limit: pageSize!,
       offset: 0,
     },
+    skip: !pageSize,
   });
 
   useEffect(() => {
-    subscribeToMore({
-      document: GetUsenetQueueSubscriptionDocument,
-      variables: { serviceId, limit: pageSize!, offset: 0 },
-      updateQuery(prev, { subscriptionData }) {
-        if (!subscriptionData) return prev;
+    if (pageSize) {
+      subscribeToMore({
+        document: GetUsenetQueueSubscriptionDocument,
+        variables: { serviceId, limit: pageSize!, offset: 0 },
+        updateQuery(prev, { subscriptionData }) {
+          if (!subscriptionData) return prev;
 
-        return subscriptionData.data;
-      },
-    });
+          return subscriptionData.data;
+        },
+      });
+    }
   }, [pageSize, serviceId, subscribeToMore]);
 
   if (error) {

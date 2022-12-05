@@ -64,6 +64,12 @@ export type Config = {
   settings: Settings;
 };
 
+export type CpuLoad = {
+  __typename?: 'CpuLoad';
+  time: Scalars['DateTime'];
+  value: Scalars['Float'];
+};
+
 export enum DockerAction {
   Remove = 'Remove',
   Restart = 'Restart',
@@ -93,6 +99,15 @@ export enum DockerStatus {
   Unknown = 'Unknown'
 }
 
+export type Info = {
+  __typename?: 'Info';
+  coreLoads: Array<Scalars['Float']>;
+  currentCpuLoad: Scalars['Float'];
+  totalDiskSpace: Scalars['Float'];
+  totalMemory: Scalars['Float'];
+  usedMemory: Scalars['Float'];
+};
+
 export type ModuleItem = {
   id: Scalars['String'];
   position: ModulePosition;
@@ -101,6 +116,7 @@ export type ModuleItem = {
 export type ModuleItemInput = {
   button?: InputMaybe<ButtonModuleInput>;
   calendar?: InputMaybe<CalendarModuleInput>;
+  systemInfo?: InputMaybe<SystemInfoModuleInput>;
   usenet?: InputMaybe<UsenetModuleInput>;
 };
 
@@ -215,6 +231,8 @@ export type Query = {
   config: Config;
   configs: Array<Config>;
   containers: Array<DockerContainer>;
+  cpuLoad: Array<CpuLoad>;
+  getSystemInfo: Info;
   search: Array<SearchResult>;
   services: Array<Service>;
   usenetHistory: UsenetHistory;
@@ -320,6 +338,7 @@ export type SettingsInput = {
 
 export type Subscription = {
   __typename?: 'Subscription';
+  cpuLoad: CpuLoad;
   usenetHistory: UsenetHistory;
   usenetInfo: UsenetInfo;
   usenetQueue: UsenetQueue;
@@ -342,6 +361,16 @@ export type SubscriptionUsenetQueueArgs = {
   limit: Scalars['Int'];
   offset: Scalars['Int'];
   serviceId: Scalars['String'];
+};
+
+export type SystemInfoModule = ModuleItem & {
+  __typename?: 'SystemInfoModule';
+  id: Scalars['String'];
+  position: ModulePosition;
+};
+
+export type SystemInfoModuleInput = {
+  test: Scalars['Boolean'];
 };
 
 export type TvCalendarItem = {
@@ -421,9 +450,9 @@ export type AddModuleItemMutationVariables = Exact<{
 }>;
 
 
-export type AddModuleItemMutation = { __typename?: 'Mutation', addModuleItem: { __typename?: 'Config', name: string, settings: { __typename?: 'Settings', title?: string | null, logo?: string | null, favicon?: string | null, colorMode: ColorMode }, modules: Array<{ __typename?: 'ButtonModule', id: string, service: { __typename?: 'Service', name: string, id: string, type: ServiceType, icon: string, url: string, externalUrl?: string | null }, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'CalendarModule', startOfWeek: CalendarWeekStart, id: string, services: Array<{ __typename?: 'Service', id: string }>, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'UsenetModule', id: string, service: { __typename?: 'Service', id: string }, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } }> } };
+export type AddModuleItemMutation = { __typename?: 'Mutation', addModuleItem: { __typename?: 'Config', name: string, settings: { __typename?: 'Settings', title?: string | null, logo?: string | null, favicon?: string | null, colorMode: ColorMode }, modules: Array<{ __typename?: 'ButtonModule', id: string, service: { __typename?: 'Service', name: string, id: string, type: ServiceType, icon: string, url: string, externalUrl?: string | null }, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'CalendarModule', startOfWeek: CalendarWeekStart, id: string, services: Array<{ __typename?: 'Service', id: string }>, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'SystemInfoModule', id: string, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'UsenetModule', id: string, service: { __typename?: 'Service', id: string }, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } }> } };
 
-export type ConfigFragment = { __typename?: 'Config', name: string, settings: { __typename?: 'Settings', title?: string | null, logo?: string | null, favicon?: string | null, colorMode: ColorMode }, modules: Array<{ __typename?: 'ButtonModule', id: string, service: { __typename?: 'Service', name: string, id: string, type: ServiceType, icon: string, url: string, externalUrl?: string | null }, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'CalendarModule', startOfWeek: CalendarWeekStart, id: string, services: Array<{ __typename?: 'Service', id: string }>, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'UsenetModule', id: string, service: { __typename?: 'Service', id: string }, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } }> };
+export type ConfigFragment = { __typename?: 'Config', name: string, settings: { __typename?: 'Settings', title?: string | null, logo?: string | null, favicon?: string | null, colorMode: ColorMode }, modules: Array<{ __typename?: 'ButtonModule', id: string, service: { __typename?: 'Service', name: string, id: string, type: ServiceType, icon: string, url: string, externalUrl?: string | null }, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'CalendarModule', startOfWeek: CalendarWeekStart, id: string, services: Array<{ __typename?: 'Service', id: string }>, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'SystemInfoModule', id: string, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'UsenetModule', id: string, service: { __typename?: 'Service', id: string }, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } }> };
 
 export type CreateServiceMutationVariables = Exact<{
   service: ServiceInput;
@@ -438,7 +467,7 @@ export type DeleteModuleItemMutationVariables = Exact<{
 }>;
 
 
-export type DeleteModuleItemMutation = { __typename?: 'Mutation', deleteModuleItem: { __typename?: 'Config', name: string, settings: { __typename?: 'Settings', title?: string | null, logo?: string | null, favicon?: string | null, colorMode: ColorMode }, modules: Array<{ __typename?: 'ButtonModule', id: string, service: { __typename?: 'Service', name: string, id: string, type: ServiceType, icon: string, url: string, externalUrl?: string | null }, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'CalendarModule', startOfWeek: CalendarWeekStart, id: string, services: Array<{ __typename?: 'Service', id: string }>, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'UsenetModule', id: string, service: { __typename?: 'Service', id: string }, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } }> } };
+export type DeleteModuleItemMutation = { __typename?: 'Mutation', deleteModuleItem: { __typename?: 'Config', name: string, settings: { __typename?: 'Settings', title?: string | null, logo?: string | null, favicon?: string | null, colorMode: ColorMode }, modules: Array<{ __typename?: 'ButtonModule', id: string, service: { __typename?: 'Service', name: string, id: string, type: ServiceType, icon: string, url: string, externalUrl?: string | null }, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'CalendarModule', startOfWeek: CalendarWeekStart, id: string, services: Array<{ __typename?: 'Service', id: string }>, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'SystemInfoModule', id: string, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'UsenetModule', id: string, service: { __typename?: 'Service', id: string }, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } }> } };
 
 export type DeleteServiceMutationVariables = Exact<{
   ids: Array<Scalars['String']> | Scalars['String'];
@@ -460,7 +489,7 @@ export type GetConfigQueryVariables = Exact<{
 }>;
 
 
-export type GetConfigQuery = { __typename?: 'Query', config: { __typename?: 'Config', name: string, settings: { __typename?: 'Settings', title?: string | null, logo?: string | null, favicon?: string | null, colorMode: ColorMode }, modules: Array<{ __typename?: 'ButtonModule', id: string, service: { __typename?: 'Service', name: string, id: string, type: ServiceType, icon: string, url: string, externalUrl?: string | null }, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'CalendarModule', startOfWeek: CalendarWeekStart, id: string, services: Array<{ __typename?: 'Service', id: string }>, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'UsenetModule', id: string, service: { __typename?: 'Service', id: string }, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } }> } };
+export type GetConfigQuery = { __typename?: 'Query', config: { __typename?: 'Config', name: string, settings: { __typename?: 'Settings', title?: string | null, logo?: string | null, favicon?: string | null, colorMode: ColorMode }, modules: Array<{ __typename?: 'ButtonModule', id: string, service: { __typename?: 'Service', name: string, id: string, type: ServiceType, icon: string, url: string, externalUrl?: string | null }, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'CalendarModule', startOfWeek: CalendarWeekStart, id: string, services: Array<{ __typename?: 'Service', id: string }>, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'SystemInfoModule', id: string, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'UsenetModule', id: string, service: { __typename?: 'Service', id: string }, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } }> } };
 
 export type GetConfigListQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -471,6 +500,16 @@ export type GetContainersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetContainersQuery = { __typename?: 'Query', containers: Array<{ __typename?: 'DockerContainer', id: string, name: string, image: string, status: DockerStatus, ports: Array<{ __typename?: 'DockerPort', private: number, public: number }> }> };
+
+export type GetCpuLoadQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetCpuLoadQuery = { __typename?: 'Query', cpuLoad: Array<{ __typename?: 'CpuLoad', time: string, value: number }> };
+
+export type GetCpuLoadUpdateSubscriptionVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetCpuLoadUpdateSubscription = { __typename?: 'Subscription', cpuLoad: { __typename?: 'CpuLoad', time: string, value: number } };
 
 export type GetServicesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -557,7 +596,7 @@ export type UpdateConfigMutationVariables = Exact<{
 }>;
 
 
-export type UpdateConfigMutation = { __typename?: 'Mutation', updateConfig: { __typename?: 'Config', name: string, settings: { __typename?: 'Settings', title?: string | null, logo?: string | null, favicon?: string | null, colorMode: ColorMode }, modules: Array<{ __typename?: 'ButtonModule', id: string, service: { __typename?: 'Service', name: string, id: string, type: ServiceType, icon: string, url: string, externalUrl?: string | null }, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'CalendarModule', startOfWeek: CalendarWeekStart, id: string, services: Array<{ __typename?: 'Service', id: string }>, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'UsenetModule', id: string, service: { __typename?: 'Service', id: string }, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } }> } };
+export type UpdateConfigMutation = { __typename?: 'Mutation', updateConfig: { __typename?: 'Config', name: string, settings: { __typename?: 'Settings', title?: string | null, logo?: string | null, favicon?: string | null, colorMode: ColorMode }, modules: Array<{ __typename?: 'ButtonModule', id: string, service: { __typename?: 'Service', name: string, id: string, type: ServiceType, icon: string, url: string, externalUrl?: string | null }, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'CalendarModule', startOfWeek: CalendarWeekStart, id: string, services: Array<{ __typename?: 'Service', id: string }>, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'SystemInfoModule', id: string, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'UsenetModule', id: string, service: { __typename?: 'Service', id: string }, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } }> } };
 
 export type UpdateContainersMutationVariables = Exact<{
   ids: Array<Scalars['String']> | Scalars['String'];
@@ -573,7 +612,7 @@ export type UpdateModulePositionsMutationVariables = Exact<{
 }>;
 
 
-export type UpdateModulePositionsMutation = { __typename?: 'Mutation', updateModulePositions: { __typename?: 'Config', name: string, settings: { __typename?: 'Settings', title?: string | null, logo?: string | null, favicon?: string | null, colorMode: ColorMode }, modules: Array<{ __typename?: 'ButtonModule', id: string, service: { __typename?: 'Service', name: string, id: string, type: ServiceType, icon: string, url: string, externalUrl?: string | null }, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'CalendarModule', startOfWeek: CalendarWeekStart, id: string, services: Array<{ __typename?: 'Service', id: string }>, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'UsenetModule', id: string, service: { __typename?: 'Service', id: string }, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } }> } };
+export type UpdateModulePositionsMutation = { __typename?: 'Mutation', updateModulePositions: { __typename?: 'Config', name: string, settings: { __typename?: 'Settings', title?: string | null, logo?: string | null, favicon?: string | null, colorMode: ColorMode }, modules: Array<{ __typename?: 'ButtonModule', id: string, service: { __typename?: 'Service', name: string, id: string, type: ServiceType, icon: string, url: string, externalUrl?: string | null }, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'CalendarModule', startOfWeek: CalendarWeekStart, id: string, services: Array<{ __typename?: 'Service', id: string }>, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'SystemInfoModule', id: string, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'UsenetModule', id: string, service: { __typename?: 'Service', id: string }, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } }> } };
 
 export type UpdateServiceMutationVariables = Exact<{
   id: Scalars['String'];
@@ -589,7 +628,7 @@ export type UpdateSettingsMutationVariables = Exact<{
 }>;
 
 
-export type UpdateSettingsMutation = { __typename?: 'Mutation', updateSettings: { __typename?: 'Config', name: string, settings: { __typename?: 'Settings', title?: string | null, logo?: string | null, favicon?: string | null, colorMode: ColorMode }, modules: Array<{ __typename?: 'ButtonModule', id: string, service: { __typename?: 'Service', name: string, id: string, type: ServiceType, icon: string, url: string, externalUrl?: string | null }, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'CalendarModule', startOfWeek: CalendarWeekStart, id: string, services: Array<{ __typename?: 'Service', id: string }>, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'UsenetModule', id: string, service: { __typename?: 'Service', id: string }, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } }> } };
+export type UpdateSettingsMutation = { __typename?: 'Mutation', updateSettings: { __typename?: 'Config', name: string, settings: { __typename?: 'Settings', title?: string | null, logo?: string | null, favicon?: string | null, colorMode: ColorMode }, modules: Array<{ __typename?: 'ButtonModule', id: string, service: { __typename?: 'Service', name: string, id: string, type: ServiceType, icon: string, url: string, externalUrl?: string | null }, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'CalendarModule', startOfWeek: CalendarWeekStart, id: string, services: Array<{ __typename?: 'Service', id: string }>, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'SystemInfoModule', id: string, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'UsenetModule', id: string, service: { __typename?: 'Service', id: string }, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } }> } };
 
 export type UsenetHistoryItemFragment = { __typename?: 'UsenetHistoryItem', name: string, size: number, id: string, time: number, completedOn: string };
 
@@ -976,6 +1015,71 @@ export function useGetContainersLazyQuery(baseOptions?: Apollo.LazyQueryHookOpti
 export type GetContainersQueryHookResult = ReturnType<typeof useGetContainersQuery>;
 export type GetContainersLazyQueryHookResult = ReturnType<typeof useGetContainersLazyQuery>;
 export type GetContainersQueryResult = Apollo.QueryResult<GetContainersQuery, GetContainersQueryVariables>;
+export const GetCpuLoadDocument = gql`
+    query getCpuLoad {
+  cpuLoad {
+    time
+    value
+  }
+}
+    `;
+
+/**
+ * __useGetCpuLoadQuery__
+ *
+ * To run a query within a React component, call `useGetCpuLoadQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetCpuLoadQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetCpuLoadQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetCpuLoadQuery(baseOptions?: Apollo.QueryHookOptions<GetCpuLoadQuery, GetCpuLoadQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetCpuLoadQuery, GetCpuLoadQueryVariables>(GetCpuLoadDocument, options);
+      }
+export function useGetCpuLoadLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCpuLoadQuery, GetCpuLoadQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetCpuLoadQuery, GetCpuLoadQueryVariables>(GetCpuLoadDocument, options);
+        }
+export type GetCpuLoadQueryHookResult = ReturnType<typeof useGetCpuLoadQuery>;
+export type GetCpuLoadLazyQueryHookResult = ReturnType<typeof useGetCpuLoadLazyQuery>;
+export type GetCpuLoadQueryResult = Apollo.QueryResult<GetCpuLoadQuery, GetCpuLoadQueryVariables>;
+export const GetCpuLoadUpdateDocument = gql`
+    subscription getCpuLoadUpdate {
+  cpuLoad {
+    time
+    value
+  }
+}
+    `;
+
+/**
+ * __useGetCpuLoadUpdateSubscription__
+ *
+ * To run a query within a React component, call `useGetCpuLoadUpdateSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useGetCpuLoadUpdateSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetCpuLoadUpdateSubscription({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetCpuLoadUpdateSubscription(baseOptions?: Apollo.SubscriptionHookOptions<GetCpuLoadUpdateSubscription, GetCpuLoadUpdateSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<GetCpuLoadUpdateSubscription, GetCpuLoadUpdateSubscriptionVariables>(GetCpuLoadUpdateDocument, options);
+      }
+export type GetCpuLoadUpdateSubscriptionHookResult = ReturnType<typeof useGetCpuLoadUpdateSubscription>;
+export type GetCpuLoadUpdateSubscriptionResult = Apollo.SubscriptionResult<GetCpuLoadUpdateSubscription>;
 export const GetServicesDocument = gql`
     query getServices {
   services {

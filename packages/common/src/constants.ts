@@ -21,4 +21,8 @@ export const ModuleSizeContraints: Record<ModuleType, SizeConstraint> = {
     minHeight: 2,
     minWidth: 3,
   },
+  systemInfo: {
+    minWidth: 1,
+    minHeight: 2,
+  },
 };

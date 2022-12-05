@@ -53,6 +53,11 @@ type ModulePosition {
   h: Float
 }
 
+type SystemInfoModule implements ModuleItem {
+  id: String!
+  position: ModulePosition!
+}
+
 type CalendarModule implements ModuleItem {
   id: String!
   position: ModulePosition!
@@ -158,11 +163,14 @@ type UsenetQueue {
 }
 
 type Info {
-  currentCpuLoad: Float!
-  coreLoads: [Float!]!
   totalMemory: Float!
   usedMemory: Float!
   totalDiskSpace: Float!
+}
+
+type CpuLoad {
+  time: DateTime!
+  value: Float!
 }
 
 type Query {
@@ -176,6 +184,7 @@ type Query {
   usenetInfo(serviceId: String!): UsenetInfo!
   services: [Service!]!
   getSystemInfo: Info!
+  cpuLoad: [CpuLoad!]!
 }
 
 union CalendarItem = MovieCalendarItem | TvCalendarItem
@@ -237,6 +246,7 @@ input ModuleItemInput {
   usenet: UsenetModuleInput
   button: ButtonModuleInput
   calendar: CalendarModuleInput
+  systemInfo: SystemInfoModuleInput
 }
 
 input UsenetModuleInput {
@@ -249,6 +259,10 @@ input ButtonModuleInput {
 
 input CalendarModuleInput {
   startOfWeek: CalendarWeekStart!
+}
+
+input SystemInfoModuleInput {
+  test: Boolean!
 }
 
 enum DockerAction {
@@ -274,4 +288,5 @@ type Subscription {
   usenetInfo(serviceId: String!): UsenetInfo!
   usenetQueue(serviceId: String!, limit: Int!, offset: Int!): UsenetQueue!
   usenetHistory(serviceId: String!, limit: Int!, offset: Int!): UsenetHistory!
+  cpuLoad: CpuLoad!
 }

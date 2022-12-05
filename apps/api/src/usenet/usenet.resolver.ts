@@ -7,14 +7,12 @@ import {
   Resolver,
   Subscription,
 } from "@nestjs/graphql";
-import { PubSub } from "graphql-subscriptions";
+import { pubSub } from "src/utils/pubSub";
 import { withStaticFields } from "src/utils/withObservable";
 import { SabnzbdService } from "../sabnzbd/sabnzbd.service";
 import { UsenetHistory } from "./models/usenetHistory.model";
 import { UsenetInfo } from "./models/usenetInfo.model";
 import { UsenetQueue } from "./models/usenetQueu.model";
-
-const pubSub = new PubSub();
 
 @Resolver()
 export class UsenetResolver {

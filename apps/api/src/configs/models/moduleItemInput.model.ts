@@ -1,6 +1,7 @@
 import { ModuleType } from "@dashboardarr/common";
 import { Field, InputType } from "@nestjs/graphql";
 import { CalendarModuleInput } from "src/calendar/models/calendarModuleInput.model";
+import { SystemInfoModuleInput } from "src/systemInfo/models/systemInfoModuleInput.model";
 import { UsenetModuleInput } from "src/usenet/models/usenetModuleInput.model";
 import { ButtonModuleInput } from "./buttonModuleInput.model";
 
@@ -14,4 +15,7 @@ export class ModuleItemInput {
 
   @Field(() => CalendarModuleInput, { nullable: true })
   [ModuleType.Calendar]?: CalendarModuleInput;
+
+  @Field(() => SystemInfoModuleInput, { nullable: true })
+  [ModuleType.SystemInfo]?: SystemInfoModuleInput;
 }

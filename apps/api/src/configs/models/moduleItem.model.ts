@@ -4,6 +4,7 @@ import { UsenetModule } from "src/usenet/models/usenetModule.model";
 import { ButtonModule } from "./buttonModule.model";
 import { ModulePosition } from "./modulePosition.model";
 import { ModuleType } from "@dashboardarr/common";
+import { SystemInfoModule } from "src/systemInfo/models/systemInfoModule.model";
 
 @InterfaceType({
   resolveType(item: ModuleItem) {
@@ -13,6 +14,8 @@ import { ModuleType } from "@dashboardarr/common";
       return UsenetModule;
     } else if (item.type === ModuleType.Calendar) {
       return CalendarModule;
+    } else if (item.type === ModuleType.SystemInfo) {
+      return SystemInfoModule;
     }
   },
 })

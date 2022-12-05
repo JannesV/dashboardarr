@@ -1,15 +1,23 @@
 import { Logger } from "@nestjs/common";
-import { Field, ObjectType, Query, Resolver } from "@nestjs/graphql";
-import { currentLoad, mem, fsSize, diskLayout } from "systeminformation";
+import {
+  Field,
+  ObjectType,
+  Query,
+  Resolver,
+  Subscription,
+} from "@nestjs/graphql";
+import { subscriptionInterval } from "src/utils/subscriptionIntervalHelper";
+import {
+  currentLoad,
+  mem,
+  fsSize,
+  diskLayout,
+  blockDevices,
+} from "systeminformation";
 import { format } from "util";
+import { SystemInfoService } from "./systemInfo.service";
 @ObjectType()
 class Info {
-  @Field()
-  currentCpuLoad: number;
-
-  @Field(() => [Number])
-  coreLoads: number[];
-
   @Field()
   totalMemory: number;
 
@@ -22,24 +30,55 @@ class Info {
 
 @Resolver()
 export class SystemInfoResolver {
+  constructor(private systemInfoService: SystemInfoService) {}
   private logger = new Logger(SystemInfoResolver.name);
   @Query(() => Info)
   async getSystemInfo(): Promise<Info> {
-    const [load, memory, diskSize, layout] = await Promise.all([
-      await currentLoad(),
+    const [memory, diskSize, diskLay, blockDev] = await Promise.all([
       await mem(),
       await fsSize(),
       await diskLayout(),
+      await blockDevices(),
     ]);
 
-    this.logger.log(format({ diskSize, diskLayout: layout, load, memory }));
+    this.logger.log(
+      format({
+        diskSize: diskSize,
+        diskLayout: diskLay,
+        blockDevices: blockDev,
+      })
+    );
 
     return {
-      currentCpuLoad: load.currentLoad,
       totalMemory: memory.total,
-      usedMemory: memory.used,
-      coreLoads: load.cpus.map((c) => c.load),
+      usedMemory: memory.active,
       totalDiskSpace: 0,
     };
   }
+
+  @Query(() => [CpuLoad], { name: "cpuLoad" })
+  cpuLoad(): CpuLoad[] {
+    return this.systemInfoService.getCpuData();
+  }
+
+  @Subscription(() => CpuLoad, { name: "cpuLoad" })
+  cpuLoadSubscription() {
+    return subscriptionInterval(async () => {
+      const data = await currentLoad();
+
+      return {
+        time: new Date(),
+        value: data.currentLoad,
+      };
+    }, "cpuLoad");
+  }
+}
+
+@ObjectType()
+class CpuLoad {
+  @Field()
+  time: Date;
+
+  @Field()
+  value: number;
 }

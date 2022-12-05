@@ -16,6 +16,7 @@ import { ServicesModule } from "./services/services.module";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { CacheModule } from "./cache/cache.module";
 import { SystemInfoModule } from "./systemInfo/systemInfo.module";
+import { ScheduleModule } from "@nestjs/schedule";
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { SystemInfoModule } from "./systemInfo/systemInfo.module";
     ServicesModule,
     CacheModule,
     SystemInfoModule,
+    ScheduleModule.forRoot(),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), "src/schema.gql"),

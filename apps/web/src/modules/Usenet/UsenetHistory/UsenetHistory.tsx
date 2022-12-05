@@ -62,15 +62,17 @@ export const UsenetHistory: FunctionComponent<UsenetHistoryProps> = ({
   });
 
   useEffect(() => {
-    subscribeToMore({
-      document: GetUsenetHistorySubscriptionDocument,
-      variables: { serviceId, limit: pageSize!, offset: 0 },
-      updateQuery(prev, { subscriptionData }) {
-        if (!subscriptionData) return prev;
+    if (pageSize) {
+      subscribeToMore({
+        document: GetUsenetHistorySubscriptionDocument,
+        variables: { serviceId, limit: pageSize!, offset: 0 },
+        updateQuery(prev, { subscriptionData }) {
+          if (!subscriptionData) return prev;
 
-        return subscriptionData.data;
-      },
-    });
+          return subscriptionData.data;
+        },
+      });
+    }
   }, [pageSize, serviceId, subscribeToMore]);
 
   const {

@@ -34,6 +34,7 @@ import {
 import { useConfig } from "../../utils/useConfig";
 import { useAtomValue } from "jotai";
 import { editDashboardModulesAtom } from "../../state/module";
+import { SystemInfoModuleBlock } from "../../modules/SystemInfo/SystemInfoModuleBlock";
 
 interface MainPageProps {}
 
@@ -132,6 +133,11 @@ export const MainPage: FunctionComponent<MainPageProps> = () => {
               case "UsenetModule":
                 module = <UsernetModuleBlock serviceId={item.service.id} />;
                 constraints = ModuleSizeContraints.usenet;
+                break;
+
+              case "SystemInfoModule":
+                module = <SystemInfoModuleBlock />;
+                constraints = ModuleSizeContraints.systemInfo;
                 break;
             }
 
