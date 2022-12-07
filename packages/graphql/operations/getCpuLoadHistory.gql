@@ -1,0 +1,6 @@
+query getCpuLoadHistory {
+  cpuLoadHistory {
+    time
+    value
+  }
+}

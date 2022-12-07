@@ -64,12 +64,6 @@ export type Config = {
   settings: Settings;
 };
 
-export type CpuLoad = {
-  __typename?: 'CpuLoad';
-  time: Scalars['DateTime'];
-  value: Scalars['Float'];
-};
-
 export enum DockerAction {
   Remove = 'Remove',
   Restart = 'Restart',
@@ -99,11 +93,8 @@ export enum DockerStatus {
   Unknown = 'Unknown'
 }
 
-export type Info = {
-  __typename?: 'Info';
-  coreLoads: Array<Scalars['Float']>;
-  currentCpuLoad: Scalars['Float'];
-  totalDiskSpace: Scalars['Float'];
+export type MemoryInfo = {
+  __typename?: 'MemoryInfo';
   totalMemory: Scalars['Float'];
   usedMemory: Scalars['Float'];
 };
@@ -231,8 +222,8 @@ export type Query = {
   config: Config;
   configs: Array<Config>;
   containers: Array<DockerContainer>;
-  cpuLoad: Array<CpuLoad>;
-  getSystemInfo: Info;
+  cpuLoadHistory: Array<SystemLoadItem>;
+  memoryInfo: MemoryInfo;
   search: Array<SearchResult>;
   services: Array<Service>;
   usenetHistory: UsenetHistory;
@@ -338,7 +329,8 @@ export type SettingsInput = {
 
 export type Subscription = {
   __typename?: 'Subscription';
-  cpuLoad: CpuLoad;
+  currentCpuLoad: SystemLoadItem;
+  currentMemoryUsage: SystemLoadItem;
   usenetHistory: UsenetHistory;
   usenetInfo: UsenetInfo;
   usenetQueue: UsenetQueue;
@@ -371,6 +363,12 @@ export type SystemInfoModule = ModuleItem & {
 
 export type SystemInfoModuleInput = {
   test: Scalars['Boolean'];
+};
+
+export type SystemLoadItem = {
+  __typename?: 'SystemLoadItem';
+  time: Scalars['DateTime'];
+  value: Scalars['Float'];
 };
 
 export type TvCalendarItem = {
@@ -461,6 +459,16 @@ export type CreateServiceMutationVariables = Exact<{
 
 export type CreateServiceMutation = { __typename?: 'Mutation', createService: { __typename?: 'Service', name: string, id: string, type: ServiceType, icon: string, url: string, externalUrl?: string | null, apiKey?: string | null } };
 
+export type CurrentCpuLoadSubscriptionVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CurrentCpuLoadSubscription = { __typename?: 'Subscription', currentCpuLoad: { __typename?: 'SystemLoadItem', time: string, value: number } };
+
+export type CurrentMemoryUsageSubscriptionVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CurrentMemoryUsageSubscription = { __typename?: 'Subscription', currentMemoryUsage: { __typename?: 'SystemLoadItem', time: string, value: number } };
+
 export type DeleteModuleItemMutationVariables = Exact<{
   configName: Scalars['String'];
   moduleId: Scalars['String'];
@@ -501,15 +509,15 @@ export type GetContainersQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetContainersQuery = { __typename?: 'Query', containers: Array<{ __typename?: 'DockerContainer', id: string, name: string, image: string, status: DockerStatus, ports: Array<{ __typename?: 'DockerPort', private: number, public: number }> }> };
 
-export type GetCpuLoadQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetCpuLoadHistoryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCpuLoadQuery = { __typename?: 'Query', cpuLoad: Array<{ __typename?: 'CpuLoad', time: string, value: number }> };
+export type GetCpuLoadHistoryQuery = { __typename?: 'Query', cpuLoadHistory: Array<{ __typename?: 'SystemLoadItem', time: string, value: number }> };
 
-export type GetCpuLoadUpdateSubscriptionVariables = Exact<{ [key: string]: never; }>;
+export type GetMemoryInfoQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCpuLoadUpdateSubscription = { __typename?: 'Subscription', cpuLoad: { __typename?: 'CpuLoad', time: string, value: number } };
+export type GetMemoryInfoQuery = { __typename?: 'Query', memoryInfo: { __typename?: 'MemoryInfo', totalMemory: number, usedMemory: number } };
 
 export type GetServicesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -783,6 +791,66 @@ export function useCreateServiceMutation(baseOptions?: Apollo.MutationHookOption
 export type CreateServiceMutationHookResult = ReturnType<typeof useCreateServiceMutation>;
 export type CreateServiceMutationResult = Apollo.MutationResult<CreateServiceMutation>;
 export type CreateServiceMutationOptions = Apollo.BaseMutationOptions<CreateServiceMutation, CreateServiceMutationVariables>;
+export const CurrentCpuLoadDocument = gql`
+    subscription currentCpuLoad {
+  currentCpuLoad {
+    time
+    value
+  }
+}
+    `;
+
+/**
+ * __useCurrentCpuLoadSubscription__
+ *
+ * To run a query within a React component, call `useCurrentCpuLoadSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useCurrentCpuLoadSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useCurrentCpuLoadSubscription({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useCurrentCpuLoadSubscription(baseOptions?: Apollo.SubscriptionHookOptions<CurrentCpuLoadSubscription, CurrentCpuLoadSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<CurrentCpuLoadSubscription, CurrentCpuLoadSubscriptionVariables>(CurrentCpuLoadDocument, options);
+      }
+export type CurrentCpuLoadSubscriptionHookResult = ReturnType<typeof useCurrentCpuLoadSubscription>;
+export type CurrentCpuLoadSubscriptionResult = Apollo.SubscriptionResult<CurrentCpuLoadSubscription>;
+export const CurrentMemoryUsageDocument = gql`
+    subscription currentMemoryUsage {
+  currentMemoryUsage {
+    time
+    value
+  }
+}
+    `;
+
+/**
+ * __useCurrentMemoryUsageSubscription__
+ *
+ * To run a query within a React component, call `useCurrentMemoryUsageSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useCurrentMemoryUsageSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useCurrentMemoryUsageSubscription({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useCurrentMemoryUsageSubscription(baseOptions?: Apollo.SubscriptionHookOptions<CurrentMemoryUsageSubscription, CurrentMemoryUsageSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<CurrentMemoryUsageSubscription, CurrentMemoryUsageSubscriptionVariables>(CurrentMemoryUsageDocument, options);
+      }
+export type CurrentMemoryUsageSubscriptionHookResult = ReturnType<typeof useCurrentMemoryUsageSubscription>;
+export type CurrentMemoryUsageSubscriptionResult = Apollo.SubscriptionResult<CurrentMemoryUsageSubscription>;
 export const DeleteModuleItemDocument = gql`
     mutation deleteModuleItem($configName: String!, $moduleId: String!) {
   deleteModuleItem(configName: $configName, moduleId: $moduleId) {
@@ -1015,9 +1083,9 @@ export function useGetContainersLazyQuery(baseOptions?: Apollo.LazyQueryHookOpti
 export type GetContainersQueryHookResult = ReturnType<typeof useGetContainersQuery>;
 export type GetContainersLazyQueryHookResult = ReturnType<typeof useGetContainersLazyQuery>;
 export type GetContainersQueryResult = Apollo.QueryResult<GetContainersQuery, GetContainersQueryVariables>;
-export const GetCpuLoadDocument = gql`
-    query getCpuLoad {
-  cpuLoad {
+export const GetCpuLoadHistoryDocument = gql`
+    query getCpuLoadHistory {
+  cpuLoadHistory {
     time
     value
   }
@@ -1025,61 +1093,66 @@ export const GetCpuLoadDocument = gql`
     `;
 
 /**
- * __useGetCpuLoadQuery__
+ * __useGetCpuLoadHistoryQuery__
  *
- * To run a query within a React component, call `useGetCpuLoadQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetCpuLoadQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetCpuLoadHistoryQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetCpuLoadHistoryQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetCpuLoadQuery({
+ * const { data, loading, error } = useGetCpuLoadHistoryQuery({
  *   variables: {
  *   },
  * });
  */
-export function useGetCpuLoadQuery(baseOptions?: Apollo.QueryHookOptions<GetCpuLoadQuery, GetCpuLoadQueryVariables>) {
+export function useGetCpuLoadHistoryQuery(baseOptions?: Apollo.QueryHookOptions<GetCpuLoadHistoryQuery, GetCpuLoadHistoryQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetCpuLoadQuery, GetCpuLoadQueryVariables>(GetCpuLoadDocument, options);
+        return Apollo.useQuery<GetCpuLoadHistoryQuery, GetCpuLoadHistoryQueryVariables>(GetCpuLoadHistoryDocument, options);
       }
-export function useGetCpuLoadLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCpuLoadQuery, GetCpuLoadQueryVariables>) {
+export function useGetCpuLoadHistoryLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCpuLoadHistoryQuery, GetCpuLoadHistoryQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetCpuLoadQuery, GetCpuLoadQueryVariables>(GetCpuLoadDocument, options);
+          return Apollo.useLazyQuery<GetCpuLoadHistoryQuery, GetCpuLoadHistoryQueryVariables>(GetCpuLoadHistoryDocument, options);
         }
-export type GetCpuLoadQueryHookResult = ReturnType<typeof useGetCpuLoadQuery>;
-export type GetCpuLoadLazyQueryHookResult = ReturnType<typeof useGetCpuLoadLazyQuery>;
-export type GetCpuLoadQueryResult = Apollo.QueryResult<GetCpuLoadQuery, GetCpuLoadQueryVariables>;
-export const GetCpuLoadUpdateDocument = gql`
-    subscription getCpuLoadUpdate {
-  cpuLoad {
-    time
-    value
+export type GetCpuLoadHistoryQueryHookResult = ReturnType<typeof useGetCpuLoadHistoryQuery>;
+export type GetCpuLoadHistoryLazyQueryHookResult = ReturnType<typeof useGetCpuLoadHistoryLazyQuery>;
+export type GetCpuLoadHistoryQueryResult = Apollo.QueryResult<GetCpuLoadHistoryQuery, GetCpuLoadHistoryQueryVariables>;
+export const GetMemoryInfoDocument = gql`
+    query getMemoryInfo {
+  memoryInfo {
+    totalMemory
+    usedMemory
   }
 }
     `;
 
 /**
- * __useGetCpuLoadUpdateSubscription__
+ * __useGetMemoryInfoQuery__
  *
- * To run a query within a React component, call `useGetCpuLoadUpdateSubscription` and pass it any options that fit your needs.
- * When your component renders, `useGetCpuLoadUpdateSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetMemoryInfoQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMemoryInfoQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
- * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetCpuLoadUpdateSubscription({
+ * const { data, loading, error } = useGetMemoryInfoQuery({
  *   variables: {
  *   },
  * });
  */
-export function useGetCpuLoadUpdateSubscription(baseOptions?: Apollo.SubscriptionHookOptions<GetCpuLoadUpdateSubscription, GetCpuLoadUpdateSubscriptionVariables>) {
+export function useGetMemoryInfoQuery(baseOptions?: Apollo.QueryHookOptions<GetMemoryInfoQuery, GetMemoryInfoQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useSubscription<GetCpuLoadUpdateSubscription, GetCpuLoadUpdateSubscriptionVariables>(GetCpuLoadUpdateDocument, options);
+        return Apollo.useQuery<GetMemoryInfoQuery, GetMemoryInfoQueryVariables>(GetMemoryInfoDocument, options);
       }
-export type GetCpuLoadUpdateSubscriptionHookResult = ReturnType<typeof useGetCpuLoadUpdateSubscription>;
-export type GetCpuLoadUpdateSubscriptionResult = Apollo.SubscriptionResult<GetCpuLoadUpdateSubscription>;
+export function useGetMemoryInfoLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMemoryInfoQuery, GetMemoryInfoQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetMemoryInfoQuery, GetMemoryInfoQueryVariables>(GetMemoryInfoDocument, options);
+        }
+export type GetMemoryInfoQueryHookResult = ReturnType<typeof useGetMemoryInfoQuery>;
+export type GetMemoryInfoLazyQueryHookResult = ReturnType<typeof useGetMemoryInfoLazyQuery>;
+export type GetMemoryInfoQueryResult = Apollo.QueryResult<GetMemoryInfoQuery, GetMemoryInfoQueryVariables>;
 export const GetServicesDocument = gql`
     query getServices {
   services {

@@ -1,84 +1,46 @@
 import { Logger } from "@nestjs/common";
-import {
-  Field,
-  ObjectType,
-  Query,
-  Resolver,
-  Subscription,
-} from "@nestjs/graphql";
+import { Query, Resolver, Subscription } from "@nestjs/graphql";
 import { subscriptionInterval } from "src/utils/subscriptionIntervalHelper";
-import {
-  currentLoad,
-  mem,
-  fsSize,
-  diskLayout,
-  blockDevices,
-} from "systeminformation";
-import { format } from "util";
+import { SystemLoadItem } from "./models/cpuLoad.model";
+import { MemoryInfo } from "./models/memoryInfo.model";
 import { SystemInfoService } from "./systemInfo.service";
-@ObjectType()
-class Info {
-  @Field()
-  totalMemory: number;
-
-  @Field()
-  usedMemory: number;
-
-  @Field()
-  totalDiskSpace: number;
-}
 
 @Resolver()
 export class SystemInfoResolver {
   constructor(private systemInfoService: SystemInfoService) {}
   private logger = new Logger(SystemInfoResolver.name);
-  @Query(() => Info)
-  async getSystemInfo(): Promise<Info> {
-    const [memory, diskSize, diskLay, blockDev] = await Promise.all([
-      await mem(),
-      await fsSize(),
-      await diskLayout(),
-      await blockDevices(),
-    ]);
 
-    this.logger.log(
-      format({
-        diskSize: diskSize,
-        diskLayout: diskLay,
-        blockDevices: blockDev,
-      })
-    );
-
-    return {
-      totalMemory: memory.total,
-      usedMemory: memory.active,
-      totalDiskSpace: 0,
-    };
+  @Query(() => MemoryInfo)
+  async memoryInfo(): Promise<MemoryInfo> {
+    return this.systemInfoService.getMemoryInfo();
   }
 
-  @Query(() => [CpuLoad], { name: "cpuLoad" })
-  cpuLoad(): CpuLoad[] {
+  @Subscription(() => SystemLoadItem)
+  currentMemoryUsage() {
+    return subscriptionInterval(
+      async () => ({
+        time: new Date(),
+        value: await this.systemInfoService.getMemoryUsage(),
+      }),
+      "currentMemoryUsage",
+      2000
+    );
+  }
+
+  @Query(() => [SystemLoadItem])
+  cpuLoadHistory(): SystemLoadItem[] {
     return this.systemInfoService.getCpuData();
   }
 
-  @Subscription(() => CpuLoad, { name: "cpuLoad" })
-  cpuLoadSubscription() {
-    return subscriptionInterval(async () => {
-      const data = await currentLoad();
-
-      return {
+  @Subscription(() => SystemLoadItem)
+  currentCpuLoad() {
+    return subscriptionInterval(
+      async () => ({
         time: new Date(),
-        value: data.currentLoad,
-      };
-    }, "cpuLoad");
+        value: await this.systemInfoService.getCpuLoad(),
+      }),
+      "currentCpuLoad",
+      2000
+    );
   }
-}
-
-@ObjectType()
-class CpuLoad {
-  @Field()
-  time: Date;
-
-  @Field()
-  value: number;
 }

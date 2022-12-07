@@ -3,7 +3,8 @@ import { withStaticFields } from "./withObservable";
 
 export const subscriptionInterval = async (
   dataFn: () => Promise<any>,
-  key: string
+  key: string,
+  timeout = 1000
 ) => {
   let prevValue: any = await dataFn();
 
@@ -16,7 +17,7 @@ export const subscriptionInterval = async (
         [key]: data,
       });
     }
-  }, 1000);
+  }, timeout);
 
   return withStaticFields(pubSub.asyncIterator(key), () => {
     clearInterval(interval);

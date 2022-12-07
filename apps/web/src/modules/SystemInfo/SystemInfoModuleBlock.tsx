@@ -1,8 +1,17 @@
-import { Text, useToken } from "@chakra-ui/react";
 import {
-  GetCpuLoadUpdateDocument,
-  GetCpuLoadUpdateSubscription,
-  useGetCpuLoadQuery,
+  Grid,
+  Progress,
+  Text,
+  useColorModeValue,
+  useToken,
+} from "@chakra-ui/react";
+import {
+  CurrentCpuLoadDocument,
+  CurrentCpuLoadSubscription,
+  CurrentMemoryUsageDocument,
+  CurrentMemoryUsageSubscription,
+  useGetCpuLoadHistoryQuery,
+  useGetMemoryInfoQuery,
 } from "@dashboardarr/graphql";
 import { FunctionComponent, useEffect } from "react";
 import { ModuleBox } from "../../components/ModuleBox/ModuleBox";
@@ -14,39 +23,93 @@ interface SystemInfoModuleBlockProps {}
 export const SystemInfoModuleBlock: FunctionComponent<
   SystemInfoModuleBlockProps
 > = () => {
-  const [blue400] = useToken("colors", ["blue.400"]);
+  const [blue400, black800, black200, whiteAlhpa800, whiteAlhpa200] = useToken(
+    "colors",
+    [
+      "blue.400",
+      "blackAlpha.800",
+      "blackAlpha.200",
+      "whiteAlpha.800",
+      "whiteAlpha.200",
+    ]
+  );
 
-  const { data, subscribeToMore } = useGetCpuLoadQuery({});
+  const { text, grid } = useColorModeValue(
+    { text: black800, grid: black200 },
+    { text: whiteAlhpa800, grid: whiteAlhpa200 }
+  );
+
+  const { data: cpuData, subscribeToMore } = useGetCpuLoadHistoryQuery({});
+
+  const { data: memoryData, subscribeToMore: subscribeToMoreMemoryInfo } =
+    useGetMemoryInfoQuery();
 
   useEffect(() => {
     subscribeToMore({
-      document: GetCpuLoadUpdateDocument,
+      document: CurrentCpuLoadDocument,
       updateQuery(
         prev,
         {
           subscriptionData,
         }: {
           subscriptionData: {
-            data: GetCpuLoadUpdateSubscription;
+            data: CurrentCpuLoadSubscription;
+          };
+        }
+      ) {
+        // Reset this when the dataset becomes too large
+        // This creates a small visual artifact but it's better than a memory leak.
+        return {
+          ...prev,
+          cpuLoadHistory: [
+            ...(prev.cpuLoadHistory.length > 500
+              ? prev.cpuLoadHistory.slice(-10)
+              : prev.cpuLoadHistory),
+            subscriptionData.data.currentCpuLoad,
+          ],
+        };
+      },
+    });
+    subscribeToMoreMemoryInfo({
+      document: CurrentMemoryUsageDocument,
+      updateQuery(
+        prev,
+        {
+          subscriptionData,
+        }: {
+          subscriptionData: {
+            data: CurrentMemoryUsageSubscription;
           };
         }
       ) {
         return {
           ...prev,
-          cpuLoad: [...prev.cpuLoad, subscriptionData.data.cpuLoad],
+          memoryInfo: {
+            ...prev.memoryInfo,
+            usedMemory: subscriptionData.data.currentMemoryUsage.value,
+          },
         };
       },
     });
-  }, [subscribeToMore]);
 
-  const graphData = data?.cpuLoad.map((d) => ({
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const graphData = cpuData?.cpuLoadHistory.map((d) => ({
     x: parseISO(d.time).getTime(),
     y: d.value,
   }));
 
+  const latestCPU = cpuData?.cpuLoadHistory.slice(-1)?.[0];
+
+  const memoryPercentage = memoryData
+    ? (memoryData.memoryInfo.usedMemory / memoryData.memoryInfo.totalMemory) *
+      100
+    : 0;
+
   return (
     <ModuleBox>
-      {/* <Grid
+      <Grid
         templateColumns="90px 35px 1fr"
         alignItems="center"
         rowGap={2}
@@ -54,36 +117,44 @@ export const SystemInfoModuleBlock: FunctionComponent<
       >
         <Text fontSize="sm">RAM Usage:</Text>
         <Text fontSize="xs" opacity={0.6} textAlign="right">
-          83%
+          {Math.round(memoryPercentage)}%
         </Text>
         <Progress
           colorScheme="green"
           flex={1}
           size="sm"
           borderRadius="md"
-          value={83}
+          value={memoryPercentage}
         />
 
-        <Text fontSize="sm">Disk Usage:</Text>
+        <Text fontSize="sm">CPU Usage:</Text>
         <Text fontSize="xs" opacity={0.6} textAlign="right">
-          64%
+          {Math.round(latestCPU?.value || 0)}%
         </Text>
-        <Progress flex={1} size="sm" borderRadius="md" value={64} />
-      </Grid> */}
+        <Progress
+          flex={1}
+          size="sm"
+          borderRadius="md"
+          value={latestCPU?.value || 0}
+        />
+      </Grid>
 
-      <Text mt={0} fontSize="sm">
+      <Text mt={6} fontSize="sm">
         CPU Usage
       </Text>
       <Chart
         type="line"
         options={{
           chart: {
+            parentHeightOffset: 0,
             type: "line",
+            offsetX: 0,
+            offsetY: 0,
             animations: {
               enabled: true,
               easing: "linear",
               dynamicAnimation: {
-                speed: 1000,
+                speed: 2000,
               },
             },
             toolbar: {
@@ -106,7 +177,7 @@ export const SystemInfoModuleBlock: FunctionComponent<
           },
 
           grid: {
-            borderColor: "rgba(255,255,255,0.1)",
+            borderColor: grid,
             show: true,
             padding: {
               bottom: 0,
@@ -127,12 +198,13 @@ export const SystemInfoModuleBlock: FunctionComponent<
           yaxis: {
             min: 0,
             max: 100,
+
             tickAmount: 4,
             decimalsInFloat: 0,
             labels: {
               maxWidth: 35,
               style: {
-                colors: "rgba(255,255,255,0.9)",
+                colors: text,
               },
               formatter(val, opts?) {
                 return `${val} %`;

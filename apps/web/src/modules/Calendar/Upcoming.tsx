@@ -30,7 +30,7 @@ export const Upcoming: FunctionComponent<UpcomingProps> = () => {
     },
   });
 
-  const d = Object.entries(
+  const items = Object.entries(
     (data?.calendar || []).reduce<
       Record<string, (MovieCalendarItem | TvCalendarItem)[]>
     >((prev, cur) => {
@@ -96,7 +96,7 @@ export const Upcoming: FunctionComponent<UpcomingProps> = () => {
           },
         }}
       >
-        {d.map(([date, items]) => (
+        {items.map(([date, items]) => (
           <Box _notLast={{ mb: 4 }} key={date}>
             <Text
               fontSize="sm"
@@ -108,12 +108,14 @@ export const Upcoming: FunctionComponent<UpcomingProps> = () => {
             </Text>
             <VStack divider={<StackDivider />} spacing={2}>
               {items.map((item, index) => {
-                if (
-                  item.__typename === "MovieCalendarItem" &&
-                  item.digitalDate
-                ) {
+                if (item.__typename === "MovieCalendarItem") {
                   return (
-                    <MovieItem movie={item} type="digital" key={index} small />
+                    <MovieItem
+                      movie={item}
+                      type={item.digitalDate ? "digital" : "cinema"}
+                      key={index}
+                      small
+                    />
                   );
                 } else if (item.__typename === "TvCalendarItem") {
                   return <TvItem series={item} key={index} small />;

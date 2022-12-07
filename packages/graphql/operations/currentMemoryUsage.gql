@@ -1,0 +1,6 @@
+subscription currentMemoryUsage {
+  currentMemoryUsage {
+    time
+    value
+  }
+}

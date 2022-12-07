@@ -1,6 +1,0 @@
-subscription getCpuLoadUpdate {
-  cpuLoad {
-    time
-    value
-  }
-}

@@ -162,15 +162,14 @@ type UsenetQueue {
   total: Float!
 }
 
-type Info {
-  totalMemory: Float!
-  usedMemory: Float!
-  totalDiskSpace: Float!
-}
-
-type CpuLoad {
+type SystemLoadItem {
   time: DateTime!
   value: Float!
+}
+
+type MemoryInfo {
+  totalMemory: Float!
+  usedMemory: Float!
 }
 
 type Query {
@@ -183,8 +182,8 @@ type Query {
   usenetQueue(serviceId: String!, limit: Int!, offset: Int!): UsenetQueue!
   usenetInfo(serviceId: String!): UsenetInfo!
   services: [Service!]!
-  getSystemInfo: Info!
-  cpuLoad: [CpuLoad!]!
+  memoryInfo: MemoryInfo!
+  cpuLoadHistory: [SystemLoadItem!]!
 }
 
 union CalendarItem = MovieCalendarItem | TvCalendarItem
@@ -288,5 +287,6 @@ type Subscription {
   usenetInfo(serviceId: String!): UsenetInfo!
   usenetQueue(serviceId: String!, limit: Int!, offset: Int!): UsenetQueue!
   usenetHistory(serviceId: String!, limit: Int!, offset: Int!): UsenetHistory!
-  cpuLoad: CpuLoad!
+  currentMemoryUsage: SystemLoadItem!
+  currentCpuLoad: SystemLoadItem!
 }

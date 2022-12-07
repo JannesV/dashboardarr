@@ -1,0 +1,6 @@
+subscription currentCpuLoad {
+  currentCpuLoad {
+    time
+    value
+  }
+}

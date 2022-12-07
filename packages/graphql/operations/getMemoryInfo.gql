@@ -1,0 +1,6 @@
+query getMemoryInfo {
+  memoryInfo {
+    totalMemory
+    usedMemory
+  }
+}

@@ -1,6 +1,0 @@
-query getCpuLoad {
-  cpuLoad {
-    time
-    value
-  }
-}

@@ -27,7 +27,7 @@ export const MovieItem: FunctionComponent<MovieItemProps> = ({
           pos="absolute"
           top={1}
           left={1}
-          background="orange.500"
+          background="green.500"
         >
           {type}
         </Badge>
@@ -36,16 +36,16 @@ export const MovieItem: FunctionComponent<MovieItemProps> = ({
         <Heading size={small ? "xs" : "sm"}>{movie.movieTitle}</Heading>
 
         <Flex my={2}>
-          {movie.genres.map((g) => (
+          {movie.genres.map((genre) => (
             <Tag
-              key={g}
+              key={genre}
               textTransform="uppercase"
               fontSize="x-small"
               size={"sm"}
               mr={2}
               whiteSpace="nowrap"
             >
-              {g}
+              {genre}
             </Tag>
           ))}
         </Flex>
