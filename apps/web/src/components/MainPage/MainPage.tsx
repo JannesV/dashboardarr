@@ -115,7 +115,7 @@ export const MainPage: FunctionComponent<MainPageProps> = () => {
         <NavBar />
 
         <Box className="grid-stack">
-          {modules.map((item, i) => {
+          {modules.map((item) => {
             let module: ReactNode = null;
             let constraints: Partial<SizeConstraint> = {};
 

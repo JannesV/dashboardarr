@@ -10,13 +10,14 @@ import {
   extendTheme,
   Spinner,
 } from "@chakra-ui/react";
-import React, { FunctionComponent, ReactNode } from "react";
+import { mode } from "@chakra-ui/theme-tools";
+import { useGetConfigQuery } from "@dashboardarr/graphql";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
+import { StepsStyleConfig as Steps } from "chakra-ui-steps";
+import { FunctionComponent, ReactNode } from "react";
 import { MainPage } from "./components/MainPage/MainPage";
 import { client } from "./utils/client";
-import { StepsStyleConfig as Steps } from "chakra-ui-steps";
-import { mode } from "@chakra-ui/theme-tools";
-import {} from "@chakra-ui/theme-tools";
-import { useGetConfigQuery } from "@dashboardarr/graphql";
 
 const theme = extendTheme({
   styles: {

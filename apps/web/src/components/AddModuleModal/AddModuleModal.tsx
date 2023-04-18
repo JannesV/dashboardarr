@@ -20,7 +20,8 @@ import { useAtom } from "jotai";
 import { FunctionComponent, useCallback, useState } from "react";
 import { createModuleItemAtom } from "../../state/module";
 import { useConfig } from "../../utils/useConfig";
-
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
 import { Step, Steps, useSteps } from "chakra-ui-steps";
 import { ModuleTypeSelector } from "./ModuleTypeSelector";
 import { ButtonModuleStep } from "./ModuleSteps/ButtonModuleStep";
@@ -31,7 +32,7 @@ import { hasRequiredFields } from "../../utils/requiredModuleFields";
 interface AddModuleModalProps {}
 
 export const AddModuleModal: FunctionComponent<AddModuleModalProps> = () => {
-  const { nextStep, prevStep, setStep, reset, activeStep } = useSteps({
+  const { nextStep, prevStep, setStep, activeStep } = useSteps({
     initialStep: 0,
   });
   const [isOpen, setIsOpen] = useAtom(createModuleItemAtom);

@@ -1,7 +1,4 @@
 import { Box, BoxProps, useColorModeValue, forwardRef } from "@chakra-ui/react";
-import { PropsWithChildren } from "react";
-
-interface ModuleBoxProps extends PropsWithChildren, BoxProps {}
 
 export const ModuleBox = forwardRef<BoxProps, "div">(
   ({ children, ...boxProps }, ref) => {

@@ -206,7 +206,7 @@ export const SystemInfoModuleBlock: FunctionComponent<
               style: {
                 colors: text,
               },
-              formatter(val, opts?) {
+              formatter(val) {
                 return `${val} %`;
               },
             },

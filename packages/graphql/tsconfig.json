@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "lib": ["dom", "ES2015"],
+    "jsx": "react-jsx",
     "module": "ESNext",
     "target": "es6",
     "composite": false,

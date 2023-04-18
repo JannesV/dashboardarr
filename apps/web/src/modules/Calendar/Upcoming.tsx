@@ -23,7 +23,7 @@ export const Upcoming: FunctionComponent<UpcomingProps> = () => {
   const startDate = startOfDay(new Date());
   const endDate = addDays(startOfDay(new Date()), 7);
 
-  const { data, error } = useGetCalendarQuery({
+  const { data } = useGetCalendarQuery({
     variables: {
       startDate: startDate.toISOString(),
       endDate: endDate.toISOString(),

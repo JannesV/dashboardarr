@@ -31,7 +31,7 @@ import {
   useDeleteServiceMutation,
   useUpdateSettingsMutation,
 } from "@dashboardarr/graphql";
-import { Formik, FormikHelpers } from "formik";
+import { Formik } from "formik";
 import { InputControl } from "formik-chakra-ui";
 import { useAtom, useSetAtom } from "jotai";
 import { FunctionComponent, useCallback } from "react";
@@ -112,8 +112,8 @@ export const SettingsDrawer: FunctionComponent<SettingsDrawerProps> = () => {
   );
 
   const handleSubmit = (
-    values: SettingsInput,
-    helpers: FormikHelpers<SettingsInput>
+    values: SettingsInput
+    // helpers: FormikHelpers<SettingsInput>
   ) => {
     updateSettings({
       variables: {

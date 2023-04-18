@@ -11,7 +11,7 @@ interface ColorModeSliderProps {
 export const ColorModeSlider: FunctionComponent<ColorModeSliderProps> = ({
   name,
 }) => {
-  const [{ onChange }, { value }, { setValue }] = useField<ColorMode>({ name });
+  const [, { value }, { setValue }] = useField<ColorMode>({ name });
 
   const { bgColor } = useColorModeValue(
     { bgColor: "gray.300" },
