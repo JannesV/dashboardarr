@@ -74,7 +74,7 @@ export const Upcoming: FunctionComponent<UpcomingProps> = () => {
         Upcoming
       </Heading>
       <Box
-        height="calc(100% - 330px)"
+        height="calc(100% - 370px)"
         overflowX="hidden"
         overflowY="auto"
         css={{
