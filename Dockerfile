@@ -7,7 +7,7 @@ RUN apk update && apk --no-cache add lsblk lm-sensors
 
 COPY ./package*.json ./
 COPY ./apps/api ./apps/api
-COPY ./apps/web/build ./web
+COPY ./apps/web/dist ./web
 COPY ./packages ./packages
 
 RUN npm ci --only=production

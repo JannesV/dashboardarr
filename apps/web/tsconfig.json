@@ -22,11 +22,5 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    "n.js",
-    "src/setupProxy.js"
-  ]
+  "include": ["src"]
 }
