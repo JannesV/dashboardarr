@@ -111,26 +111,20 @@ export class SabnzbdService {
   }
 
   private async getClient(serviceId: string) {
-    if (!this.clients[serviceId]) {
-      const services = await this.configService.getServices(
-        ServiceType.Sabnzbd
-      );
+    const services = await this.configService.getServices(ServiceType.Sabnzbd);
 
-      const service = services.find((s) => s.id === serviceId);
+    const service = services.find((s) => s.id === serviceId);
 
-      if (!service) {
-        throw new Error(`Service with ID "${serviceId}" could not be found.`);
-      }
-
-      if (!service.apiKey) {
-        throw new Error(`API Key for service "${service.name}" is missing`);
-      }
-
-      const { origin } = new URL(service.url);
-
-      this.clients[serviceId] = new Client(origin, service.apiKey);
+    if (!service) {
+      throw new Error(`Service with ID "${serviceId}" could not be found.`);
     }
 
-    return this.clients[serviceId];
+    if (!service.apiKey) {
+      throw new Error(`API Key for service "${service.name}" is missing`);
+    }
+
+    const { origin } = new URL(service.url);
+
+    return new Client(origin, service.apiKey);
   }
 }

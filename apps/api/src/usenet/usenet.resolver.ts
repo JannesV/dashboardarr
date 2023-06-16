@@ -70,7 +70,10 @@ export class UsenetResolver {
 
   @Subscription(() => UsenetInfo, { name: "usenetInfo" })
   async usenetInfoUpdated(@Args("serviceId") serviceId: string) {
-    return sub(() => this.sabnzbdService.getInfo(serviceId), "usenetInfo");
+    return this.subscribe(
+      () => this.sabnzbdService.getInfo(serviceId),
+      "usenetInfo"
+    );
   }
 
   // Todo: More refined subscription on an item basis
@@ -80,7 +83,7 @@ export class UsenetResolver {
     @Args("limit", { type: () => Int }) limit: number,
     @Args("offset", { type: () => Int }) offset: number
   ) {
-    return sub(
+    return this.subscribe(
       () =>
         this.sabnzbdService.getQueue({
           serviceId,
@@ -98,7 +101,7 @@ export class UsenetResolver {
     @Args("limit", { type: () => Int }) limit: number,
     @Args("offset", { type: () => Int }) offset: number
   ) {
-    return sub(
+    return this.subscribe(
       () =>
         this.sabnzbdService.getHistory({
           serviceId,
@@ -108,24 +111,27 @@ export class UsenetResolver {
       "usenetHistory"
     );
   }
+
+  async subscribe(dataFn: () => Promise<any>, key: string) {
+    let prevValue: any = await dataFn();
+
+    const interval = setInterval(async () => {
+      try {
+        const data = await dataFn();
+
+        if (JSON.stringify(prevValue) !== JSON.stringify(data)) {
+          prevValue = data;
+          pubSub.publish(key, {
+            [key]: data,
+          });
+        }
+      } catch (err) {
+        this.logger.warn(`Error fetching data for ${key}`, err);
+      }
+    }, 1000);
+
+    return withStaticFields(pubSub.asyncIterator(key), () => {
+      clearInterval(interval);
+    });
+  }
 }
-
-// Todo clean this up
-const sub = async (dataFn: () => Promise<any>, key: string) => {
-  let prevValue: any = await dataFn();
-
-  const interval = setInterval(async () => {
-    const data = await dataFn();
-
-    if (JSON.stringify(prevValue) !== JSON.stringify(data)) {
-      prevValue = data;
-      pubSub.publish(key, {
-        [key]: data,
-      });
-    }
-  }, 1000);
-
-  return withStaticFields(pubSub.asyncIterator(key), () => {
-    clearInterval(interval);
-  });
-};
