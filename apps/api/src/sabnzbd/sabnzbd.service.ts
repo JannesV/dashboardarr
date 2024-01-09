@@ -38,6 +38,7 @@ export class SabnzbdService {
       size: slot.bytes,
       time: slot.download_time,
       completedOn: unix(slot.completed).toDate(),
+      completedIn: slot.download_time,
     }));
 
     return {

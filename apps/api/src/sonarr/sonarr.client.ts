@@ -29,10 +29,12 @@ export class SonarrClient {
     startDate: Date,
     endDate: Date
   ): Promise<SonarrCalendarItem[]> {
-    const response = await this.apiClient.get("/api/calendar", {
+    const response = await this.apiClient.get("/api/v3/calendar", {
       params: {
         start: startDate.toISOString(),
         end: endDate.toISOString(),
+        includeSeries: true,
+        includeEpisodeImages: true,
       },
     });
 

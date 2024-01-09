@@ -34,7 +34,7 @@ export class SonarrService {
             seasonNumber: item.seasonNumber,
             seriesTitle: item.series.title,
             tvDbId: item.series.tvdbId,
-            poster: image?.url || undefined,
+            poster: image?.remoteUrl || undefined,
             genres: item.series.genres,
             overview: item.overview || "",
           };

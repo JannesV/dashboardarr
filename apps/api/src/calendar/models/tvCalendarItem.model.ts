@@ -23,8 +23,8 @@ export class TvCalendarItem {
   @Field()
   tvDbId: string;
 
-  @Field()
-  imdbId: string;
+  @Field({ nullable: true })
+  imdbId?: string;
 
   @Field({ nullable: true })
   poster?: string;

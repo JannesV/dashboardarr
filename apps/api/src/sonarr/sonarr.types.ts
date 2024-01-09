@@ -39,7 +39,7 @@ export interface Language {
 }
 
 export enum LanguageName {
-  English = 'English',
+  English = "English",
 }
 
 export interface MediaInfo {
@@ -49,14 +49,14 @@ export interface MediaInfo {
 }
 
 export enum AudioCodec {
-  EAC3Atmos = 'EAC3 Atmos',
-  Eac3 = 'EAC3',
+  EAC3Atmos = "EAC3 Atmos",
+  Eac3 = "EAC3",
 }
 
 export enum VideoCodec {
-  H264 = 'h264',
-  H265 = 'h265',
-  X265 = 'x265',
+  H264 = "h264",
+  H265 = "h265",
+  X265 = "x265",
 }
 
 export interface EpisodeFileQuality {
@@ -116,12 +116,13 @@ export interface Series {
 export interface Image {
   coverType: CoverType;
   url: string;
+  remoteUrl: string;
 }
 
 export enum CoverType {
-  Banner = 'banner',
-  Fanart = 'fanart',
-  Poster = 'poster',
+  Banner = "banner",
+  Fanart = "fanart",
+  Poster = "poster",
 }
 
 export interface Ratings {
@@ -135,10 +136,10 @@ export interface Season {
 }
 
 export enum SeriesType {
-  Standard = 'standard',
+  Standard = "standard",
 }
 
 export enum Status {
-  Continuing = 'continuing',
-  Upcoming = 'upcoming',
+  Continuing = "continuing",
+  Upcoming = "upcoming",
 }

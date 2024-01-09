@@ -36,7 +36,7 @@ export class RadarrService {
               : undefined,
             imdbId: item.imdbId || "",
             movieTitle: item.title || "",
-            poster: image?.url || "",
+            poster: image?.remoteUrl || "",
             overview: item.overview || "",
             voteAverage: item.ratings.tmdb.value,
           };

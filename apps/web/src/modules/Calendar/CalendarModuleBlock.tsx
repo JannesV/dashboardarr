@@ -37,7 +37,9 @@ export const CalendarModuleBlock: FunctionComponent<
   const startDate = startOfWeek(month, {
     weekStartsOn: weekStart === CalendarWeekStart.Monday ? 1 : 0,
   });
-  const endDate = endOfWeek(endOfMonth(month));
+  const endDate = endOfWeek(endOfMonth(month), {
+    weekStartsOn: weekStart === CalendarWeekStart.Monday ? 1 : 0,
+  });
 
   const dates = eachDayOfInterval({
     start: startDate,
@@ -50,6 +52,8 @@ export const CalendarModuleBlock: FunctionComponent<
       endDate: endDate.toISOString(),
     },
   });
+
+  console.log();
 
   return (
     <ModuleBox>
@@ -96,7 +100,6 @@ export const CalendarModuleBlock: FunctionComponent<
           />
         ))}
       </Grid>
-      <Upcoming />
       {error && (
         <Alert borderRadius="md" status="error" mt={4}>
           <AlertIcon />
@@ -105,6 +108,7 @@ export const CalendarModuleBlock: FunctionComponent<
           </AlertDescription>
         </Alert>
       )}
+      <Upcoming height={`calc(100% - ${dates.length > 35 ? 369 : 330}px)`} />
     </ModuleBox>
   );
 };

@@ -393,6 +393,7 @@ export type UsenetHistory = {
 
 export type UsenetHistoryItem = {
   __typename?: 'UsenetHistoryItem';
+  completedIn: Scalars['Float'];
   completedOn: Scalars['DateTime'];
   id: Scalars['String'];
   name: Scalars['String'];
@@ -531,7 +532,7 @@ export type GetUsenetHistoryQueryVariables = Exact<{
 }>;
 
 
-export type GetUsenetHistoryQuery = { __typename?: 'Query', usenetHistory: { __typename?: 'UsenetHistory', total: number, items: Array<{ __typename?: 'UsenetHistoryItem', name: string, size: number, id: string, time: number, completedOn: string }> } };
+export type GetUsenetHistoryQuery = { __typename?: 'Query', usenetHistory: { __typename?: 'UsenetHistory', total: number, items: Array<{ __typename?: 'UsenetHistoryItem', name: string, size: number, id: string, time: number, completedOn: string, completedIn: number }> } };
 
 export type GetUsenetHistorySubscriptionSubscriptionVariables = Exact<{
   serviceId: Scalars['String'];
@@ -540,7 +541,7 @@ export type GetUsenetHistorySubscriptionSubscriptionVariables = Exact<{
 }>;
 
 
-export type GetUsenetHistorySubscriptionSubscription = { __typename?: 'Subscription', usenetHistory: { __typename?: 'UsenetHistory', total: number, items: Array<{ __typename?: 'UsenetHistoryItem', name: string, size: number, id: string, time: number, completedOn: string }> } };
+export type GetUsenetHistorySubscriptionSubscription = { __typename?: 'Subscription', usenetHistory: { __typename?: 'UsenetHistory', total: number, items: Array<{ __typename?: 'UsenetHistoryItem', name: string, size: number, id: string, time: number, completedOn: string, completedIn: number }> } };
 
 export type GetUsenetInfoQueryVariables = Exact<{
   serviceId: Scalars['String'];
@@ -638,7 +639,7 @@ export type UpdateSettingsMutationVariables = Exact<{
 
 export type UpdateSettingsMutation = { __typename?: 'Mutation', updateSettings: { __typename?: 'Config', name: string, settings: { __typename?: 'Settings', title?: string | null, logo?: string | null, favicon?: string | null, colorMode: ColorMode }, modules: Array<{ __typename?: 'ButtonModule', id: string, service: { __typename?: 'Service', name: string, id: string, type: ServiceType, icon: string, url: string, externalUrl?: string | null }, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'CalendarModule', startOfWeek: CalendarWeekStart, id: string, services: Array<{ __typename?: 'Service', id: string }>, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'SystemInfoModule', id: string, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } } | { __typename?: 'UsenetModule', id: string, service: { __typename?: 'Service', id: string }, position: { __typename?: 'ModulePosition', x: number, y: number, w?: number | null, h?: number | null } }> } };
 
-export type UsenetHistoryItemFragment = { __typename?: 'UsenetHistoryItem', name: string, size: number, id: string, time: number, completedOn: string };
+export type UsenetHistoryItemFragment = { __typename?: 'UsenetHistoryItem', name: string, size: number, id: string, time: number, completedOn: string, completedIn: number };
 
 export type UsenetInfoFragment = { __typename?: 'UsenetInfo', paused: boolean, sizeLeft: number, speed: number, eta: number, itemsRemaining: number };
 
@@ -703,6 +704,7 @@ export const UsenetHistoryItemFragmentDoc = gql`
   id
   time
   completedOn
+  completedIn
 }
     `;
 export const UsenetInfoFragmentDoc = gql`

@@ -33,8 +33,8 @@ import {
 import { parseISO } from "date-fns";
 import { FunctionComponent, useCallback, useEffect, useState } from "react";
 import { parseDuration } from "../../../utils/formatDuration";
-import { formatRelative } from "../../../utils/formatRelative";
 import { humanFileSize } from "../../../utils/humanFileSize";
+import { RelativeDate } from "../../../utils/RelativeDate";
 
 interface UsenetHistoryProps {
   serviceId: string;
@@ -183,8 +183,13 @@ export const UsenetHistory: FunctionComponent<UsenetHistoryProps> = ({
               </Td>
               <Td>{humanFileSize(item.size)}</Td>
               <Td textAlign="right">
-                <Tooltip label={`Completed in ${parseDuration(item.time)}`}>
-                  {formatRelative(parseISO(item.completedOn))}
+                <Tooltip
+                  hasArrow
+                  label={`Completed in ${parseDuration(item.time)}`}
+                >
+                  <span>
+                    <RelativeDate date={parseISO(item.completedOn)} />
+                  </span>
                 </Tooltip>
               </Td>
             </Tr>

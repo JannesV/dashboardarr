@@ -11,8 +11,8 @@ export class MovieCalendarItem {
   @Field({ nullable: true })
   digitalDate?: Date;
 
-  @Field()
-  imdbId: string;
+  @Field({ nullable: true })
+  imdbId?: string;
 
   @Field({ nullable: true })
   poster?: string;

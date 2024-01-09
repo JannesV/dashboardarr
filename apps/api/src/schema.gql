@@ -122,6 +122,7 @@ type UsenetHistoryItem {
   id: String!
   time: Float!
   completedOn: DateTime!
+  completedIn: Float!
 }
 
 """
@@ -192,7 +193,7 @@ type MovieCalendarItem {
   movieTitle: String!
   inCinemasDate: DateTime
   digitalDate: DateTime
-  imdbId: String!
+  imdbId: String
   poster: String
   genres: [String!]!
   overview: String!
@@ -207,7 +208,7 @@ type TvCalendarItem {
   seasonNumber: Float!
   episodeNumber: Float!
   tvDbId: String!
-  imdbId: String!
+  imdbId: String
   poster: String
   genres: [String!]!
 }

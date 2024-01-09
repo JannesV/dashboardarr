@@ -17,9 +17,11 @@ import { FunctionComponent } from "react";
 import { MovieItem } from "./CalendarDay/MovieItem";
 import { TvItem } from "./CalendarDay/TvItem";
 
-interface UpcomingProps {}
+interface UpcomingProps {
+  height: string;
+}
 
-export const Upcoming: FunctionComponent<UpcomingProps> = () => {
+export const Upcoming: FunctionComponent<UpcomingProps> = ({ height }) => {
   const startDate = startOfDay(new Date());
   const endDate = addDays(startOfDay(new Date()), 7);
 
@@ -74,7 +76,7 @@ export const Upcoming: FunctionComponent<UpcomingProps> = () => {
         Upcoming
       </Heading>
       <Box
-        height="calc(100% - 370px)"
+        height={height}
         overflowX="hidden"
         overflowY="auto"
         css={{

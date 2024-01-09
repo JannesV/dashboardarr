@@ -19,4 +19,10 @@ export class UsenetHistoryItem {
 
   @Field()
   completedOn: Date;
+
+  /**
+   * Time it took to download
+   */
+  @Field()
+  completedIn: number;
 }
