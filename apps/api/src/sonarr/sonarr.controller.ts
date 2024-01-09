@@ -18,7 +18,7 @@ export class SonarrController {
 
     const response = await axios({
       method: "get",
-      url: `${service.url}/api/${params[0]}`,
+      url: `${service.url}/api/v3/${params[0]}`,
       params: {
         apiKey: service.apiKey,
       },

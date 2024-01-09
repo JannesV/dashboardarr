@@ -45,7 +45,7 @@ export class SonarrClient {
     let series: Series[] = await this.cacheManager.get("sonarr-series");
 
     if (!series) {
-      const response = await this.apiClient.get<Series[]>("/api/series", {});
+      const response = await this.apiClient.get<Series[]>("/api/v3/series", {});
 
       if (!Array.isArray(response.data)) {
         throw new Error("Sonarr did not return a valid response");
